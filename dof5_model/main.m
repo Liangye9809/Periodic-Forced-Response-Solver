@@ -14,6 +14,7 @@ clc
 %% Get parameters from file
 
 Data
+% Biud_FEM_structure
 
 %% Criag-Bampton reduction from FEM matrices
 
@@ -42,24 +43,24 @@ Data
 % Psi is constrained modes
 %**************************************************************************************************
 % INPUTS(getting from matlab Workspace):
-% * Mee: mass matrix in elastic-elastic part
-% * Mec: mass matrix in elastic-contact part
-% * Mcc: mass matrix in contact-contact part
-% * Kee: stiffness matrix in elastic-elastic part
-% * Kec: stiffness matrix in elastic-contact part
-% * Kcc: stiffness matrix in contact-contact part
-% * Pe: preload forces in elastic part
-% * Pc: preload forces in contact part
-% * Fe: Amplitude of external forces in elastic part
-% * Fc: Amplitude of external forces in contact part
-% * Na: number of CB modes
+% * FEM.Mee: mass matrix in elastic-elastic part
+% * FEM.Mec: mass matrix in elastic-contact part
+% * FEM.Mcc: mass matrix in contact-contact part
+% * FEM.Kee: stiffness matrix in elastic-elastic part
+% * FEM.Kec: stiffness matrix in elastic-contact part
+% * FEM.Kcc: stiffness matrix in contact-contact part
+% * FEM.Pe: preload forces in elastic part
+% * FEM.Pc: preload forces in contact part
+% * FEM.Fe: Amplitude of external forces in elastic part
+% * FEM.Fc: Amplitude of external forces in contact part
+% * FEM.Na: number of CB modes
 % 
 %   OUTPUTS(save to .mat variables in current folder):
-% * CBmods: structure contains the full-stuck elastic modes Phi and constrained modes Psi
-% * CB_MK: structure contains criag-bampton M K matrices
-% * CB_F: structure contains criag-bampton Fa Fx column vectors
-% * xe0: preload displacement of elastic part
-% * Rx: preload reaction forces act in contact part
+% * CB.CBmods: structure contains the full-stuck elastic modes Phi and constrained modes Psi
+% * CB.CB_MK: structure contains criag-bampton M K matrices
+% * CB.CB_F: structure contains criag-bampton Fa Fx column vectors
+% * CB.xe0: preload displacement of elastic part
+% * CB.Rx: preload reaction forces act in contact part
 % 
 % Written by Liu Liangye on June 03, 2025
 % *************************************************************************************************
@@ -86,11 +87,11 @@ CriagBamptonReduction
 %
 %**************************************************************************************************
 % INPUTS(getting from matlab Workspace):
-% * CBmods: structure contains the full-stuck elastic modes Phi and constrained modes Psi
-% * CB_MK: structure contains criag-bampton M K matrices
-% * CB_F: structure contains criag-bampton Fa Fx column vectors
-% * xe0: preload displacement of elastic part
-% * Rx: preload reaction forces act in contact part 
+% * CB.CBmods: structure contains the full-stuck elastic modes Phi and constrained modes Psi
+% * CB.CB_MK: structure contains criag-bampton M K matrices
+% * CB.CB_F: structure contains criag-bampton Fa Fx column vectors
+% * CB.xe0: preload displacement of elastic part
+% * CB.Rx: preload reaction forces act in contact part 
 % 
 %   OUTPUTS(save to .mat variables in current folder):
 % * x_cont: solution of every ds in dof order with H harmonics fouriers' coefficient

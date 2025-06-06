@@ -1,47 +1,47 @@
-function [x_cont, lambda_cont] = continuation(FUNC, JACOB, JLAMBDA, params)
+function [x_cont, omega_cont] = continuation(FUNC, JACOB, JLAMBDA, params)
     % 先计算初值点的解，不调用cont_step函数，或者传入的ds = 0
     % 然后存储第一个点，按照正常的逻辑调用cont_step函数计算之后的点
     
-
+    % First, Calculate the initial point, with ds = 0, 
     ds = params.cont.ds;
-    lambda0 = params.cont.lambda0;
-    lambda_end = params.cont.lambda_end;
+    omega_0 = params.cont.omega_0;
+    omega_end = params.cont.omega_end;
     % calculate the initial point
     params.cont.ds = 0;
     params.cont.step = 1;
     disp('continuation information');
     disp('step:   x1   x2   lambda  errorx  errorf     kmax');
-    [x,lambda,tx,tlambda] = cont_step(FUNC, JACOB, JLAMBDA, params);
+    [x,omega,tx,tomega] = cont_step(FUNC, JACOB, JLAMBDA, params);
     x_cont = x;
-    lambda_cont = lambda;
-    if lambda0 == lambda_end
+    omega_cont = omega;
+    if omega_0 == omega_end
         return;
     end
     % calculate the rest points
     params.cont.ds = ds;
     params.cont.x0 = x;
     params.cont.tx0 = tx;
-    params.cont.lambda0 = lambda;
-    params.cont.tlambda0 = tlambda;
+    params.cont.omega_0 = omega;
+    params.cont.tomega0 = tomega;
     maxstep = params.cont.maxstep;
     for n = 2:maxstep
         params.cont.step = n;
-        [x,lambda,tx,tlambda] = cont_step(FUNC, JACOB, JLAMBDA, params);
+        [x,omega,tx,tomega] = cont_step(FUNC, JACOB, JLAMBDA, params);
         params.cont.x0 = x;
-        params.cont.lambda0 = lambda;
+        params.cont.omega_0 = omega;
         params.cont.tx0 = tx;
-        params.cont.tlambda0 = tlambda;
+        params.cont.tomega0 = tomega;
         x_cont = [x_cont, x];
-        lambda_cont = [lambda_cont, lambda];
-        if sign(lambda_end - lambda0) * (lambda + ds*tlambda - lambda_end) > 0 % the final point
+        omega_cont = [omega_cont, omega];
+        if sign(omega_end - omega_0) * (omega + ds*tomega - omega_end) > 0 % the final point
             params.cont.ds = 0;
             params.cont.tx0 = zeros(size(tx));
-            params.cont.tlambda0 = sign(lambda_end - lambda0) * 1;
-            params.cont.lambda0 = lambda_end;
+            params.cont.tomega0 = sign(omega_end - omega_0) * 1;
+            params.cont.omega_0 = omega_end;
             params.cont.step = n + 1;
-            [x,lambda,tx,tlambda] = cont_step(FUNC, JACOB, JLAMBDA, params);
+            [x,omega,tx,tomega] = cont_step(FUNC, JACOB, JLAMBDA, params);
             x_cont = [x_cont, x];
-            lambda_cont = [lambda_cont, lambda];
+            omega_cont = [omega_cont, omega];
             break;
         end
         % if omega > 1.05

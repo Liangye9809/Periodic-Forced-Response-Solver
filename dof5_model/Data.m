@@ -1,14 +1,14 @@
 %% FEM matrices for test
-Mee = [1,0;0,1];
-Mec = [0,0,0;0,0,0];
-Mcc = [1,0,0;0,1,0;0,0,1];
-Kee = [10,-10;-10,20];
-Kec = [0,0,0;-10,0,0];
-Kcc = [20,-10,0;-10,20,-10;0,-10,20]; 
-Fe = [1,1]'; % external forces amplitude in elastic part, Ne * 1 vector
-Fc = [0,0,0]'; % external forces amplitude in contact part, Nc * 1 vector
-Pe = [1;0.1];
-Pc = [0.1;0.1;0.1];
+FEM.Mee = [1,0;0,1];
+FEM.Mec = [0,0,0;0,0,0];
+FEM.Mcc = [1,0,0;0,1,0;0,0,1];
+FEM.Kee = [10,-10;-10,20];
+FEM.Kec = [0,0,0;-10,0,0];
+FEM.Kcc = [20,-10,0;-10,20,-10;0,-10,20]; 
+FEM.Fe = [1,1]'; % external forces amplitude in elastic part, Ne * 1 vector
+FEM.Fc = [0,0,0]'; % external forces amplitude in contact part, Nc * 1 vector
+FEM.Pe = [1;0.1];
+FEM.Pc = [0.1;0.1;0.1];
 
 %% CB matrices for test
 % Phi = [-0.850650808352040,-0.525731112119134;-0.525731112119134,0.850650808352040];
@@ -75,11 +75,11 @@ xp0 = 1e-5; % if no value defined here, the default value inside is 0
 
 ds = 0.05;
 maxstep = 10000;
-lambda0 = 0.9;
-lambda_end = 1.3;
+omega_0 = 0.9;
+omega_end = 1.3;
 
 x0 = 0;
 
 % tx0 = 0; % always 0 when calculating the first point so default inside the code
-% tlambda0 = 1; % is defined by lambda0 and lambda_end
+% tomega0 = 1; % is defined by lambda0 and lambda_end
 

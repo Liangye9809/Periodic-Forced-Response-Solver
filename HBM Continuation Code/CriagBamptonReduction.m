@@ -23,22 +23,22 @@
 % Psi is constrained modes
 %**************************************************************************************************
 % INPUTS(getting from matlab Workspace):
-% * Mee: mass matrix in elastic-elastic part
-% * Mec: mass matrix in elastic-contact part
-% * Mcc: mass matrix in contact-contact part
-% * Kee: stiffness matrix in elastic-elastic part
-% * Kec: stiffness matrix in elastic-contact part
-% * Kcc: stiffness matrix in contact-contact part
-% * Pe: preload forces in elastic part
-% * Pc: preload forces in contact part
-% * Fe: Amplitude of external forces in elastic part
-% * Fc: Amplitude of external forces in contact part
+% * FEM.Mee: mass matrix in elastic-elastic part
+% * FEM.Mec: mass matrix in elastic-contact part
+% * FEM.Mcc: mass matrix in contact-contact part
+% * FEM.Kee: stiffness matrix in elastic-elastic part
+% * FEM.Kec: stiffness matrix in elastic-contact part
+% * FEM.Kcc: stiffness matrix in contact-contact part
+% * FEM.Pe: preload forces in elastic part
+% * FEM.Pc: preload forces in contact part
+% * FEM.Fe: Amplitude of external forces in elastic part
+% * FEM.Fc: Amplitude of external forces in contact part
 % * Na: number of CB modes
 % 
 %   OUTPUTS(save to .mat variables in current folder):
-% * CBmods: structure contains the full-stuck elastic modes Phi and constrained modes Psi
-% * CB_MK: structure contains criag-bampton M K matrices
-% * CB_F: structure contains criag-bampton Fa Fx column vectors
+% * CB.CBmods: structure contains the full-stuck elastic modes Phi and constrained modes Psi
+% * CB.CB_MK: structure contains criag-bampton M K matrices
+% * CB.CB_F: structure contains criag-bampton Fa Fx column vectors
 % * xe0: preload displacement of elastic part
 % * Rx: preload reaction forces act in contact part
 % 
@@ -46,17 +46,20 @@
 % *************************************************************************************************
 
 
-FEMinput = struct('Mee',Mee, 'Mec', Mec, 'Mcc', Mcc, 'Kee', Kee, 'Kec', Kec, 'Kcc', Kcc); 
-F.Fe = Fe; 
-F.Fc = Fc; 
-CBmods = CBmodes(FEMinput, Na);
-CB_MK = cb_reduction_MK(FEMinput, CBmods); 
-CB_F = cb_reduction_vector(F, CBmods); 
-xe0 = Kee \ Pe; 
-Rx = Kec' * xe0 - Pc; 
 
-save CBmods.mat CBmods
-save CB_MK.mat CB_MK
-save CB_F.mat CB_F
+FEMinput = struct('Mee', FEM.Mee, 'Mec', FEM.Mec, 'Mcc', FEM.Mcc, ...
+                  'Kee', FEM.Kee, 'Kec', FEM.Kec, 'Kcc', FEM.Kcc); 
+F.Fe = FEM.Fe; 
+F.Fc = FEM.Fc; 
+CB.CBmods = CBmodes(FEMinput, Na);
+CB.CB_MK = cb_reduction_MK(FEMinput, CB.CBmods); 
+CB.CB_F = cb_reduction_vector(F, CB.CBmods); 
+xe0 = FEM.Kee \ FEM.Pe; 
+Rx = FEM.Kec' * xe0 - FEM.Pc; 
+
+
+
+% save output to current folder
+save CB.mat CB
 save xe0.mat xe0
 save Rx.mat Rx
