@@ -7,18 +7,19 @@ end
 A = E * x_contNx(:,:,1);
 Amax = max(abs(A));
 % figure;
-frq = omega_cont ./ (2*pi);
+frq = omega_cont; % ./ (2*pi);
 plot(frq, Amax,'b-'),hold on;
-xlabel('Omega [Hz]');
+% xlabel('Omega [Hz]');
+xlabel('Omega');
 ylabel('||a_1(t)||');
 legend('H = ' + string(H));
 grid on;
-% a1 = [frq', Amax'];
-% cd data/'30 May - two-solid system'/
-% dataname = 'Cont_Cubic_F1H_a1_H' + string(H) + '_0.25fext_gamma=5e16.mat';
-% save(dataname,'a1')
-% cd ../
-% cd ../
+a1 = [frq', Amax'];
+cd data/
+dataname = 'Cont_Friciton_F1H_a1_H' + string(H) + '.mat';
+save(dataname,'a1')
+cd ../
+
 
 % %% ifft and convert a to Xe
 % clear x_contDOF xt A_cont A_a A_x A_Xe at Xet
