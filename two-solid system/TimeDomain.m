@@ -4,10 +4,65 @@ clc
 Data
 ReadFromCSV
 Dimensionless
+%% preload
+params.func.CBmods = CB.CBmods;
+params.func.CB_MK = CB.CB_MK;
+params.func.CB_F = CB.CB_F;
+HBMstruct = struct('H', H, 'N', N, 'Nx', Nx, 'Na', Na, 'xi', xi, 'H_F_ext' ,H_F_ext, 'CB_F', params.func.CB_F);
+params.func.HBM = HBM(HBMstruct); % H, N, Nc, Na, xi, Idx, E, EH
+params.func.static.xp0 = xp0;
+params.Newton = struct('epsx', epsx, 'epsf', epsf, 'maxiter', maxiter);
+Coulombstruct = struct('kn', kn, 'xn0', xn0, 'mu', mu, 'kt', kt, 'Nx', Nx);
+params.func.fc = CoulombFrictionParas(Coulombstruct); % handle classdef
+
+[xp, gxp] = Preloadxp(Rx, params); % preload displacement and preload forces in contact part
 %%
 M = [eye(5), CB.CB_MK.Max;
      CB.CB_MK.Max', CB.CB_MK.Mxx];
 K = [diag(CB.CB_MK.Kaa), zeros(5,12);
      zeros(12,5), CB.CB_MK.Kxx];
+
 F = [CB.CB_F.Fa;
      CB.CB_F.Fx];
+invM = inv(M);
+F = M \ F;
+F = [zeros(17,1); F];
+
+A = [zeros(17), eye(17);
+     -M \ K, -M \ (xi * K)];
+
+R = [zeros(5,1); Rx];
+R = M \ R;
+R = [zeros(17,1); R];
+
+y0 = zeros(17*2,1);
+y(:,1,1) = y0;
+t(1,1) = 0;
+i = 1;
+for omega = omega_0:0.002:omega_end
+    T = 2*pi / omega;
+    nstep = 30000;
+    nrelax = 200;
+    dt = T / nstep;
+    expdtA = exp(dt*A);
+    for k = 1:nrelax*nstep
+        x = y(6:17, k, i)';
+        G = g(x, params.func);
+        G = [zeros(5,1); G'];
+        G = M \ G;
+        G = [zeros(17,1); G];
+        y(:, k+1, i) = expdtA * (y(:, k, i) + dt * (F * sin(omega * t(i, k)) - G - R));
+        t(i, k+1) = t(i, k) + dt;
+    end
+    if omega >= omega_end
+        break;
+    end
+    i = i + 1;
+    t(i, 1) = 0;
+    y(:, 1, i) = y(:, end, i-1);
+end
+
+%%
+for j = 1:size(y,3)
+    Amax = max(abs(y(:,:,j)));
+end

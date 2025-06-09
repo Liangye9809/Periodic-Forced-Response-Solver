@@ -1,5 +1,6 @@
 path = pwd;
-cd('/home/liangye/study loves me/data/non-linear problem/Friction/HBM Keep A and X dof')
+cd('D:\study\PHD\data\Frictions\HBM Keep A and X dof'); % for windows
+% cd('/home/liangye/study loves me/data/non-linear problem/Friction/HBM Keep A and X dof') % for Liunx
 filename = 'matrices.csv';
 fid = fopen(filename, 'r');
 

@@ -135,6 +135,7 @@ Dimensionless
 % |Kaa  0 | |0 |   |  0  |   | 0 |
 % | 0  Kxx|*|xp| + |g(xp)| = |-Rx|
 %
+% x = xc - xp
 %**************************************************************************************************
 % INPUTS(getting from matlab Workspace):
 % * CB.CBmods: structure contains the full-stuck elastic modes Phi and constrained modes Psi
