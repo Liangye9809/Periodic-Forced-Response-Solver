@@ -29,7 +29,7 @@ H_F_ext = [0,0,1]; % fourier coefficient of f(t)
 
 %% HBM parameters
 
-H = 1;
+H = 5;
 N = 2^5;
 Nx = 4;
 Na = 5;
@@ -50,6 +50,7 @@ xn0 = 0;
 mu = [0.1;0.1];
 kt = [1e6;1e6];
 
+% w = [-0.803227302337595;-1.06547598368370]; % the middle point of omega 1.2
 
 
 %% preload initial contition for Newton method
