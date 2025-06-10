@@ -12,7 +12,10 @@ HBMstruct = struct('H', H, 'N', N, 'Nx', Nx, 'Na', Na, 'xi', xi, 'H_F_ext' ,H_F_
 params.func.HBM = HBM(HBMstruct); % H, N, Nc, Na, xi, Idx, E, EH
 params.func.static.xp0 = xp0;
 params.Newton = struct('epsx', epsx, 'epsf', epsf, 'maxiter', maxiter);
-Coulombstruct = struct('kn', kn, 'xn0', xn0, 'mu', mu, 'kt', kt, 'Nx', Nx);
+if ~exist('w', 'var')
+    w = [0;0];
+end
+Coulombstruct = struct('kn', kn, 'xn0', xn0, 'mu', mu, 'kt', kt, 'Nx', Nx, 'w', w);
 params.func.fc = CoulombFrictionParas(Coulombstruct); % handle classdef
 
 [xp, gxp] = Preloadxp(Rx, params); % preload displacement and preload forces in contact part
@@ -29,20 +32,23 @@ F = M \ F;
 F = [zeros(17,1); F];
 
 A = [zeros(17), eye(17);
-     -M \ K, -M \ (xi * K)];
+     -(M \ K), -xi * (M \ K)];
+
+A = [zeros(17), eye(17);
+     -M \ K, -M \ (xi *K)];
 
 R = [zeros(5,1); Rx];
 R = M \ R;
 R = [zeros(17,1); R];
 
-y0 = zeros(17*2,1);
+y0 = zeros(17*2, 1);
 y(:,1,1) = y0;
 t(1,1) = 0;
 i = 1;
 for omega = omega_0:0.002:omega_end
     T = 2*pi / omega;
     nstep = 30000;
-    nrelax = 200;
+    nrelax = 1;
     dt = T / nstep;
     expdtA = exp(dt*A);
     for k = 1:nrelax*nstep

@@ -29,7 +29,7 @@ H_F_ext = [0,0,1]; % fourier coefficient of f(t)
 
 %% HBM parameters
 
-H = 10;
+H = 1;
 N = 2^5;
 Nx = 4;
 Na = 5;

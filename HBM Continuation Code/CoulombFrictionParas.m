@@ -16,7 +16,8 @@ classdef CoulombFrictionParas < handle
             xn0 = Coulombstruct.xn0;
             mu = Coulombstruct.mu;
             kt = Coulombstruct.kt;
-            w = [0;0];
+            % w = [0;0];
+            w = Coulombstruct.w;
 
             if size(kn, 2) == 1
                 obj.kn = kn * ones(1, Nx);

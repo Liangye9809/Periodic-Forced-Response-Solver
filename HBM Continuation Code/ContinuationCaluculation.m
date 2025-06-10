@@ -37,7 +37,10 @@ HBMstruct = struct('H', H, 'N', N, 'Nx', Nx, 'Na', Na, 'xi', xi, 'H_F_ext' ,H_F_
 params.func.HBM = HBM(HBMstruct); % H, N, Nc, Na, xi, Idx, E, EH
 params.func.static.xp0 = xp0;
 params.Newton = struct('epsx', epsx, 'epsf', epsf, 'maxiter', maxiter);
-Coulombstruct = struct('kn', kn, 'xn0', xn0, 'mu', mu, 'kt', kt, 'Nx', Nx);
+if ~exist('w', 'var')
+    w = [0;0];
+end
+Coulombstruct = struct('kn', kn, 'xn0', xn0, 'mu', mu, 'kt', kt, 'Nx', Nx, 'w', w);
 params.func.fc = CoulombFrictionParas(Coulombstruct); % handle classdef
 
 [xp, gxp] = Preloadxp(Rx, params); % preload displacement and preload forces in contact part

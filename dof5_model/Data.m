@@ -29,13 +29,7 @@ H_F_ext = [0,0,1]; % fourier coefficient of f(t)
 
 %% HBM parameters
 
-H = 3;
-% N = 2^5;
-% Nc = 4;
-% Na = 5;
-% Ne = 10566;
-% xi = 1e-6;
-
+H = 10;
 N = 2^5;
 Nx = 1; % contact points
 Na = 2;
@@ -49,17 +43,12 @@ maxiter = 50;
 
 %% Coulomb friction
 
-% kn = 1e9;
-% xn0 = 0;
-% mu = [0.1;0.1];
-% kt = [1e6;1e6];
-
 kn = 1;
 xn0 = -3.5;
 mu = [1;1];
 kt = [1;1];
 
-
+w = [-0.803227302337595;-1.06547598368370]; % the middle point of omega 1.2
 %% preload initial contition for Newton method
 
 xp0 = 1e-5; % if no value defined here, the default value inside is 0
@@ -67,19 +56,17 @@ xp0 = 1e-5; % if no value defined here, the default value inside is 0
 
 %% continuation parameters
 
-% ds = 0.25;
-% maxstep = 10000;
-% lambda0 = 4900.0;
-% lambda_end = 5260.0;
-% lambda_end = 4920.0;
 
 ds = 0.05;
 maxstep = 10000;
-omega_0 = 0.9;
+omega_0 = 1.2;
 omega_end = 1.3;
 
-x0 = 0;
-
+cd ./data/
+load('x_omega1.2_backwards.mat');
+load('x_omega1.2_forwards.mat');
+x0 = (x_backwards + x_forwards)/2;
+cd ../
 % tx0 = 0; % always 0 when calculating the first point so default inside the code
 % tomega0 = 1; % is defined by lambda0 and lambda_end
 
