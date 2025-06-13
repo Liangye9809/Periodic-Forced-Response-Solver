@@ -31,4 +31,4 @@ tic
 testF = g(rand(256,17), 0);
 toc
 %%
-gf(rand(1,12), params.func).w
+gf(rand(256,17), params.)

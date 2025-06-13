@@ -116,7 +116,7 @@ ReadFromCSV
 % Written by Liu Liangye on June 03, 2025
 % *************************************************************************************************
 
-Dimensionless
+Nondimentionalization
 %% continuation calculation with HBM
 
 %**************************************************************************************************

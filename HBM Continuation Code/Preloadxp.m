@@ -1,4 +1,4 @@
-function [xp, gxp] = Preloadxp(Rx, params)
+function [xp, gxp, w] = Preloadxp(Rx, params)
 % *************************************************************************************************
 % this function calculate the contact static displacement in preload case 
 % by the following nonlinear system using Newton Method
@@ -20,26 +20,6 @@ function [xp, gxp] = Preloadxp(Rx, params)
 % Written by Liu Liangye on April 07, 2025
 % *************************************************************************************************
 
-% xp = p.xp0;
-% gxp = g(xp');
-% gxp = gxp';
-% f = Kxx * xp + gxp + Rx;
-% for i = 1:p.itermax
-%     Jf = Kxx + finite_diff_jac(@g,xp');
-%     dxp = - Jf \ f;
-%     xp = xp + dxp;
-%     %%%%%
-%     gxp = g(xp');
-%     gxp = gxp';
-%     f = Kxx * xp + gxp + Rx;
-%     %%%%%
-%     errorxp = norm(dxp);
-%     errorf = norm(f);
-%     if (errorxp < p.epsx) && (errorf < p.epsf)
-%         return
-%     end
-% end
-
 
 
 xp = params.func.static.xp0;
@@ -51,24 +31,26 @@ maxiter = params.Newton.maxiter;
 epsx = params.Newton.epsx;
 epsf = params.Newton.epsf;
 Kxx = params.func.CB_MK.Kxx;
-gxp = g(xp', params.func); %%%
-f = Kxx * xp + gxp' + Rx; %%% transpose
+gxpstruct = g(xp', params.func); %%%
+f = Kxx * xp + gxpstruct.F' + Rx; %%% transpose
+w = gxpstruct.w; % update w
 disp('preload iterations:'); 
 disp('i xp w gxp errxp errf'); 
 for i = 1:maxiter
-    Jf = Kxx + finite_diff_jac(@(xp) g(xp, params.func), xp'); %%
+    Jf = Kxx + finite_diff_jac(@(xp) g(xp, params.func).F, xp'); %%
     dxp = - Jf \ f;
     xp = xp + dxp;
     %%%%%
-    gxp = g(xp', params.func); %%%
-    f = Kxx * xp + gxp' + Rx; %%%
+    gxpstruct = g(xp', params.func); %%%
+    f = Kxx * xp + gxpstruct.F' + Rx; %%%
+    w = gxpstruct.w; % update w
     %%%%%
     errorxp = norm(dxp);
     errorf = norm(f);
-    disp([i,xp(1:3)',params.func.fc.w(:,1)',gxp(1:3),errorxp,errorf]);
+    disp([i, xp(1:3)', w(:,1)', gxpstruct.F(1:3), errorxp, errorf]);
     
     if (errorxp < epsx) && (errorf < epsf)
-        gxp = gxp';
+        gxp = gxpstruct.F';
         return
     end
     if i >= maxiter

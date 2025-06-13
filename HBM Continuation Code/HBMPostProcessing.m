@@ -15,7 +15,7 @@ ylabel('||a_1(t)||');
 % ylabel('Max Amplitude of x_3');
 legend('H = ' + string(H));
 grid on;
-x3 = [frq', Amax'];
+a1 = [frq', Amax'];
 % cd data/
 % % dataname = 'Cont_Friciton_F1H_a1_H' + string(H) + '.mat';
 % dataname = 'x3_Backwards_H_' + string(H) + '.mat';

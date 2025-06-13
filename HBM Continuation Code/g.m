@@ -12,16 +12,17 @@
 function F = g(xt, p) % xt, each rows correspond each time, columns are different dofs
 
     [N, ~] = size(xt);
-    F = zeros(size(xt));
+    F.F = zeros(size(xt));
     % pc = p.fc;
 
     for j = 1:2
         for i = 1:N
             x = xt(i, :);
             Fi = gf(x, p);
-            F(i, :) = Fi';
+            F.F(i, :) = Fi.F';
+            p.fc.w = Fi.w; % update w
         end
     end
-
+    F.w = Fi.w; % update w to outside
 
 end

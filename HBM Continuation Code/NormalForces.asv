@@ -35,5 +35,9 @@
 
 function FN = NormalForces(xn, kn, xn0)
     u = xn - xn0;
-    FN = max(0, kn .* u);
+    if u < 0
+        FN = 0;
+    else
+        FN = kn .* u;
+    end
 end

@@ -30,7 +30,7 @@ H_F_ext = [0,0,1]; % fourier coefficient of f(t)
 %% HBM parameters
 
 H = 5;
-N = 2^5;
+N = 2^8;
 Nx = 4;
 Na = 5;
 xi = 1e-6;
@@ -62,9 +62,9 @@ xp0 = 1e-5; % if no value defined here, the default value inside is 0
 
 % ds = 0.25;
 % maxstep = 10000;
-% lambda0 = 4900.0;
-% lambda_end = 5260.0;
-% lambda_end = 4920.0;
+% omega_0 = 4900.0;
+% omega_end = 5260.0;
+
 
 ds = 0.5;
 maxstep = 20000;

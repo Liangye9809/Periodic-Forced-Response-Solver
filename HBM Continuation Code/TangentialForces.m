@@ -1,3 +1,4 @@
+
 function [T, w] = TangentialForces(xt, wt, kt, mu, FN)
     if FN > 0
         T = kt * (xt - wt);
@@ -14,41 +15,20 @@ function [T, w] = TangentialForces(xt, wt, kt, mu, FN)
     end
 end
 
-
-
-% function [T,w] = TangentialForce(xt,wt,kt,mu,FN)
-%     Nx = size(xt,1); % xt is column vector
-%     T = zeros(size(xt));
-%     w = zeros(size(xt));
-%     kt = kt(:); % if it is row vector, change to column vector
-%     mu = mu(:);
-%     FN = FN(:);
-%     % if it is a 1*1 scale, change to Nx*1 column vector, same elements
-%     if size(FN,1) == 1
-%         FN = FN * ones(Nx,1);
-%     end
-%     if size(kt,1) == 1
-%         kt = kt * ones(Nx,1);
-%     end
-%     if size(mu,1) == 1
-%         mu = mu * ones(Nx,1);
-%     end
+% assume inputs are all row vectors
+% function [T, w] = TangentialForces(xt, wt, kt, mu, FN)
+%     T_raw = kt .* (xt - wt);
+%     slipping = abs(T_raw) >= mu .* FN;
+%     sticking = ~slipping;
 % 
-%     for i = 1:Nx
-%         if FN(i) > 0
-%             T(i) = kt(i) * (xt(i) - wt(i));
-%             if abs(T(i)) < mu(i) * FN(i)
-%                 w(i) = wt(i);
-%             else
-%                 sg = sign(T(i));
-%                 T(i) = sg * mu(i) * FN(i);
-%                 w(i) = xt(i) - sg * mu(i) * FN(i) / kt(i);
-%             end
-%         else
-%             T(i) = 0;
-%             w(i) = xt(i);
-%         end
-%     end
+%     T = T_raw;
+%     w = wt;
 % 
+%     % Stick condition
+%     w(sticking) = wt(sticking);
+% 
+%     % Slip condition
+%     sg = sign(T_raw(slipping));
+%     T(slipping) = sg .* mu(slipping) .* FN(slipping);
+%     w(slipping) = xt(slipping) - sg .* mu(slipping) .* FN(slipping) ./ kt(slipping);
 % end
-

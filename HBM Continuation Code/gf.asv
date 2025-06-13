@@ -20,18 +20,21 @@ function F = gf(x, p) % x is a 3*Np dof row vector, represent 2*Np tangential di
     kt = fc.kt; % stiffness of 2 tangential direction in column vector
     w = fc.w;
     
-    
-    
+    X = reshape(x, 3, []);
+    x1 = X(1,:);
+    x2 = X(2,:);
+    xn = X(3,:);
+    FN = Nor
 
-    Np = size(kn, 2);
-    FN = zeros(1, Np);
-    T1 = zeros(1, Np);
-    T2 = zeros(1, Np);
-    for i = 1:Np
-        FN(i) = NormalForces(x(3*(i-1)+3), kn(i), xn0(i));
-        [T1(i), w(1, i)] = TangentialForces(x(3*(i-1)+1), w(1, i), kt(1, i), mu(1, i), FN(i));
-        [T2(i), w(2, i)] = TangentialForces(x(3*(i-1)+2), w(2, i), kt(2, i), mu(2, i), FN(i));
-    end
+    % Np = size(kn, 2);
+    % FN = zeros(1, Np);
+    % T1 = zeros(1, Np);
+    % T2 = zeros(1, Np);
+    % for i = 1:Np
+    %     FN(i) = NormalForces(x(3*(i-1)+3), kn(i), xn0(i));
+    %     [T1(i), w(1, i)] = TangentialForces(x(3*(i-1)+1), w(1, i), kt(1, i), mu(1, i), FN(i));
+    %     [T2(i), w(2, i)] = TangentialForces(x(3*(i-1)+2), w(2, i), kt(2, i), mu(2, i), FN(i));
+    % end
 
     F.F = [T1; T2; FN];
     F.F = F.F(:);
