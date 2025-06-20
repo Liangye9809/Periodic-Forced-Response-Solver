@@ -31,4 +31,15 @@ tic
 testF = g(rand(256,17), 0);
 toc
 %%
-gf(rand(1,12), params.func).w
+disp(['dt   ','nsteps   ','max(dtA) ','max(exp(dtA))']);
+for i  = 0:5
+    nsteps = 100 * 10^i;
+    testdt = T / nsteps;
+    testdtA = testdt * A;
+    testexpdtA = exp(testdtA);
+    disp([testdt, nsteps, max(max(abs(testdtA))), max(max(abs(testexpdtA)))]);
+end
+%% 
+t = -1:0.001:1;
+y = sqrt(abs(t));
+plot(t,y)

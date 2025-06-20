@@ -6,7 +6,7 @@
 %     F = 5e16 .* xt.^3;
 %     % F = sin(x);
 %     % F = 0*xt;
-%     % F = xt.^3;
+%     % F.F = xt.^3;
 % end
 
 function F = g(xt, p) % xt, each rows correspond each time, columns are different dofs

@@ -3,7 +3,7 @@ clc
 %% load data
 Data
 ReadFromCSV
-Nondimentionalization
+% Nondimentionalization
 %% preload
 params.func.CBmods = CB.CBmods;
 params.func.CB_MK = CB.CB_MK;
@@ -47,9 +47,9 @@ y(:,1,1) = y0;
 t(1,1) = 0;
 i = 1;
 for omega = omega_0:0.002:omega_end
-    % omega = omega * sqrt(CB.CB_MK.Kaa(1));
     T = 2*pi / omega;
-    nstep = 3000;
+    omega = omega * CB.CB_MK.Kaa(1)
+    nstep = 300;
     nrelax = 1;
     dt = T / nstep;
     expdtA = exp(dt*A);

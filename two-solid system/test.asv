@@ -31,4 +31,12 @@ tic
 testF = g(rand(256,17), 0);
 toc
 %%
-gf(rand(256,17), params.)
+disp(['dt','nteps']);
+for i  = 0:5
+    
+    testdt = 0.001 / (10^i);
+
+    testdtA = testdt * A;
+    testexpdtA = exp(testdtA);
+    disp([testdt,max(max(abs(testdtA))), max(max(abs(testexpdtA)))]);
+end
