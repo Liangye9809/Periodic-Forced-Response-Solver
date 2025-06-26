@@ -19,3 +19,6 @@ kn = kn * (beta / alpha)^2 / omega02;
 kt = kt * (beta / alpha)^2 / omega02;
 
 xi = xi * sqrt(omega02);
+
+params.func.Nondimention.beta = beta;
+params.func.Nondimention.alpha = alpha;

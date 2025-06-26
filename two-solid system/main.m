@@ -67,6 +67,7 @@ Data
 
 % CriagBamptonReduction
 ReadFromCSV
+Rx = 10*Rx;
 %% Dimensionless
 
 %**************************************************************************************************

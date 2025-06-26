@@ -31,12 +31,34 @@ tic
 testF = g(rand(256,17), 0);
 toc
 %%
-disp(['dt','nteps']);
-for i  = 0:5
-    
-    testdt = 0.001 / (10^i);
-
+clc
+disp(['dt   ','nsteps   ','max(dtA) ','max(expm(dtA))    ', 'max(abs(eig(expm(dtA))))    ', 'max(abs(eigEuler))  ', 'max(abs(eigRK2))']);
+clear J
+J = finite_diff_jac(@(x) gf(x, params.func).F, xp);
+J = [zeros(5,17);
+      zeros(12,5), J];
+J = -M \ J;
+Jg = [zeros(17,17), zeros(17,17);
+      J, zeros(17,17)];
+for i  = 0:8
+    nsteps = 100 * 10^i;
+    testdt = T / nsteps;
     testdtA = testdt * A;
-    testexpdtA = exp(testdtA);
-    disp([testdt,max(max(abs(testdtA))), max(max(abs(testexpdtA)))]);
+    R = expm(testdtA) + testdt * expm(testdtA) * Jg;
+    e = eig(R);
+    eA = eig((eye(34) - testdt * A));
+    RK2R = testdt * A + testdt^2 / 2 * A^2 + eye(34);
+    maxe = max(abs(e));
+    maxeE = max(abs(eA));
+    maxeRK2 = max(abs(eig(RK2R)));
+    disp([testdt, nsteps, max(max(abs(testdtA))), max(max(abs(R))), maxe, maxeE, maxeRK2]);
 end
+%% 
+t = -1:0.001:1;
+y = sqrt(abs(t));
+plot(t,y)
+%%
+a_1 = 11/6;
+a0 = -3;
+a1 = 3/2;
+a2 = 

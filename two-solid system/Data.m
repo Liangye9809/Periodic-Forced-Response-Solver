@@ -62,14 +62,16 @@ xp0 = 1e-5; % if no value defined here, the default value inside is 0
 
 % ds = 0.25;
 % maxstep = 10000;
-% omega_0 = 4900.0;
-% omega_end = 5260.0;
+% omega_0 = 4920.0;
+% omega_end = 5050.0;
 
 
 ds = 0.5;
 maxstep = 20000;
-omega_0 = 0.81;
-omega_end = 0.85;
+% omega_0 = 0.81;
+% omega_end = 0.85;
+omega_0 = 0.80;
+omega_end = 0.95;
 
 x0 = 0;
 
