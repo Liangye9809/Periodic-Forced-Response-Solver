@@ -8,6 +8,7 @@ A = E * x_contNx(:,:,1);
 Amax = max(abs(A));
 % figure;
 frq = omega_cont; % ./ (2*pi);
+% frq = omega_cont ./ (2*pi);
 plot(frq, Amax,'b-'),hold on;
 % xlabel('Omega [Hz]');
 xlabel('Omega');

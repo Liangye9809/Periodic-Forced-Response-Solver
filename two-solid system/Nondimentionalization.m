@@ -22,3 +22,4 @@ xi = xi * sqrt(omega02);
 
 params.func.Nondimention.beta = beta;
 params.func.Nondimention.alpha = alpha;
+params.func.Nondimention.omega02 = omega02;

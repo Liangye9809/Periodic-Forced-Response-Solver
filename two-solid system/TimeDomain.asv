@@ -3,6 +3,7 @@ clc
 %% load data
 Data
 ReadFromCSV
+Rx = 10*Rx;
 Nondimentionalization
 %% preload
 params.func.CBmods = CB.CBmods;
@@ -20,6 +21,7 @@ params.func.fc = CoulombFrictionParas(Coulombstruct); % handle classdef
 
 [xp, gxp, w] = Preloadxp(Rx, params); % preload displacement and preload forces in contact part
 params.func.fc.w = w;
+params.func.static.preload = struct('xe0', xe0, 'Rx', Rx, 'xp', xp, 'gxp', gxp);
 %%
 M = [eye(5), CB.CB_MK.Max;
      CB.CB_MK.Max', CB.CB_MK.Mxx];
@@ -47,14 +49,16 @@ y(:,1,1) = y0;
 t(1,1) = 0;
 i = 1;
 omega_cont = [];
-for omega = omega_0:0.002:omega_end
+domega = (omega_end - omega_0) / 25;
+for omega = omega_0:domega:omega_end
     % omega = omega * sqrt(CB.CB_MK.Kaa(1));
     omega_cont = [omega_cont, omega];
     T = 2*pi / omega;
-    nstep = 1000;
+    nstep = 300;
     nrelax = 100;
     dt = T / nstep;
-    expdtAhalf = expm(0.5*dt*A);
+    % expdtAhalf = expm(0.5*dt*A);
+    R = inv(eye(34) - dt*A);
     for k = 1:nrelax*nstep
         x = y(6:17, k, i)';
         Gstruct = g(x + xp', params.func);
@@ -63,8 +67,19 @@ for omega = omega_0:0.002:omega_end
         G = [zeros(5,1); G'];
         G = M \ G;
         G = [zeros(17,1); G];
-        yhalf = expdtAhalf * (y(:, k, i) + 0.5 * dt * (F * sin(omega * t(i, k)) - G));
-        y(:, k+1, i) = expdtAhalf * (expdtAhalf * y(:, k, i) + dt * (F * sin(omega * (0.5*dt + t(i, k))) - G));
+        yp1 = R * y(:, k, i) + dt * (F * sin(omega * (dt + t(i, k))) - G);
+        x = yp1(6:17)'; % phi(t,y+1)
+        for j = 2:50
+            Gstruct = g(x + xp', params.func);
+            G = Gstruct.F - gxp';
+            params.func.fc.w = Gstruct.w;
+            G = [zeros(5,1); G'];
+            G = M \ G;
+            G = [zeros(17,1); G];
+            yp12 = R * y(:, k, i) + dt * (F * sin(omega * (dt + t(i, k))) - G);
+            error
+            if 
+        end
         t(i, k+1) = t(i, k) + dt;
     end
     if omega >= omega_end
@@ -75,18 +90,11 @@ for omega = omega_0:0.002:omega_end
     y(:, 1, i) = y(:, end, i-1);
 end
 
-function G = phity(x, p)
-        Gstruct = g(x + xp', params.func);
-        G = Gstruct.F - gxp';
-        params.func.fc.w = Gstruct.w;
-        G = [zeros(5,1); G'];
-        G = M \ G;
-        G = [zeros(17,1); G];
-end
+
 %%
 clear Amax
 for j = 1:size(y,3) % omega number
     Amax(:, j) = max(abs(y(:,:,j)), [], 2);
 end
-omega_cont = omega_0:0.002:omega_end;
-plot(omega_cont, Amax(1,:));
+omega_cont = omega_0:domega:omega_end;
+plot(omega_cont, Amax(1,:),'bo');

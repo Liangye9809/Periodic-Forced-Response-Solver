@@ -4,7 +4,7 @@ clc
 Data
 ReadFromCSV
 Rx = 10*Rx;
-% Nondimentionalization
+Nondimentionalization
 %% preload
 params.func.CBmods = CB.CBmods;
 params.func.CB_MK = CB.CB_MK;
@@ -17,12 +17,13 @@ if ~exist('w', 'var')
     w = [0;0];
 end
 Coulombstruct = struct('kn', kn, 'xn0', xn0, 'mu', mu, 'kt', kt, 'Nx', Nx, 'w', w);
-params.func.fc = CoulombFrictionParas(Coulombstruct); % handle classdef
+params.func.fc = CoulombFrictionParas(Coulombstruct); 
 
 [xp, gxp, w] = Preloadxp(Rx, params); % preload displacement and preload forces in contact part
-params.func.fc.w = w;
+params.func.fc.w = w; % update w
 params.func.static.preload = struct('xe0', xe0, 'Rx', Rx, 'xp', xp, 'gxp', gxp);
 %%
+tic;
 M = [eye(5), CB.CB_MK.Max;
      CB.CB_MK.Max', CB.CB_MK.Mxx];
 K = [diag(CB.CB_MK.Kaa), zeros(5,12);
@@ -38,7 +39,7 @@ F = [zeros(17,1); F];
 %      -(invM * K), -xi * (invM * K)];
 
 A = [zeros(17), eye(17);
-     M \ -K, M \ (xi * -K)];
+     M \ (-K), M \ (xi * -K)];
 
 % R = [zeros(5,1); Rx];
 % R = M \ R;
@@ -49,33 +50,47 @@ y(:,1,1) = y0;
 t(1,1) = 0;
 i = 1;
 omega_cont = [];
-for omega = omega_0:omega_end
+domega = (omega_end - omega_0) / 25;
+for omega = omega_0:domega:omega_end
     % omega = omega * sqrt(CB.CB_MK.Kaa(1));
     omega_cont = [omega_cont, omega];
     T = 2*pi / omega;
     nstep = 300;
-    nrelax = 5;
+    nrelax = 100;
     dt = T / nstep;
-    expdtAhalf = expm(0.5*dt*A);
+    % expdtAhalf = expm(0.5*dt*A);
+    % R = inv(eye(34) - dt*A);
+    R = eye(34) - dt*A;
     for k = 1:nrelax*nstep
-        x = y(6:17, k, i)';
-        Gstruct = g(x + xp', params.func);
-        G = Gstruct.F - gxp';
-        params.func.fc.w = Gstruct.w;
-        G = [zeros(5,1); G'];
-        G = M \ G;
-        G = [zeros(17,1); G];
-        yhalf = expdtAhalf * (y(:, k, i) + 0.5 * dt * (F * sin(omega * t(i, k)) - G));
-
-        x = yhalf(6:17)';
-        Gstruct = g(x + xp', params.func);
-        G = Gstruct.F - gxp';
-        params.func.fc.w = Gstruct.w;
-        G = [zeros(5,1); G'];
-        G = M \ G;
-        G = [zeros(17,1); G];
-        y(:, k+1, i) = expdtAhalf * (expdtAhalf * y(:, k, i) + dt * (F * sin(omega * (0.5*dt + t(i, k))) - G));
-
+        % x = y(6:17, k, i)';
+        % Gstruct = g(x + xp', params.func);
+        % G = Gstruct.F - gxp';
+        % params.func.fc.w = Gstruct.w;
+        % G = [zeros(5,1); G'];
+        % G = M \ G;
+        % G = [zeros(17,1); G];
+        % yp1 = R * y(:, k, i) + dt * (F * sin(omega * (dt + t(i, k))) - G);
+        y(:, k+1, i) = R \ y(:, k, i) + dt * (F * sin(omega * (dt + t(i, k))));
+        % x = yp1(6:17)'; % phi(t,y+1)
+        % for j = 2:50
+        %     Gstruct = g(x + xp', params.func);
+        %     G = Gstruct.F - gxp';
+        %     params.func.fc.w = Gstruct.w;
+        %     G = [zeros(5,1); G'];
+        %     G = M \ G;
+        %     G = [zeros(17,1); G];
+        %     yp12 = R * y(:, k, i) + dt * (F * sin(omega * (dt + t(i, k))) - G);
+        %     errory = norm(yp12 - yp1) / norm(yp1);
+        %     if max(abs(errory)) < 1e-3
+        %         break;
+        %     end
+        %     if j>49
+        %         warning('iteration cannot converge in omega %f of nstep %d',omega,k);
+        %     end
+        %     yp1 = yp12;
+        %     x = yp12(6:17)';
+        % end
+        % y(:, k+1, i) = yp12;
         t(i, k+1) = t(i, k) + dt;
     end
     if omega >= omega_end
@@ -86,20 +101,23 @@ for omega = omega_0:omega_end
     y(:, 1, i) = y(:, end, i-1);
 end
 
-function G = phity(x, p)
-        xp = p.static.preload.xp;
-        gxp = p.static.preload.gxp;
-        Gstruct = g(x + xp', p);
-        G = Gstruct.F - gxp';
-        params.func.fc.w = Gstruct.w;
-        G = [zeros(5,1); G'];
-        G = M \ G;
-        G = [zeros(17,1); G];
-end
+toc;
 %%
 clear Amax
 for j = 1:size(y,3) % omega number
-    Amax(:, j) = max(abs(y(:,:,j)), [], 2);
+    Amax(:, j) = max(abs(y(:,end-10*nstep:end,j)), [], 2);
 end
-omega_cont = omega_0:0.002:omega_end;
-plot(omega_cont, Amax(1,:));
+% omega_cont = omega_0:domega:omega_end;
+figure
+plot(omega_cont, Amax(1,:),'ko');
+%%
+figure;
+i = 1;
+tt = 0;
+for omega = omega_0:domega:omega_end
+    T = 2 * pi / omega;
+    dt = T / nstep;
+    tt = tt(end) + dt*[0:nstep*nrelax];
+    plot(tt, y(1,:,i)), hold on;
+    i = i + 1;
+end

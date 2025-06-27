@@ -32,7 +32,7 @@ testF = g(rand(256,17), 0);
 toc
 %%
 clc
-disp(['dt   ','nsteps   ','max(dtA) ','max(expm(dtA))    ', 'max(abs(eig(expm(dtA))))    ', 'max(abs(eigEuler))  ', 'max(abs(eigRK2))']);
+disp(['dt   ','nsteps   ','max(dtA) ','max(expm(dtA))    ', 'max(abs(eig(expm(dtA))))    ', 'max(abs(eigEuler))  ', 'max(abs(eigRK2))', 'ImpEular']);
 clear J
 J = finite_diff_jac(@(x) g(x, params.func).F, xp);
 J = [zeros(5,17);
@@ -49,10 +49,12 @@ for i  = 0:8
     e = eig(R);
     eA = eig((eye(34) - testdt * A));
     RK2R = testdt * A + testdt^2 / 2 * A^2 + eye(34);
+    ImpR = inv(eye(34) - testdt*(A + Jg));
+    eImpR = eig(ImpR);
     maxe = max(abs(e));
     maxeE = max(abs(eA));
     maxeRK2 = max(abs(eig(RK2R)));
-    disp([testdt, nsteps, max(max(abs(testdtA))), max(max(abs(R))), maxe, maxeE, maxeRK2]);
+    disp([testdt, nsteps, max(max(abs(testdtA))), max(max(abs(R))), maxe, maxeE, maxeRK2, max(abs(eImpR))]);
 end
 %% 
 t = -1:0.001:1;
