@@ -6,11 +6,11 @@ function F = g(xt, p)
     % beta = p.Nondimention.beta;
     % alpha = p.Nondimention.alpha;
     % omega02 = p.Nondimention.omega02;
-    F.F = (beta^4 / (alpha^2*omega02)) * 5e10 .* xt.^3;
+    % F.F = (beta^4 / (alpha^2*omega02)) * 5e10 .* xt.^3;
 
     
     % F.F = 0*xt;
-    % F.F = 5e10 .* xt.^3;
+    F.F = 5e10 .* xt.^3;
     F.w = p.fc.w;
 end
 

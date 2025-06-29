@@ -55,7 +55,7 @@ kt = [1e6;1e6];
 
 %% preload initial contition for Newton method
 
-xp0 = 1e-5; % if no value defined here, the default value inside is 0
+xp0 = 0; % if no value defined here, the default value inside is 0
 
 
 %% continuation parameters
@@ -68,16 +68,16 @@ maxstep = 10000;
 % omega_0 = 3940.0;
 % omega_end = 4020.0;
 
-% omega_0 = 3861.0; % linear only
-% omega_end = 4064.0;
+omega_0 = 3861.0; % linear only
+omega_end = 4064.0;
 
 % ds = 0.5;
 % maxstep = 20000;
 % % omega_0 = 0.81;
 % % omega_end = 0.85;
 
-omega_0 = 0.775;
-omega_end = 0.80;
+% omega_0 = 0.775;
+% omega_end = 0.80;
 
 x0 = 0;
 

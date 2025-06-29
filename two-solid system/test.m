@@ -69,3 +69,11 @@ f1 = a_1 + a0 + a1 + a2;
 f2 = a0 + 2*a1 + 3*a2;
 f3 = a0 + 4*a1 + 9*a2;
 f4 = a0 + 8*a1 + 27*a2;
+%%
+for i  = 8:8
+    nsteps = 14500;
+    testdt = T / nsteps;
+    R = eye(34) + (testdt/2)*A;
+    format short g
+    disp([testdt, nsteps, max(max(abs(R))), max(max(abs(eig(R))))]);
+end

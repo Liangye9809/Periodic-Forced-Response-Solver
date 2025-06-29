@@ -3,8 +3,8 @@ clc
 %% load data
 Data
 ReadFromCSV
-Rx = 10*Rx;
-Nondimentionalization
+Rx = 0*Rx;
+% Nondimentionalization
 %% preload
 params.func.CBmods = CB.CBmods;
 params.func.CB_MK = CB.CB_MK;
@@ -23,7 +23,6 @@ params.func.fc = CoulombFrictionParas(Coulombstruct);
 params.func.fc.w = w; % update w
 params.func.static.preload = struct('xe0', xe0, 'Rx', Rx, 'xp', xp, 'gxp', gxp);
 %%
-tic;
 M = [eye(5), CB.CB_MK.Max;
      CB.CB_MK.Max', CB.CB_MK.Mxx];
 K = [diag(CB.CB_MK.Kaa), zeros(5,12);
@@ -51,6 +50,8 @@ t(1,1) = 0;
 i = 1;
 omega_cont = [];
 domega = (omega_end - omega_0) / 25;
+%% 
+tic;
 for omega = omega_0:domega:omega_end
     % omega = omega * sqrt(CB.CB_MK.Kaa(1));
     omega_cont = [omega_cont, omega];
@@ -60,7 +61,7 @@ for omega = omega_0:domega:omega_end
     dt = T / nstep;
     % expdtAhalf = expm(0.5*dt*A);
     % R = inv(eye(34) - dt*A);
-    R = eye(34) - dt*A;
+    R = eye(34) - dt*A; % Implicit Euler Method
     for k = 1:nrelax*nstep
         % x = y(6:17, k, i)';
         % Gstruct = g(x + xp', params.func);
@@ -70,7 +71,7 @@ for omega = omega_0:domega:omega_end
         % G = M \ G;
         % G = [zeros(17,1); G];
         % yp1 = R * y(:, k, i) + dt * (F * sin(omega * (dt + t(i, k))) - G);
-        y(:, k+1, i) = R \ y(:, k, i) + dt * (F * sin(omega * (dt + t(i, k))));
+        y(:, k+1, i) = R \ (y(:, k, i) + dt * (F * sin(omega * (dt + t(i, k)))));
         % x = yp1(6:17)'; % phi(t,y+1)
         % for j = 2:50
         %     Gstruct = g(x + xp', params.func);
@@ -102,6 +103,34 @@ for omega = omega_0:domega:omega_end
 end
 
 toc;
+
+%% RK2 method without gx
+tic;
+domega = 5;
+for omega = omega_0:domega:omega_end
+    omega_cont = [omega_cont, omega];
+    T = 2*pi / omega;
+    nstep = 14500;
+    nrelax = 50;
+    dt = T / nstep;
+    R = eye(34) + (dt/2)*A; % half step of Explicit Euler Method
+    for k = 1:nrelax*nstep
+        Ft = F * sin(omega * (dt + t(i, k)));
+        yhalf = R * y(:, k, i) + (dt/2) * Ft;
+        Ft = F * sin(omega * (dt/2 + t(i, k)));
+        y(:, k+1, i) = y(:, k, i) + dt * (A * yhalf + Ft);
+        t(i, k+1) = t(i, k) + dt;
+    end
+    if omega >= omega_end
+        break;
+    end
+    i = i + 1;
+    t(i, 1) = 0;
+    y(:, 1, i) = y(:, end, i-1);
+end
+
+toc;
+
 %%
 clear Amax
 for j = 1:size(y,3) % omega number
