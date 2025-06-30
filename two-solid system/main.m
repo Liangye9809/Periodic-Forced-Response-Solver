@@ -67,7 +67,7 @@ Data
 
 % CriagBamptonReduction
 ReadFromCSV
-Rx = 0*Rx;
+Rx = 10*Rx;
 %% Dimensionless
 
 %**************************************************************************************************
@@ -117,7 +117,7 @@ Rx = 0*Rx;
 % Written by Liu Liangye on June 03, 2025
 % *************************************************************************************************
 
-% Nondimentionalization
+Nondimentionalization
 %% continuation calculation with HBM
 
 %**************************************************************************************************

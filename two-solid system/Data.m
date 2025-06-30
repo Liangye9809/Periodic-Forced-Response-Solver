@@ -68,16 +68,18 @@ maxstep = 10000;
 % omega_0 = 3940.0;
 % omega_end = 4020.0;
 
-omega_0 = 3861.0; % linear only
-omega_end = 4064.0;
+% omega_0 = 3861.0; % linear only
+% omega_end = 4064.0;
 
 % ds = 0.5;
 % maxstep = 20000;
 % % omega_0 = 0.81;
 % % omega_end = 0.85;
 
-% omega_0 = 0.775;
-% omega_end = 0.80;
+omega_0 = 0.95;
+omega_end = 1.0;
+% omega_0 = 4826;
+% omega_end = 5080;
 
 x0 = 0;
 

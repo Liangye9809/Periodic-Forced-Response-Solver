@@ -78,7 +78,7 @@ tic;
 for omega = omega_0:domega:omega_end
     omega_cont = [omega_cont, omega];
     T = 2*pi / omega;
-    nstep = 1000;
+    nstep = 300;
     nrelax = 100;
     dt = T / nstep;
     % expdtAhalf = expm(0.5*dt*A);
@@ -92,32 +92,29 @@ for omega = omega_0:domega:omega_end
         G = M \ G;
         G = [zeros(17,1); G];
         yp1 = R * (y(:, k, i) + dt * (F * sin(omega * (dt + t(i, k))) - G));
-
-        % function iteration
-        % x = yp1(6:17)'; % phi(t,y+1)
-        % for j = 2:50
-        %     Gstruct = g(x + xp', params.func);
-        %     G = Gstruct.F - gxp';
-        %     params.func.fc.w = Gstruct.w;
-        %     G = [zeros(5,1); G'];
-        %     G = M \ G;
-        %     G = [zeros(17,1); G];
-        %     yp12 = R * (y(:, k, i) + dt * (F * sin(omega * (dt + t(i, k))) - G));
-        %     errory = norm(yp12 - yp1) / norm(yp1);
-        %     if max(abs(errory)) < 1e-3
-        %         break;
-        %     end
-        %     if j>49
-        %         warning('iteration cannot converge in omega %f of nstep %d',omega,k);
-        %     end
-        %     yp1 = yp12;
-        %     x = yp12(6:17)';
-        % end
-
-        y(:, k+1, i) = yp1;
+        x = yp1(6:17)'; % phi(t,y+1)
+        for j = 2:50
+            Gstruct = g(x + xp', params.func);
+            G = Gstruct.F - gxp';
+            params.func.fc.w = Gstruct.w;
+            G = [zeros(5,1); G'];
+            G = M \ G;
+            G = [zeros(17,1); G];
+            yp12 = R * (y(:, k, i) + dt * (F * sin(omega * (dt + t(i, k))) - G));
+            errory = norm(yp12 - yp1) / norm(yp1);
+            if max(abs(errory)) < 1e-3
+                break;
+            end
+            if j>49
+                warning('iteration cannot converge in omega %f of nstep %d',omega,k);
+            end
+            yp1 = yp12;
+            x = yp12(6:17)';
+        end
+        y(:, k+1, i) = yp12;
         t(i, k+1) = t(i, k) + dt;
     end
-    disp('omega ' + string(omega) + ' a1(end) ' + string(yp1(1)));
+    disp('omega ' + string(omega) + ' a1(end) ' + string(max(abs(yp12))));
     if omega >= omega_end
         break;
     end
