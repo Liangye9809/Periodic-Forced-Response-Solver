@@ -45,9 +45,9 @@ A = [zeros(17), eye(17);
 % R = [zeros(17,1); R];
 
 nstep = 50000;
-nrelax = 30;
+nrelax = 500;
 nomega = 20;
-y = zeros(17*2, 1+nstep*nrelax, nomega+1);
+% y = zeros(17*2, 1+nstep*nrelax, nomega+1);
 
 t(1,1) = 0;
 i = 1;
@@ -139,63 +139,117 @@ domega = (omega_end - omega_0) / nomega;
 % J = -M \ J;
 % Jg = [zeros(17,17), zeros(17,17);
 %       J, zeros(17,17)];
+
+% tic;
+% for omega = omega_0:domega:omega_end
+%     omega_cont = [omega_cont, omega];
+%     T = 2*pi / omega;
+%     dt = T / nstep;
+%     R = expm(dt*A); 
+%     if i == 1
+%         nrelax = 500;
+%         y0 = zeros(17*2,nrelax*nstep+1);
+%         cd .\data
+%         load('y0');
+%         y0(:,1,1) = y0_;
+%         cd ..\
+%         for k = 1:nrelax*nstep
+% 
+%             x = y0(6:17, k)';
+%             Gstruct = gf(x + xp', params.func);
+%             G = Gstruct.F - gxp;
+%             params.func.fc.w = Gstruct.w;
+%             G = [zeros(5,1); G];
+%             G = M \ G;
+%             G = [zeros(17,1); G];
+% 
+%             phi_ty = F * sin(omega * t(i, k)) - G;
+%             y0(:, k+1) = R * (y0(:, k) + dt * phi_ty);
+%             t(i, k+1) = t(i, k) + dt;
+%         end
+%         nrelax = 30;
+%         y(:,:,1) = y0(:,end-nrelax*nstep:end);
+%         disp('omega ' + string(omega) + ' a1(end) ' + string(y(1, end, i)));
+%         i = i + 1;
+%         t(i, 1) = 0;
+%         y(:, 1, i) = y(:, end, i-1);
+%     else
+%         for k = 1:nrelax*nstep
+% 
+%             x = y(6:17, k, i)';
+%             Gstruct = gf(x + xp', params.func);
+%             G = Gstruct.F - gxp;
+%             params.func.fc.w = Gstruct.w;
+%             G = [zeros(5,1); G];
+%             G = M \ G;
+%             G = [zeros(17,1); G];
+% 
+%             phi_ty = F * sin(omega * t(i, k)) - G;
+%             y(:, k+1, i) = R * (y(:, k, i) + dt * phi_ty);
+%             t(i, k+1) = t(i, k) + dt;
+%         end
+%         disp('omega ' + string(omega) + ' a1(end) ' + string(y(1, end, i)));
+%         if omega >= omega_end
+%             break;
+%         end
+%         i = i + 1;
+%         t(i, 1) = 0;
+%         y(:, 1, i) = y(:, end, i-1);
+%     end
+% 
+% end
+% 
+% toc;
+% plot(y0(1,:),'b'), hold on;
+
+%% Exponential Method with friction (nondimensionalization, with initial condition)
 tic;
-for omega = omega_0:domega:omega_end
+clear y t
+t = 0;
+nrelax = 500;
+y = zeros(17*2, nrelax*nstep+1);
+cd .\data
+load('y0');
+y(:,1) = y0_;
+cd ..\
+%%
+for omega = (omega_0+domega*2):domega:omega_end
     omega_cont = [omega_cont, omega];
     T = 2*pi / omega;
     dt = T / nstep;
     R = expm(dt*A); 
-    if i == 1
-        nrelax = 500;
-        y0 = zeros(17*2,nrelax*nstep+1);
-        for k = 1:nrelax*nstep
+
     
-            x = y0(6:17, k)';
-            Gstruct = gf(x + xp', params.func);
-            G = Gstruct.F - gxp;
-            params.func.fc.w = Gstruct.w;
-            G = [zeros(5,1); G];
-            G = M \ G;
-            G = [zeros(17,1); G];
-    
-            phi_ty = F * sin(omega * t(i, k)) - G;
-            y0(:, k+1) = R * (y0(:, k) + dt * phi_ty);
-            t(i, k+1) = t(i, k) + dt;
-        end
-        nrelax = 30;
-        y(:,:,1) = y0(:,end-nrelax*nstep:end);
-        disp('omega ' + string(omega) + ' a1(end) ' + string(y(1, end, i)));
-        i = i + 1;
-        t(i, 1) = 0;
-        y(:, 1, i) = y(:, end, i-1);
-    else
-        for k = 1:nrelax*nstep
-    
-            x = y(6:17, k, i)';
-            Gstruct = gf(x + xp', params.func);
-            G = Gstruct.F - gxp;
-            params.func.fc.w = Gstruct.w;
-            G = [zeros(5,1); G];
-            G = M \ G;
-            G = [zeros(17,1); G];
-    
-            phi_ty = F * sin(omega * t(i, k)) - G;
-            y(:, k+1, i) = R * (y(:, k, i) + dt * phi_ty);
-            t(i, k+1) = t(i, k) + dt;
-        end
-        disp('omega ' + string(omega) + ' a1(end) ' + string(y(1, end, i)));
-        if omega >= omega_end
-            break;
-        end
-        i = i + 1;
-        t(i, 1) = 0;
-        y(:, 1, i) = y(:, end, i-1);
+
+    for k = 1:nrelax*nstep
+
+        x = y(6:17, k)';
+        Gstruct = gf(x + xp', params.func);
+        G = Gstruct.F - gxp;
+        params.func.fc.w = Gstruct.w;
+        G = [zeros(5,1); G];
+        G = M \ G;
+        G = [zeros(17,1); G];
+
+        phi_ty = F * sin(omega * t) - G;
+        y(:, k+1) = R * (y(:, k) + dt * phi_ty);
+        t = t + dt;
     end
+    disp('omega ' + string(omega) + ' a1(end) ' + string(y(1, end)));
+    Amax(:, i) = max(abs(y(:,end-10*nstep:end)), [], 2);
+    if omega >= omega_end
+        break;
+    end
+    i = i + 1;
+    t = 0;
+    y(:, 1) = y(:, end);
+    
 
 end
 
 toc;
-plot(y0(1,:),'b'), hold on;
+% plot(y0(1,:),'b'), hold on;
+
 % %% Implicit Euler Method without gx
 % tic;
 % for omega = omega_0:domega:omega_end
@@ -302,39 +356,51 @@ plot(y0(1,:),'b'), hold on;
 % toc;
 
 %%
-clear Amax
-for j = 1:size(y,3) % omega number
-    Amax(:, j) = max(abs(y(:,end-10*nstep:end,j)), [], 2);
-end
+% clear Amax
+% for j = 1:size(y,3) % omega number
+%     Amax(:, j) = max(abs(y(:,end-10*nstep:end,j)), [], 2);
+% end
 % omega_cont = omega_0:domega:omega_end;
 figure
 plot(omega_cont, Amax(1,:),'ko');
 grid on;
 %% oscilation over time
-figure;
-i = 1;
-tt = 0;
-for omega = omega_0:domega:omega_end
-    T = 2 * pi / omega;
-    dt = T / nstep;
-    tt = tt(end) + dt*[0:nstep*nrelax];
-    plot(tt, y(1,:,i)), hold on;
-    i = i + 1;
-end
-grid on;
+% figure;
+% i = 1;
+% tt = 0;
+% for omega = omega_0:domega:omega_end
+%     T = 2 * pi / omega;
+%     dt = T / nstep;
+%     tt = tt(end) + dt*[0:nstep*nrelax];
+%     plot(tt, y(1,:,i)), hold on;
+%     i = i + 1;
+% end
+% grid on;
 
 %% oscilation over cycle number
+% figure;
+% i = 1;
+% ss = 0;
+% for omega = omega_0:domega:omega_end
+%     T = 2 * pi / omega;
+%     dt = T / nstep;
+%     ss = ss(end) + [0:nstep*nrelax] ./ nstep;
+%     plot(ss, y(1,:,i)), hold on;
+%     i = i + 1;
+% end
+% grid on;
+% xticks(0:30:630);
+% xlabel('cycles');
+% ylabel('a_1');
+%%
 figure;
-i = 1;
 ss = 0;
-for omega = omega_0:domega:omega_end
-    T = 2 * pi / omega;
-    dt = T / nstep;
-    ss = ss(end) + [0:nstep*nrelax] ./ nstep;
-    plot(ss, y(1,:,i)), hold on;
-    i = i + 1;
-end
+
+
+ss = ss(end) + [0:nstep*nrelax] ./ nstep;
+plot(ss, y(1,:)), hold on;
+
 grid on;
-xticks(0:30:630);
+% xticks(0:30:630);
 xlabel('cycles');
 ylabel('a_1');
