@@ -2,6 +2,7 @@
 omega02 = CB.CBmods.Kaa(1);
 alpha = abs(CB.CB_F.Fa(1)) / omega02;
 beta = abs(mu(1) * max(abs(Rx)) / kt(1));
+% beta = 1e-6;
 
 CB.CB_F.Fa = CB.CB_F.Fa / (alpha * omega02);
 CB.CB_F.Fx = CB.CB_F.Fx * beta / (alpha^2 * omega02);

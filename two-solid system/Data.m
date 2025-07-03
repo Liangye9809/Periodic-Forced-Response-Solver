@@ -73,13 +73,21 @@ maxstep = 10000;
 
 % ds = 0.5;
 % maxstep = 20000;
-% % omega_0 = 0.81;
-% % omega_end = 0.85;
+omega_0 = 0.81; % friction
+omega_end = 0.85;
+% omega_0 = 4115;
+% omega_end = 4318;
 
-omega_0 = 0.95;
-omega_end = 1.0;
+
+% omega_0 = 0.95; % cubic
+% omega_end = 1.0;
 % omega_0 = 4826;
 % omega_end = 5080;
+
+
+% omega_0 = 0.95;
+% omega_end = 1.0;
+
 
 x0 = 0;
 

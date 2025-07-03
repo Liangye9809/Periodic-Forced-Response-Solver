@@ -1,6 +1,6 @@
 %% clear workspace and close all
 clear
-close all
+% close all
 clc
 %**************************************************************************************************
 % This file using continuation method with Harmonic Balance Method assumption to slove the equation:
@@ -67,6 +67,10 @@ Data
 
 CriagBamptonReduction
 
+
+%% dimensionless
+
+Nondimentionalization
 %% continuation calculation with HBM
 
 %**************************************************************************************************
@@ -99,9 +103,9 @@ CriagBamptonReduction
 % 
 % Written by Liu Liangye on June 03, 2025
 % *************************************************************************************************
-
+tic;
 ContinuationCaluculation
-
+toc;
 %%
 
 HBMPostProcessing;

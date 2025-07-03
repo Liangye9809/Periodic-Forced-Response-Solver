@@ -1,9 +1,9 @@
 clear
-clc
+% clc
 %% load data
 Data
 ReadFromCSV
-Rx = 10*Rx;
+% Rx = 10*Rx; % cubic only
 Nondimentionalization
 %% preload
 params.func.CBmods = CB.CBmods;
@@ -44,116 +44,262 @@ A = [zeros(17), eye(17);
 % R = M \ R;
 % R = [zeros(17,1); R];
 
-y0 = zeros(17*2, 1);
-y(:,1,1) = y0;
+nstep = 50000;
+nrelax = 30;
+nomega = 20;
+y = zeros(17*2, 1+nstep*nrelax, nomega+1);
+
 t(1,1) = 0;
 i = 1;
 omega_cont = [];
-domega = (omega_end - omega_0) / 25;
-%% Implicit Euler Method without gx
+domega = (omega_end - omega_0) / nomega;
+
+% %% Exponential Method without gx
+% tic;
+% i = 1;
+% for omega = omega_0:domega:omega_end
+%     omega_cont = [omega_cont, omega];
+%     T = 2*pi / omega;
+%     % nstep = 200;
+%     % nrelax = 600;
+%     dt = T / nstep;
+%     R = expm(dt*A); 
+%     for k = 1:nrelax*nstep
+%         y(:, k+1, i) = R * (y(:, k, i) + dt * (F * sin(omega * t(i, k))));
+%         t(i, k+1) = t(i, k) + dt;
+%     end
+%     disp('omega ' + string(omega) + ' a1(end) ' + string(y(1, end, i)));
+%     if omega >= omega_end
+%         break;
+%     end
+%     i = i + 1;
+%     t(i, 1) = 0;
+%     y(:, 1, i) = y(:, end, i-1);
+% end
+% 
+% toc;
+% 
+% %% Exponential Method with cubic (nondimensionalization)
+% 
+% % stability
+% J = finite_diff_jac(@(x) g(x, params.func).F, xp);
+% J = [zeros(5,17);
+%       zeros(12,5), J];
+% J = -M \ J;
+% Jg = [zeros(17,17), zeros(17,17);
+%       J, zeros(17,17)];
+% T = 2*pi / omega_0;
+% for i = 0:5
+%     nstep = 100 * 10^i;
+%     dt = T / nstep;
+%     R = dt * expm(dt*A) * Jg;
+%     eigR = eig(R);
+%     disp([nstep, dt, max(abs(real(eigR)))]);
+% end
+% 
+% tic;
+% i = 1;
+% for omega = omega_0:domega:omega_end
+%     omega_cont = [omega_cont, omega];
+%     T = 2*pi / omega;
+%     nstep = 200;
+%     nrelax = 600;
+%     dt = T / nstep;
+%     R = expm(dt*A); 
+%     for k = 1:nrelax*nstep
+% 
+%         x = y(6:17, k, i)';
+%         Gstruct = g(x + xp', params.func);
+%         G = Gstruct.F - gxp';
+%         params.func.fc.w = Gstruct.w;
+%         G = [zeros(5,1); G'];
+%         G = M \ G;
+%         G = [zeros(17,1); G];
+% 
+%         phi_ty = F * sin(omega * t(i, k)) - G;
+%         y(:, k+1, i) = R * (y(:, k, i) + dt * phi_ty);
+%         t(i, k+1) = t(i, k) + dt;
+%     end
+%     disp('omega ' + string(omega) + ' a1(end) ' + string(y(1, end, i)));
+%     if omega >= omega_end
+%         break;
+%     end
+%     i = i + 1;
+%     t(i, 1) = 0;
+%     y(:, 1, i) = y(:, end, i-1);
+% 
+% end
+% 
+% toc;
+
+%% Exponential Method with friction (nondimensionalization)
+% J = finite_diff_jac(@(x) gf(x, params.func).F, xp);
+% J = [zeros(5,17);
+%       zeros(12,5), J];
+% J = -M \ J;
+% Jg = [zeros(17,17), zeros(17,17);
+%       J, zeros(17,17)];
 tic;
 for omega = omega_0:domega:omega_end
     omega_cont = [omega_cont, omega];
     T = 2*pi / omega;
-    nstep = 1000;
-    nrelax = 100;
     dt = T / nstep;
-    R = eye(34) - dt*A; % Implicit Euler Method
-    for k = 1:nrelax*nstep
-        y(:, k+1, i) = R \ (y(:, k, i) + dt * (F * sin(omega * (dt + t(i, k)))));
-        t(i, k+1) = t(i, k) + dt;
+    R = expm(dt*A); 
+    if i == 1
+        nrelax = 500;
+        y0 = zeros(17*2,nrelax*nstep+1);
+        for k = 1:nrelax*nstep
+    
+            x = y0(6:17, k)';
+            Gstruct = gf(x + xp', params.func);
+            G = Gstruct.F - gxp;
+            params.func.fc.w = Gstruct.w;
+            G = [zeros(5,1); G];
+            G = M \ G;
+            G = [zeros(17,1); G];
+    
+            phi_ty = F * sin(omega * t(i, k)) - G;
+            y0(:, k+1) = R * (y0(:, k) + dt * phi_ty);
+            t(i, k+1) = t(i, k) + dt;
+        end
+        nrelax = 30;
+        y(:,:,1) = y0(:,end-nrelax*nstep:end);
+        disp('omega ' + string(omega) + ' a1(end) ' + string(y(1, end, i)));
+        i = i + 1;
+        t(i, 1) = 0;
+        y(:, 1, i) = y(:, end, i-1);
+    else
+        for k = 1:nrelax*nstep
+    
+            x = y(6:17, k, i)';
+            Gstruct = gf(x + xp', params.func);
+            G = Gstruct.F - gxp;
+            params.func.fc.w = Gstruct.w;
+            G = [zeros(5,1); G];
+            G = M \ G;
+            G = [zeros(17,1); G];
+    
+            phi_ty = F * sin(omega * t(i, k)) - G;
+            y(:, k+1, i) = R * (y(:, k, i) + dt * phi_ty);
+            t(i, k+1) = t(i, k) + dt;
+        end
+        disp('omega ' + string(omega) + ' a1(end) ' + string(y(1, end, i)));
+        if omega >= omega_end
+            break;
+        end
+        i = i + 1;
+        t(i, 1) = 0;
+        y(:, 1, i) = y(:, end, i-1);
     end
-    if omega >= omega_end
-        break;
-    end
-    i = i + 1;
-    t(i, 1) = 0;
-    y(:, 1, i) = y(:, end, i-1);
+
 end
 
 toc;
-
-%% Implicit Euler Method with gx iteration
-tic;
-for omega = omega_0:domega:omega_end
-    omega_cont = [omega_cont, omega];
-    T = 2*pi / omega;
-    nstep = 1000;
-    nrelax = 100;
-    dt = T / nstep;
-    % expdtAhalf = expm(0.5*dt*A);
-    R = inv(eye(34) - dt*A);
-    for k = 1:nrelax*nstep
-        x = y(6:17, k, i)';
-        Gstruct = g(x + xp', params.func);
-        G = Gstruct.F - gxp';
-        params.func.fc.w = Gstruct.w;
-        G = [zeros(5,1); G'];
-        G = M \ G;
-        G = [zeros(17,1); G];
-        yp1 = R * (y(:, k, i) + dt * (F * sin(omega * (dt + t(i, k))) - G));
-
-        % function iteration
-        % x = yp1(6:17)'; % phi(t,y+1)
-        % for j = 2:50
-        %     Gstruct = g(x + xp', params.func);
-        %     G = Gstruct.F - gxp';
-        %     params.func.fc.w = Gstruct.w;
-        %     G = [zeros(5,1); G'];
-        %     G = M \ G;
-        %     G = [zeros(17,1); G];
-        %     yp12 = R * (y(:, k, i) + dt * (F * sin(omega * (dt + t(i, k))) - G));
-        %     errory = norm(yp12 - yp1) / norm(yp1);
-        %     if max(abs(errory)) < 1e-3
-        %         break;
-        %     end
-        %     if j>49
-        %         warning('iteration cannot converge in omega %f of nstep %d',omega,k);
-        %     end
-        %     yp1 = yp12;
-        %     x = yp12(6:17)';
-        % end
-
-        y(:, k+1, i) = yp1;
-        t(i, k+1) = t(i, k) + dt;
-    end
-    disp('omega ' + string(omega) + ' a1(end) ' + string(yp1(1)));
-    if omega >= omega_end
-        break;
-    end
-    i = i + 1;
-    t(i, 1) = 0;
-    y(:, 1, i) = y(:, end, i-1);
-end
-
-toc;
-
-%% RK2 method without gx
-tic;
-domega = 5;
-for omega = omega_0:domega:omega_end
-    omega_cont = [omega_cont, omega];
-    T = 2*pi / omega;
-    nstep = 14500;
-    nrelax = 50;
-    dt = T / nstep;
-    R = eye(34) + (dt/2)*A; % half step of Explicit Euler Method
-    for k = 1:nrelax*nstep
-        Ft = F * sin(omega * (dt + t(i, k)));
-        yhalf = R * y(:, k, i) + (dt/2) * Ft;
-        Ft = F * sin(omega * (dt/2 + t(i, k)));
-        y(:, k+1, i) = y(:, k, i) + dt * (A * yhalf + Ft);
-        t(i, k+1) = t(i, k) + dt;
-    end
-    if omega >= omega_end
-        break;
-    end
-    i = i + 1;
-    t(i, 1) = 0;
-    y(:, 1, i) = y(:, end, i-1);
-end
-
-toc;
+plot(y0(1,:),'b'), hold on;
+% %% Implicit Euler Method without gx
+% tic;
+% for omega = omega_0:domega:omega_end
+%     omega_cont = [omega_cont, omega];
+%     T = 2*pi / omega;
+%     % nstep = 200;
+%     % nrelax = 500;
+%     dt = T / nstep;
+%     R = expm(dt*A); 
+%     for k = 1:nrelax*nstep
+%         y(:, k+1, i) = R * y(:, k, i) + dt * (F * sin(omega * t(i, k)));
+%         t(i, k+1) = t(i, k) + dt;
+%     end
+%     if omega >= omega_end
+%         break;
+%     end
+%     i = i + 1;
+%     t(i, 1) = 0;
+%     y(:, 1, i) = y(:, end, i-1);
+% end
+% 
+% toc;
+% 
+% %% Implicit Euler Method with gx iteration
+% tic;
+% for omega = omega_0:domega:omega_end
+%     omega_cont = [omega_cont, omega];
+%     T = 2*pi / omega;
+%     % nstep = 1000;
+%     % nrelax = 100;
+%     dt = T / nstep;
+%     % expdtAhalf = expm(0.5*dt*A);
+%     R = inv(eye(34) - dt*A);
+%     for k = 1:nrelax*nstep
+%         x = y(6:17, k, i)';
+%         Gstruct = g(x + xp', params.func);
+%         G = Gstruct.F - gxp';
+%         params.func.fc.w = Gstruct.w;
+%         G = [zeros(5,1); G'];
+%         G = M \ G;
+%         G = [zeros(17,1); G];
+%         yp1 = R * (y(:, k, i) + dt * (F * sin(omega * (dt + t(i, k))) - G));
+% 
+%         % function iteration
+%         % x = yp1(6:17)'; % phi(t,y+1)
+%         % for j = 2:50
+%         %     Gstruct = g(x + xp', params.func);
+%         %     G = Gstruct.F - gxp';
+%         %     params.func.fc.w = Gstruct.w;
+%         %     G = [zeros(5,1); G'];
+%         %     G = M \ G;
+%         %     G = [zeros(17,1); G];
+%         %     yp12 = R * (y(:, k, i) + dt * (F * sin(omega * (dt + t(i, k))) - G));
+%         %     errory = norm(yp12 - yp1) / norm(yp1);
+%         %     if max(abs(errory)) < 1e-3
+%         %         break;
+%         %     end
+%         %     if j>49
+%         %         warning('iteration cannot converge in omega %f of nstep %d',omega,k);
+%         %     end
+%         %     yp1 = yp12;
+%         %     x = yp12(6:17)';
+%         % end
+% 
+%         y(:, k+1, i) = yp1;
+%         t(i, k+1) = t(i, k) + dt;
+%     end
+%     disp('omega ' + string(omega) + ' a1(end) ' + string(yp1(1)));
+%     if omega >= omega_end
+%         break;
+%     end
+%     i = i + 1;
+%     t(i, 1) = 0;
+%     y(:, 1, i) = y(:, end, i-1);
+% end
+% 
+% toc;
+% 
+% %% RK2 method without gx
+% tic;
+% domega = 5;
+% for omega = omega_0:domega:omega_end
+%     omega_cont = [omega_cont, omega];
+%     T = 2*pi / omega;
+%     % nstep = 14500;
+%     % nrelax = 50;
+%     dt = T / nstep;
+%     R = eye(34) + (dt/2)*A; % half step of Explicit Euler Method
+%     for k = 1:nrelax*nstep
+%         Ft = F * sin(omega * (dt + t(i, k)));
+%         yhalf = R * y(:, k, i) + (dt/2) * Ft;
+%         Ft = F * sin(omega * (dt/2 + t(i, k)));
+%         y(:, k+1, i) = y(:, k, i) + dt * (A * yhalf + Ft);
+%         t(i, k+1) = t(i, k) + dt;
+%     end
+%     if omega >= omega_end
+%         break;
+%     end
+%     i = i + 1;
+%     t(i, 1) = 0;
+%     y(:, 1, i) = y(:, end, i-1);
+% end
+% 
+% toc;
 
 %%
 clear Amax
@@ -163,7 +309,8 @@ end
 % omega_cont = omega_0:domega:omega_end;
 figure
 plot(omega_cont, Amax(1,:),'ko');
-%%
+grid on;
+%% oscilation over time
 figure;
 i = 1;
 tt = 0;
@@ -174,3 +321,20 @@ for omega = omega_0:domega:omega_end
     plot(tt, y(1,:,i)), hold on;
     i = i + 1;
 end
+grid on;
+
+%% oscilation over cycle number
+figure;
+i = 1;
+ss = 0;
+for omega = omega_0:domega:omega_end
+    T = 2 * pi / omega;
+    dt = T / nstep;
+    ss = ss(end) + [0:nstep*nrelax] ./ nstep;
+    plot(ss, y(1,:,i)), hold on;
+    i = i + 1;
+end
+grid on;
+xticks(0:30:630);
+xlabel('cycles');
+ylabel('a_1');

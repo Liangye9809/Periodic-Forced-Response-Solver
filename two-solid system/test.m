@@ -31,30 +31,38 @@ tic
 testF = g(rand(256,17), 0);
 toc
 %%
-clc
-disp(['dt   ','nsteps   ','max(dtA) ','max(expm(dtA))    ', 'max(abs(eig(expm(dtA))))    ', 'max(abs(eigEuler))  ', 'max(abs(eigRK2))', 'ImpEular']);
+% clc
+disp(['dt   ','nsteps   ','']);
 clear J
-J = finite_diff_jac(@(x) g(x, params.func).F, xp);
+J = finite_diff_jac(@(x) gf(x, params.func).F, xp);
 J = [zeros(5,17);
       zeros(12,5), J];
 J = -M \ J;
 Jg = [zeros(17,17), zeros(17,17);
       J, zeros(17,17)];
+T = 2*pi / omega_0;
 for i  = 0:8
     nsteps = 100 * 10^i;
-    % nsteps = 100 * 80;
-    testdt = T / nsteps;
-    testdtA = testdt * A;
-    R = expm(testdtA) + testdt * expm(testdtA) * Jg;
-    e = eig(R);
-    eA = eig((eye(34) - testdt * A));
-    RK2R = testdt * A + testdt^2 / 2 * A^2 + eye(34);
-    ImpR = inv(eye(34) - testdt*(A + Jg));
-    eImpR = eig(ImpR);
-    maxe = max(abs(e));
-    maxeE = max(abs(eA));
-    maxeRK2 = max(abs(eig(RK2R)));
-    disp([testdt, nsteps, max(max(abs(testdtA))), max(max(abs(R))), maxe, maxeE, maxeRK2, max(abs(eImpR))]);
+    dt = T / nsteps;
+
+    % explicit Euler exponential numerical method
+    dtA = dt * A;
+    R_ExpEulxpm = expm(dtA) + dt * expm(dtA) * Jg;
+    e_ExpEulxpm = eig(R_ExpEulxpm);
+    maxe_ExpEulxpm = max(abs(e_ExpEulxpm));
+
+    % % RK2 exponential numerical method
+    % RK2R = dt * A + dt^2 / 2 * A^2 + eye(34);
+    % maxeRK2 = max(abs(eig(RK2R)));
+
+
+    % Implicit Euler Method
+    R_ImpEulxpm = inv(eye(34) - dt*(A + Jg));
+    e_ImpEulxpm = eig(R_ImpEulxpm);
+    maxe_ImpEulxpm = max(abs(e_ImpEulxpm));
+    
+    
+    disp([dt, nsteps, maxe_ExpEulxpm, max(abs(e_ImpEulxpm))]);
 end
 %% 
 t = -1:0.001:1;
@@ -72,8 +80,9 @@ f4 = a0 + 8*a1 + 27*a2;
 %%
 for i  = 8:8
     nsteps = 14500;
-    testdt = T / nsteps;
-    R = eye(34) + (testdt/2)*A;
+    dt = T / nsteps;
+    R_ExpEulxpm = eye(34) + (dt/2)*A;
     format short g
-    disp([testdt, nsteps, max(max(abs(R))), max(max(abs(eig(R))))]);
+    disp([dt, nsteps, max(max(abs(R_ExpEulxpm))), max(max(abs(eig(R_ExpEulxpm))))]);
 end
+
