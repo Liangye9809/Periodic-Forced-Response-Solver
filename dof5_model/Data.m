@@ -71,10 +71,10 @@ maxstep = 20000;
 % omega_0 = 0.12;
 % omega_end = 0.90;
 
-% omega_0 = 0.9; % friction
-% omega_end = 1.3;
-omega_0 = 0.46;
-omega_end = 0.67;
+omega_0 = 0.9; % friction
+omega_end = 1.3;
+% omega_0 = 0.46;
+% omega_end = 0.67;
 
 % cd ./data/
 % load('x_omega1.2_backwards.mat');

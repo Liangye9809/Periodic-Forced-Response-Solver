@@ -1,7 +1,6 @@
 % x are in frequency domain 
 % x = [a¹0,a¹1,b¹1,a¹2,b¹2,...,a¹H,b¹H,  a²0,a²1,b²1,a²2,b²2,...,a²H,b²H,...]'
 
-%% original structure
 % function F = fftgx(x, pfunc) % x(t) = E*X
 %     E = pfunc.HBM.E;
 %     EH = pfunc.HBM.EH;
@@ -30,22 +29,18 @@ function F = fftgx(X, pfunc) % x(t) = E*X
     xp = pfunc.static.preload.xp;
     gxp = pfunc.static.preload.gxp;
     H = pfunc.HBM.H;
-    E = pfunc.HBM.E;
-    EH = pfunc.HBM.EH;
     Nc = pfunc.HBM.Nc;
     G = zeros(size(X));
-    w = pfunc.fc.w;
-
     for i = 1:Nc
         r1 = 1 + 3*(i - 1) * (2*H + 1);
         r2 = 3*i * (2*H + 1);
         r3 = 3*(i - 1) + 1;
         r4 = 3*i;
-        Gstruct = force_fourier(X(r1:r2), xp(r3:r4), gxp(r3:r4), H, E, EH);
+        Gstruct = force_fourier(X(r1:r2), xp(r3:r4), gxp(r3:r4), pfunc);
         G(r1:r2) = Gstruct.F;
-        w(:,i) = Gstruct.w;
+        
     end
 
     F.F = G;
-    F.w = w;
+    F.w = gxstruct.w;
 end

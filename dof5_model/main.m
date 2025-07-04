@@ -70,7 +70,7 @@ CriagBamptonReduction
 
 %% dimensionless
 
-Nondimentionalization
+% Nondimentionalization
 %% continuation calculation with HBM
 
 %**************************************************************************************************

@@ -22,7 +22,7 @@
 % CB.Rx = [-1.2;-0.1;-0.1];
 % CB.xe0 = [0.21;0.11];
 
-%% External forces and preoload
+%% External  forces and preoload
 
 H_F_ext = [0,0,1]; % fourier coefficient of f(t)
 
