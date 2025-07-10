@@ -11,6 +11,8 @@ clc
 % Written by Liu Liangye on June 03, 2025
 % *************************************************************************************************
 
+
+
 %% Get parameters from file
 
 Data
@@ -152,8 +154,12 @@ Nondimentionalization
 % Written by Liu Liangye on June 03, 2025
 % *************************************************************************************************
 tic;
+profile on
 ContinuationCaluculation
+profile off
 toc;
+p = profile('info');
+save('ProfileInfo.mat','p');
 %%
 
 HBMPostProcessing;

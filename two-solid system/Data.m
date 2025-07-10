@@ -61,7 +61,7 @@ xp0 = 0; % if no value defined here, the default value inside is 0
 %% continuation parameters
 
 ds = 0.5;
-maxstep = 10000;
+maxstep = 20;
 % omega_0 = 4920.0;
 % omega_end = 5050.0;
 

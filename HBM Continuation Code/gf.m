@@ -10,18 +10,16 @@
 %     F = [T1; T2; N];
 % end
 
-function F = gf(x, p) % x is a 3*Np dof row vector, represent 2*Np tangential directions and 1*Np normal direction
+function F = gf(x, fc) % x is a 3*Np dof row vector, represent 2*Np tangential directions and 1*Np normal direction
     
-    fc = p.fc;
+    % fc = fc.fc;
     
     kn = fc.kn; % stiffness in normal direction
     xn0 = fc.xn0; % initial gap between this contact point
     mu = fc.mu; % friciton coefficient of coulomb friction
     kt = fc.kt; % stiffness of 2 tangential direction in column vector
     w = fc.w;
-    
-    
-    
+ 
 
     Np = size(kn, 2);
     FN = zeros(1, Np);
