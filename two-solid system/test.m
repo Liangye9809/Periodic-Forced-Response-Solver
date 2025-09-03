@@ -86,3 +86,19 @@ for i  = 8:8
     disp([dt, nsteps, max(max(abs(R_ExpEulxpm))), max(max(abs(eig(R_ExpEulxpm))))]);
 end
 
+%% test g only
+clear
+load("ptest.mat");
+N = 2^8;
+Nx = 4;
+xtest = rand(N, 3 * Nx);
+
+tic;
+profile on
+for i = 1:1
+    F = g(xtest, ptest);
+end
+profile off
+toc;
+p = profile('info');
+profview(0,p);

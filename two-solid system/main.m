@@ -159,7 +159,7 @@ ContinuationCaluculation
 profile off
 toc;
 p = profile('info');
-save('ProfileInfo.mat','p');
+save('ProfileInfoMEX.mat','p');
 %%
 
 HBMPostProcessing;

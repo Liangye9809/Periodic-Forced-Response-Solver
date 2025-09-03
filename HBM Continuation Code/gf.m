@@ -29,6 +29,9 @@ function F = gf(x, fc) % x is a 3*Np dof row vector, represent 2*Np tangential d
         FN(i) = NormalForces(x(3*(i-1)+3), kn(i), xn0(i));
         [T1(i), w(1, i)] = TangentialForces(x(3*(i-1)+1), w(1, i), kt(1, i), mu(1, i), FN(i));
         [T2(i), w(2, i)] = TangentialForces(x(3*(i-1)+2), w(2, i), kt(2, i), mu(2, i), FN(i));
+        % FN(i) = NormalForcesMEX(x(3*(i-1)+3), kn(i), xn0(i));
+        % [T1(i), w(1, i)] = TangentialForcesMEX(x(3*(i-1)+1), w(1, i), kt(1, i), mu(1, i), FN(i));
+        % [T2(i), w(2, i)] = TangentialForcesMEX(x(3*(i-1)+2), w(2, i), kt(2, i), mu(2, i), FN(i));
     end
 
     F.F = [T1; T2; FN];
