@@ -16,8 +16,14 @@ function F = fftgx(x, pfunc) % x(t) = E*X
         X(:,i) = x(r1:r2); % reorder in dofs in column
     end
     xt = E * X; 
-    % xpt = ones(size(xt)) * diag(xp);
-    gxstruct = g(xt + xp', pfunc);
+    % gxstruct = g(xt + xp', pfunc.fc); % call matlab function
+    fc.kn = pfunc.fc.kn;
+    fc.xn0 = pfunc.fc.xn0;
+    fc.mu = pfunc.fc.mu;
+    fc.kt = pfunc.fc.kt;
+    fc.w = pfunc.fc.w;
+    gxstruct = g_mex(xt + xp', fc); % call mex function
+    
     gt = gxstruct.F - gxp';
     hndn = EH * gt;
     % save Ff_omega1.2.mat hndn

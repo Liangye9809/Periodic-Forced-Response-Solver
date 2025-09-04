@@ -153,13 +153,14 @@ Nondimentionalization
 % 
 % Written by Liu Liangye on June 03, 2025
 % *************************************************************************************************
+
 tic;
-profile on
+% profile on
 ContinuationCaluculation
-profile off
+% profile off
 toc;
 p = profile('info');
-save('ProfileInfoMEX.mat','p');
+save('ProfileInfo_g_MEX.mat','p');
 %%
 
 HBMPostProcessing;

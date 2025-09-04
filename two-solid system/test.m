@@ -89,16 +89,25 @@ end
 %% test g only
 clear
 load("ptest.mat");
-N = 2^8;
+N = 2^3;
 Nx = 4;
-xtest = rand(N, 3 * Nx);
-
-tic;
-profile on
-for i = 1:1
-    F = g(xtest, ptest);
+xtest = zeros(N, 3 * Nx);
+fc.kn = ptest.fc.kn;
+fc.xn0 = ptest.fc.xn0;
+fc.mu = ptest.fc.mu;
+fc.kt = ptest.fc.kt;
+fc.w = ptest.fc.w;
+for i = 1:N
+    for j = 1:(3 * Nx)
+        xtest(i, j) = 12 * (i -1) + j;
+    end
 end
-profile off
+profile on
+tic;
+for i = 1:1
+    F = g_mex(xtest, fc);
+end
 toc;
+profile off
 p = profile('info');
 profview(0,p);

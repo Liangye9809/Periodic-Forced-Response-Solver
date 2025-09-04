@@ -29,7 +29,7 @@
 % assume xn, kn and xn0 are all row vectors
 % function FN = NormalForces(xn, kn, xn0)
 %     u = xn - xn0;
-%     u(u<0) = 0;
+%     u(u < 0) = 0;
 %     FN = kn .* u;
 % end
 

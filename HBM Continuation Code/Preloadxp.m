@@ -26,22 +26,31 @@ xp = params.func.static.xp0;
 if size(xp,1) == 1
     xp = xp * ones(size(Rx));
 end
+% convert fc to struct type for calling mex function
+fc.kn = params.func.fc.kn;
+fc.xn0 = params.func.fc.xn0;
+fc.mu = params.func.fc.mu;
+fc.kt = params.func.fc.kt;
+fc.w = params.func.fc.w;
 
 maxiter = params.Newton.maxiter;
 epsx = params.Newton.epsx;
 epsf = params.Newton.epsf;
 Kxx = params.func.CB_MK.Kxx;
-gxpstruct = g(xp', params.func); %%%
+% gxpstruct = g(xp', params.func.fc); %%%
+gxpstruct = g_mex(xp', fc); 
 f = Kxx * xp + gxpstruct.F' + Rx; %%% transpose
 w = gxpstruct.w; % update w
 disp('preload iterations:'); 
 disp('i xp w gxp errxp errf'); 
 for i = 1:maxiter
-    Jf = Kxx + finite_diff_jac(@(xp) g(xp, params.func).F, xp'); %%
+    % Jf = Kxx + finite_diff_jac(@(xp) g(xp, params.func.fc).F, xp'); %%
+    Jf = Kxx + finite_diff_jac(@(xp) g_mex(xp, fc).F, xp');
     dxp = - Jf \ f;
     xp = xp + dxp;
     %%%%%
-    gxpstruct = g(xp', params.func); %%%
+    % gxpstruct = g(xp', params.func.fc); %%%
+    gxpstruct = g_mex(xp', fc); 
     f = Kxx * xp + gxpstruct.F' + Rx; %%%
     w = gxpstruct.w; % update w
     %%%%%

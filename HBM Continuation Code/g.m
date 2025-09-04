@@ -17,6 +17,30 @@
 %     F.w = p.fc.w;
 % end
 
+%% for mex function
+% function F = g(xt, p) % xt, each rows correspond each time, columns are different dofs
+% 
+%     [N, ~] = size(xt);
+%     F.F = zeros(size(xt));
+%     % convert fc to struct type
+%     fc.kn = p.kn;
+%     fc.xn0 = p.xn0;
+%     fc.mu = p.mu;
+%     fc.kt = p.kt;
+%     fc.w = p.w;
+% 
+%     for j = 1:2
+%         for i = 1:N
+%             x = xt(i, :);
+%             [FF, fc.w] = gf_mex(x, fc);
+%             F.F(i, :) = FF;
+%         end
+%     end
+%     F.w = fc.w;
+% 
+% end
+
+%% matlab only
 function F = g(xt, p) % xt, each rows correspond each time, columns are different dofs
 
     [N, ~] = size(xt);

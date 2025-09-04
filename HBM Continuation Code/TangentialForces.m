@@ -30,5 +30,5 @@ end
 %     % Slip condition
 %     sg = sign(T_raw(slipping));
 %     T(slipping) = sg .* mu(slipping) .* FN(slipping);
-%     w(slipping) = xt(slipping) - sg .* mu(slipping) .* FN(slipping) ./ kt(slipping);
+%     w(slipping) = xt(slipping) - T(slipping) ./ kt(slipping);
 % end
