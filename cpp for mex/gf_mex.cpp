@@ -42,8 +42,8 @@ void mexFunction(int nlhs, mxArray *plhs[],
     if (nrhs != 2) {
         mexErrMsgIdAndTxt("gf_mex:nrhs", "Two inputs required: x, fc.");
     }
-    if (nlhs != 2) {
-        mexErrMsgIdAndTxt("gf_mex:nlhs", "Two outputs required: F, w.");
+    if (nlhs != 1) {
+        mexErrMsgIdAndTxt("gf_mex:nlhs", "One outputs required: F struct.");
     }
 
     // === Input x ===
@@ -79,14 +79,26 @@ void mexFunction(int nlhs, mxArray *plhs[],
         mexErrMsgIdAndTxt("gf_mex:dimMismatch", "x length must be 3*Np.");
     }
 
-    // === Output F ===
+    // === Outputs: create struct with fields F, w ===
+    const char *field_names[] = {"F","w"};
+    plhs[0] = mxCreateStructMatrix(1,1,2,field_names);
+
+    // Allocate F.F (N x Nx)
+    mxArray *F_mx = mxCreateDoubleMatrix(3*Np, 1, mxREAL);
+    double *F_out = mxGetPr(F_mx);
+
+    // Copy w (will be updated)
+    mxArray *w_mx_out = mxDuplicateArray(w_mx);
+    double *w_out = mxGetPr(w_mx_out);
+
+   /*  // === Output F ===
     plhs[0] = mxCreateDoubleMatrix(3*Np, 1, mxREAL);
     double *F = mxGetPr(plhs[0]);
 
     // === Output w ===
     plhs[1] = mxDuplicateArray(w_mx);
     double *w_out = mxGetPr(plhs[1]);
-
+ */
     // === Loop over contact points ===
     for (mwSize i = 0; i < Np; i++) {
         double xn  = x[3*i + 2];
@@ -105,8 +117,11 @@ void mexFunction(int nlhs, mxArray *plhs[],
         
        
         // Save
-        F[3*i + 0] = T1;
-        F[3*i + 1] = T2;
-        F[3*i + 2] = FN;
+        F_out[3*i + 0] = T1;
+        F_out[3*i + 1] = T2;
+        F_out[3*i + 2] = FN;
     }
+    // Assign outputs
+    mxSetField(plhs[0], 0, "F", F_mx);
+    mxSetField(plhs[0], 0, "w", w_mx_out);
 }

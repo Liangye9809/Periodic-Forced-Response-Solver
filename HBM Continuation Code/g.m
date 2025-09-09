@@ -45,14 +45,14 @@ function F = g(xt, p) % xt, each rows correspond each time, columns are differen
 
     [N, ~] = size(xt);
     F.F = zeros(size(xt));
-    fc = p.fc;
+    % fc = p.fc;
 
     for j = 1:2
         for i = 1:N
             x = xt(i, :);
-            Fi = gf(x, fc);
+            Fi = gf(x, p);
             F.F(i, :) = Fi.F';
-            fc.w = Fi.w; % update w
+            p.w = Fi.w; % update w
         end
     end
     F.w = Fi.w; % update w to outside
