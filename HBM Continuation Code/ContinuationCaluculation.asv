@@ -41,15 +41,8 @@ if ~exist('w', 'var')
     w = [0;0];
 end
 Coulombstruct = struct('kn', kn, 'xn0', xn0, 'mu', mu, 'kt', kt, 'Nx', Nx, 'w', w);
-Coulombstructfc = CoulombFrictionParas(Coulombstruct);
-% store the friction parameters in struct form, faster in calculation and
-% proper in mex function
-params.func.fc.kn = Coulombstructfc.kn;
-params.func.fc.kt = Coulombstructfc.kt;
-params.func.fc.xn0 = Coulombstructfc.xn0;
-params.func.fc.mu = Coulombstructfc.mu;
-params.func.fc.w = Coulombstructfc.w;
 
+params.func.fc = CoulombFrictionParas(Coulombstruct); 
 
 [xp, gxp, w] = Preloadxp(Rx, params); % preload displacement and preload forces in contact part
 params.func.fc.w = w; % update w

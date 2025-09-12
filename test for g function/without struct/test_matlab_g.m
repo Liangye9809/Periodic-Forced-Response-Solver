@@ -14,4 +14,3 @@ for i = 1:1000
     [F, w] = g(xtest, kn, xn0, mu, kt, w_in);
 end
 toc;
-

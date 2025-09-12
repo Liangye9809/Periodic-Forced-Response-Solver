@@ -17,12 +17,12 @@ function F = fftgx(x, pfunc) % x(t) = E*X
     end
     xt = E * X; 
     % gxstruct = g(xt + xp', pfunc.fc); % call matlab function
-    fc.kn = pfunc.fc.kn;
-    fc.xn0 = pfunc.fc.xn0;
-    fc.mu = pfunc.fc.mu;
-    fc.kt = pfunc.fc.kt;
-    fc.w = pfunc.fc.w;
-    gxstruct = g_mex(xt + xp', fc); % call mex function
+    % fc.kn = pfunc.fc.kn;
+    % fc.xn0 = pfunc.fc.xn0;
+    % fc.mu = pfunc.fc.mu;
+    % fc.kt = pfunc.fc.kt;
+    % fc.w = pfunc.fc.w;
+    gxstruct = g_mex(xt + xp', pfunc.fc); % call mex function
     
     gt = gxstruct.F - gxp';
     hndn = EH * gt;
