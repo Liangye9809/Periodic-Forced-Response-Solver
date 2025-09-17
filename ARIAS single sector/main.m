@@ -68,57 +68,58 @@ Data
 % *************************************************************************************************
 
 % CriagBamptonReduction
-ReadFromCSV
-% Rx = 10*Rx; % cubic only
+
+% ReadFromCSV
+
+load("CB.mat");
+load("Rx.mat");
+load("xe0.mat");
 %% Dimensionless
 
 %**************************************************************************************************
 % This section make the dimensionless to the equation:
 % 
-% | I  Max| |\ddot{a} |         |Kaa  0 | |\dot{a} |   |Kaa  0 | |a |   |  0  |   |Fa|        | 0 |
-% |Mxa Mxx|*|\ddot{xc}| + \{xi}*| 0  Kxx|*|\dot{xc}| + | 0  Kxx|*|xc| + |g(xc)| = |Fx|*f(t) + |-Rx|
+% | I  Max| |\ddot{a} |        |Kaa  0 | |\dot{a} |   |Kaa  0 | |a |   |  0  |   |Fa|        | 0 |
+% |Mxa Mxx|*|\ddot{xc}| + {xi}*| 0  Kxx|*|\dot{xc}| + | 0  Kxx|*|xc| + |g(xc)| = |Fx|*f(t) + |-Rx|
 % 
-% to equation:
+% using the following changes:
 % 
-% 
-% 
+% t -> (1 / omega0) * t
+% a -> alpha * a
+% x -> beta * x
 % 
 % where:
-%
+% omega0 is selected to match that of the resonance of interest,
+% alpha = fa / (omega0)^2
+% beta = mu * max(abs(Rx)) / kt
 % 
+% Nondimentionalized Equation:
+% |             I     (beta/alpha)Max| |\ddot{a} |               |(1/omega0)^2*Kaa                       0  | |\dot{a} |
+% |(beta/alpha)Mxa (beta/alpha)^2*Mxx|*|\ddot{xc}| + {xi*omega0}*|              0  (beta/alpha/omega0)^2*Kxx|*|\dot{xc}|
 % 
-%
-%  
+%    |(1/omega0)^2*Kaa                        0 | |a |   |               0           |   | (1/alpha/omega0^2)*Fa  |      
+%  + |              0  (beta/alpha/omega0)^2*Kxx|*|xc| + |beta/(alpha*omega0)^2*g(xc)| = |(beta/alpha/omega0)^2*Fx|*f(t) 
 % 
-% 
-% 
-% 
-% 
-% 
+%                         | 0 |
+% + beta/(alpha*omega0)^2*|-Rx|
 %**************************************************************************************************
 % INPUTS(getting from matlab Workspace):
-% * 
-% * 
-% * 
-% * 
-% * 
-% * 
-% * 
-% * 
-% * 
-% * 
-% * 
+% * CB.CBmods: structure contains the full-stuck elastic modes Phi and constrained modes Psi
+% * CB.CB_MK: structure contains criag-bampton M K matrices
+% * CB.CB_F: structure contains criag-bampton Fa Fx column vectors
+% * Rx: preload reaction forces act in contact part
 % 
 %   OUTPUTS(save to .mat variables in current folder):
-% * 
-% * 
-% * 
-% * 
-% * 
+% * CB.CBmods: structure contains the full-stuck elastic modes Phi and constrained modes Psi
+% * CB.CB_MK: structure contains criag-bampton M K matrices
+% * CB.CB_F: structure contains criag-bampton Fa Fx column vectors
+% * Rx: preload reaction forces act in contact part
 % 
-% Written by Liu Liangye on June 03, 2025
+% Written by Liu Liangye on Sep 16, 2025
 % *************************************************************************************************
 
+% CB.CB_F.Fa = 0.3 .* CB.CB_F.Fa;
+% CB.CB_F.Fx = 0.3 .* CB.CB_F.Fx;
 Nondimentionalization
 %% continuation calculation with HBM
 
@@ -155,12 +156,11 @@ Nondimentionalization
 % *************************************************************************************************
 
 tic;
-% profile on
+
 ContinuationCaluculation
-% profile off
+
 toc;
-% p = profile('info');
-% save('ProfileInfo_g_MEX_10H.mat','p');
+
 %%
 
 HBMPostProcessing;

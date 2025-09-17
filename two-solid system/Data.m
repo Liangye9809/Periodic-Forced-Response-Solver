@@ -22,18 +22,18 @@
 % CB.Rx = [-1.2;-0.1;-0.1];
 % CB.xe0 = [0.21;0.11];
 
-%% External  forces and preoload
+%% External  forces
 
 H_F_ext = [0,0,1]; % fourier coefficient of f(t)
 
 
 %% HBM parameters
 
-H = 10;
-N = 2^8;
-Nx = 4;
-Na = 5;
-xi = 1e-6;
+H = 10; % number of harmonics assumption
+N = 2^8; % number of time points per force cycle
+Nx = 4; % number of contact points, means having 4 * 3 = 12 dofs
+Na = 5; % number of CB modes
+xi = 1e-6; 
 
 
 
@@ -50,8 +50,6 @@ xn0 = 0;
 mu = [0.1;0.1];
 kt = [1e6;1e6];
 
-% w = [-0.803227302337595;-1.06547598368370]; % the middle point of omega 1.2
-
 
 %% preload initial contition for Newton method
 
@@ -60,33 +58,15 @@ xp0 = 0; % if no value defined here, the default value inside is 0
 
 %% continuation parameters
 
+
 ds = 0.5;
-% maxstep = 20;
-% omega_0 = 4920.0;
-% omega_end = 5050.0;
-
-% omega_0 = 3940.0;
-% omega_end = 4020.0;
-
-% omega_0 = 3861.0; % linear only
-% omega_end = 4064.0;
-
-% ds = 0.5;
 maxstep = 20000;
-omega_0 = 0.81; % friction
+omega_0 = 0.81; % 
 omega_end = 0.85;
 % omega_0 = 4115;
 % omega_end = 4318;
 
 
-% omega_0 = 0.95; % cubic
-% omega_end = 1.0;
-% omega_0 = 4826;
-% omega_end = 5080;
-
-
-% omega_0 = 0.95;
-% omega_end = 1.0;
 
 
 x0 = 0;
