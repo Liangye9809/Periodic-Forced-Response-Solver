@@ -33,7 +33,7 @@
 \float_placement class
 \float_alignment class
 \paperfontsize default
-\spacing single
+\spacing onehalf
 \use_hyperref false
 \papersize a4
 \use_geometry true
@@ -64,7 +64,7 @@
 \color #008000
 \end_index
 \leftmargin 2cm
-\topmargin 3cm
+\topmargin 2cm
 \rightmargin 2cm
 \bottommargin 3cm
 \secnumdepth 3
@@ -72,7 +72,7 @@
 \paragraph_separation indent
 \paragraph_indentation 2em
 \is_math_indent 0
-\math_numbering_side default
+\math_numbering_side right
 \quotes_style english
 \dynamic_quotes 0
 \papercolumns 1
@@ -93,7 +93,640 @@
 \begin_body
 
 \begin_layout Standard
-Each model to be analyzed has its own folder,
+This bunch of codes solve the following modal equation of the system with continuation method under Harmonic Balance Method (HBM) assumption:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(\begin{array}{cc}
+M_{ee} & M_{ec}\\
+M_{ce} & M_{cc}
+\end{array}\right)\left(\begin{array}{c}
+\ddot{e}\\
+\ddot{x}_{c}
+\end{array}\right)+\xi\left(\begin{array}{cc}
+K_{ee} & K_{ec}\\
+K_{ce} & K_{cc}
+\end{array}\right)\left(\begin{array}{c}
+\dot{e}\\
+\dot{x}_{c}
+\end{array}\right)+\left(\begin{array}{cc}
+K_{ee} & K_{ec}\\
+K_{ce} & K_{cc}
+\end{array}\right)\left(\begin{array}{c}
+e\\
+x_{c}
+\end{array}\right)+\left(\begin{array}{c}
+0\\
+g(x_{c})
+\end{array}\right)=\left(\begin{array}{c}
+F_{e}\\
+F_{c}
+\end{array}\right)\cdot f(t)+\left(\begin{array}{c}
+P_{e}\\
+P_{c}
+\end{array}\right)\label{eq:motion}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where:
+ 
+\begin_inset Formula $e$
+\end_inset
+
+ are displacements of elastic part,
+ 
+\begin_inset Formula $x_{c}$
+\end_inset
+
+ are the displacements of contact part,
+ 
+\begin_inset Formula $M$
+\end_inset
+
+ and 
+\begin_inset Formula $K$
+\end_inset
+
+ are the mass and stiffness matrices from Finite Element Method (FEM),
+ 
+\begin_inset Formula $g(x_{c})$
+\end_inset
+
+ are the Coulomb friction forces acting only on contact part,
+ 
+\begin_inset Formula $F_{e}$
+\end_inset
+
+ and 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ are the amplitudes coefficients of external harmonic forces acting on elastic and contact part,
+ 
+\begin_inset Formula $P_{e}$
+\end_inset
+
+ and 
+\begin_inset Formula $P_{c}$
+\end_inset
+
+ are the preload forces acting on elastic and contact part.
+ The equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:motion"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+ should be modified before solving it.
+\end_layout
+
+\begin_layout Standard
+First,
+ calculate the elastic preload displacement 
+\begin_inset Formula $x_{e}^{0}$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(\begin{array}{cc}
+K_{ee} & K_{ec}\\
+K_{ce} & K_{cc}
+\end{array}\right)\left(\begin{array}{c}
+x_{e}^{0}\\
+0
+\end{array}\right)=\left(\begin{array}{c}
+F_{e}\\
+F_{c}
+\end{array}\right)+\left(\begin{array}{c}
+0\\
+R
+\end{array}\right)\label{eq:elastic preload}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $R$
+\end_inset
+
+ is the reactions at the contacts.
+ 
+\end_layout
+
+\begin_layout Standard
+So the elastic displacement 
+\begin_inset Formula $x_{e}$
+\end_inset
+
+ based on 
+\begin_inset Formula $x_{e}^{0}$
+\end_inset
+
+ can be written as:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left\{ \begin{array}{l}
+x_{e}=e-x_{e}^{0}\\
+\dot{x}_{e}=\dot{e}\\
+\ddot{x}_{e}=\ddot{e}
+\end{array}\right.\label{eq:elastic placement}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+substitute equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:elastic placement"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+ to 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:motion"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+,
+ we get:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(\begin{array}{cc}
+M_{ee} & M_{ec}\\
+M_{ce} & M_{cc}
+\end{array}\right)\left(\begin{array}{c}
+\ddot{x}_{e}\\
+\ddot{x}_{c}
+\end{array}\right)+\xi\left(\begin{array}{cc}
+K_{ee} & K_{ec}\\
+K_{ce} & K_{cc}
+\end{array}\right)\left(\begin{array}{c}
+\dot{x}_{e}\\
+\dot{x}_{c}
+\end{array}\right)+\left(\begin{array}{cc}
+K_{ee} & K_{ec}\\
+K_{ce} & K_{cc}
+\end{array}\right)\left(\begin{array}{c}
+x_{e}\\
+x_{c}
+\end{array}\right)+\left(\begin{array}{c}
+0\\
+g(x_{c})
+\end{array}\right)=\left(\begin{array}{c}
+F_{e}\\
+F_{c}
+\end{array}\right)\cdot f(t)+\left(\begin{array}{c}
+0\\
+-R
+\end{array}\right)\label{eq:before CB}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Second,
+ do the Criag-Bampton Reduction to the equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:before CB"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+ above,
+ apply:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(\begin{array}{c}
+x_{e}\\
+x_{c}
+\end{array}\right)=\left(\begin{array}{cc}
+\Phi & \Psi\\
+0 & \mathbf{I}
+\end{array}\right)\left(\begin{array}{c}
+a\\
+x_{c}
+\end{array}\right)=T_{cb}\left(\begin{array}{c}
+a\\
+x_{c}
+\end{array}\right)\label{eq:CB matrix}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+to equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:before CB"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+,
+ where 
+\begin_inset Formula $\Psi$
+\end_inset
+
+ is constrained modes,
+ 
+\begin_inset Formula $\Phi$
+\end_inset
+
+is full-stuck elastic modes,
+ we get:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(\begin{array}{cc}
+\mathbf{I} & M_{ax}\\
+M_{xa} & M_{xx}
+\end{array}\right)\left(\begin{array}{c}
+\ddot{a}\\
+\ddot{x}_{c}
+\end{array}\right)+\xi\left(\begin{array}{cc}
+K_{aa} & 0\\
+0 & K_{xx}
+\end{array}\right)\left(\begin{array}{c}
+\dot{a}\\
+\dot{x}_{c}
+\end{array}\right)+\left(\begin{array}{cc}
+K_{aa} & 0\\
+0 & K_{xx}
+\end{array}\right)\left(\begin{array}{c}
+a\\
+x_{c}
+\end{array}\right)+\left(\begin{array}{c}
+0\\
+g(x_{c})
+\end{array}\right)=\left(\begin{array}{c}
+F_{a}\\
+F_{x}
+\end{array}\right)\cdot f(t)+\left(\begin{array}{c}
+0\\
+-R
+\end{array}\right)\label{eq:after CB}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Third,
+ calculate the contact preload displacement 
+\begin_inset Formula $x_{p}$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(\begin{array}{cc}
+K_{aa} & 0\\
+0 & K_{xx}
+\end{array}\right)\left(\begin{array}{c}
+a\\
+x_{p}
+\end{array}\right)+\left(\begin{array}{c}
+0\\
+g(x_{p})
+\end{array}\right)=\left(\begin{array}{c}
+0\\
+-R
+\end{array}\right)\label{eq:xp calculation}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+So the contact displacement 
+\begin_inset Formula $x$
+\end_inset
+
+ based on 
+\begin_inset Formula $x_{p}$
+\end_inset
+
+ is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left\{ \begin{array}{l}
+x=x_{c}-x_{p}\\
+\dot{x}=\dot{x_{c}}\\
+\ddot{x}=\ddot{x_{c}}
+\end{array}\right.\label{eq:contact placement}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+substitute equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:contact placement"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+ to 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:after CB"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+,
+ we get the final form of the modal equation to be solved:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(\begin{array}{cc}
+\mathbf{I} & M_{ax}\\
+M_{xa} & M_{xx}
+\end{array}\right)\left(\begin{array}{c}
+\ddot{a}\\
+\ddot{x}
+\end{array}\right)+\xi\left(\begin{array}{cc}
+K_{aa} & 0\\
+0 & K_{xx}
+\end{array}\right)\left(\begin{array}{c}
+\dot{a}\\
+\dot{x}
+\end{array}\right)+\left(\begin{array}{cc}
+K_{aa} & 0\\
+0 & K_{xx}
+\end{array}\right)\left(\begin{array}{c}
+a\\
+x
+\end{array}\right)+\left(\begin{array}{c}
+0\\
+g(x+x_{p})-g(x_{p})
+\end{array}\right)=\left(\begin{array}{c}
+F_{a}\\
+F_{x}
+\end{array}\right)\cdot f(t)\label{eq:final modal equation}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Fourth,
+ apply the Fourier Transformation to CB modes 
+\begin_inset Formula $a$
+\end_inset
+
+,
+ contact displacement 
+\begin_inset Formula $x$
+\end_inset
+
+ and friction forces 
+\begin_inset Formula $g(x+x_{p})-g(x_{p})$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left\{ \begin{array}{c}
+a(t)=\frac{A_{c}^{0}}{2}+\sum\limits_{k=1}^{\infty}A_{c}^{k}\cdot\cos(k\Omega t)+A_{s}^{k}\cdot\sin(k\Omega t)\\
+x(t)=\frac{X_{c}^{0}}{2}+\sum\limits_{k=1}^{\infty}X_{c}^{k}\cdot\cos(k\Omega t)+X_{s}^{k}\cdot\sin(k\Omega t)\\
+g(x(t)+x_{p})-g(x_{p})=\frac{G_{c}^{0}}{2}+\sum\limits_{k=1}^{\infty}G_{c}^{k}\cdot\cos(k\Omega t)+G_{s}^{k}\cdot\sin(k\Omega t)
+\end{array}\right.\label{eq:Harmonic assumption}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+External forces are assumed harmonic forces,
+ so we can define the Fourier coefficients directly.
+ Substitute 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Harmonic assumption"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+ to equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:final modal equation"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+,
+ we can get following functions,
+ equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:continuation func"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+-
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:continuation JOmega"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+,
+ for continuation method:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+FUN(X)=\left(\begin{array}{cccc}
+K_{aa}-k^{2}\Omega^{2}\mathrm{I} & k\Omega\xi K_{aa} & -k^{2}\Omega^{2}M_{ax} & 0\\
+-k\Omega\xi K_{aa} & K_{aa}-k^{2}\Omega^{2}\mathrm{I} & 0 & -k^{2}\Omega^{2}M_{ax}\\
+-k^{2}\Omega^{2}M_{xa} & 0 & K_{xx}-k^{2}\Omega^{2}M_{xx} & k\Omega\xi K_{xx}\\
+0 & -k^{2}\Omega^{2}M_{xa} & -k\Omega\xi K_{xx} & K_{xx}-k^{2}\Omega^{2}M_{xx}
+\end{array}\right)\left(\begin{array}{c}
+A_{c}^{k}\\
+A_{s}^{k}\\
+X_{c}^{k}\\
+X_{s}^{k}
+\end{array}\right)+\left(\begin{array}{c}
+0\\
+0\\
+G_{c}^{k}\\
+G_{s}^{k}
+\end{array}\right)-\left(\begin{array}{c}
+F_{ac}^{k}\\
+F_{as}^{k}\\
+F_{xc}^{k}\\
+F_{xs}^{k}
+\end{array}\right)\label{eq:continuation func}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $X$
+\end_inset
+
+ in 
+\begin_inset Formula $FUN(X)$
+\end_inset
+
+ are the Fourier coefficients which are 
+\begin_inset Formula $A_{c}^{k},A_{s}^{k},X_{c}^{k},X_{s}^{k}$
+\end_inset
+
+ .
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial FUN(X)}{\partial X}=\left(\begin{array}{cccc}
+K_{aa}-k^{2}\Omega^{2}\mathrm{I} & k\Omega\xi K_{aa} & -k^{2}\Omega^{2}M_{ax} & 0\\
+-k\Omega\xi K_{aa} & K_{aa}-k^{2}\Omega^{2}\mathrm{I} & 0 & -k^{2}\Omega^{2}M_{ax}\\
+-k^{2}\Omega^{2}M_{xa} & 0 & K_{xx}-k^{2}\Omega^{2}M_{xx} & k\Omega\xi K_{xx}\\
+0 & -k^{2}\Omega^{2}M_{xa} & -k\Omega\xi K_{xx} & K_{xx}-k^{2}\Omega^{2}M_{xx}
+\end{array}\right)+\left(\begin{array}{cc}
+\mathbf{0} & \mathbf{0}\\
+\mathbf{0} & \frac{\partial G}{\partial X}
+\end{array}\right)\label{eq:continuation Jacobian}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial FUN(X)}{\partial\Omega}=\left(\begin{array}{cccc}
+-2k^{2}\Omega\mathrm{I} & k\xi K_{aa} & -2k^{2}\Omega M_{ax} & 0\\
+-k\xi K_{aa} & -2k^{2}\Omega\mathrm{I} & 0 & -2k^{2}\Omega M_{ax}\\
+-2k^{2}\Omega M_{xa} & 0 & -2k^{2}\Omega M_{xx} & k\xi K_{xx}\\
+0 & -2k^{2}\Omega M_{xa} & -k\xi K_{xx} & -2k^{2}\Omega M_{xx}
+\end{array}\right)\left(\begin{array}{c}
+A_{c}^{k}\\
+A_{s}^{k}\\
+X_{c}^{k}\\
+X_{s}^{k}
+\end{array}\right)\label{eq:continuation JOmega}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+So the codes are basically to implement above equations.
+ In code structure,
+ each model to be analyzed has its own folder,
  such as 
 \begin_inset Quotes eld
 \end_inset
@@ -114,7 +747,7 @@ dof5_model
  Inside the model's folder,
  there is a main.m file to call every other functions,
  the structure of the codes is showed in Figure 1.
- To finish the forced response analysis using continuation method under Harmonic Balance Method (HBM) assumption,
+ To run the code successfully,
  we need to add 
 \begin_inset Quotes eld
 \end_inset
@@ -128,7 +761,7 @@ HBM Continuation Code mex
 
 \begin_layout Standard
 \begin_inset Float figure
-placement document
+placement h
 alignment document
 wide false
 sideways false
@@ -165,29 +798,757 @@ Structure of the codes
 \begin_layout Standard
 In main.m file,
  there are 5 main parts.
- In each part,
- we can see the details inside files.
+ 
 \end_layout
 
 \begin_layout Standard
 First,
  the data.m file which in the same folder with main.m,
  we finish parameters setting.
- Include getting Finite Element Method (FEM) matrices,
- setting harmonics of external forces,
- HBM parameters,
- Newton Method parameters,
- Coulomb friction parameters and continuation parameters.
+ Including:
+\end_layout
+
+\begin_layout Itemize
+FEM matrices and vectors:
  
+\begin_inset Formula $M$
+\end_inset
+
+ and 
+\begin_inset Formula $K$
+\end_inset
+
+ matrices,
+ 
+\begin_inset Formula $F$
+\end_inset
+
+ and 
+\begin_inset Formula $P$
+\end_inset
+
+ vectors from the equation
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:motion"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+.
+ We can write them directly inside the data.m file or read them from other file like csv file.
+ Finally the 
+\begin_inset Formula $M$
+\end_inset
+
+,
+ 
+\begin_inset Formula $K$
+\end_inset
+
+,
+ 
+\begin_inset Formula $F$
+\end_inset
+
+ and 
+\begin_inset Formula $P$
+\end_inset
+
+ should be stored in the form of Matlab struct named as FEM in Workspace.
+ Because 
+\begin_inset Formula $M_{ec}=M_{ce}^{\mathrm{T}}$
+\end_inset
+
+,
+ 
+\begin_inset Formula $K_{ec}=K_{ce}^{\mathrm{T}}$
+\end_inset
+
+,
+ we only keep 
+\begin_inset Formula $M_{ec}$
+\end_inset
+
+ and 
+\begin_inset Formula $K_{ec}$
+\end_inset
+
+ to save the memory.
+ They can be accessed like 
+\begin_inset Formula $FEM.Mee$
+\end_inset
+
+,
+ 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\nospellcheck off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $FEM.Mec$
+\end_inset
+
+,
+ 
+\begin_inset Formula $FEM.Mcc$
+\end_inset
+
+,
+ 
+\begin_inset Formula $FEM.Kee$
+\end_inset
+
+,
+ 
+\begin_inset Formula $FEM.Kec$
+\end_inset
+
+,
+ 
+\begin_inset Formula $FEM.Kcc$
+\end_inset
+
+,
+ 
+\begin_inset Formula $FEM.Fe$
+\end_inset
+
+,
+ 
+\begin_inset Formula $FEM.Fc$
+\end_inset
+
+,
+ 
+\begin_inset Formula $FEM.Pe$
+\end_inset
+
+,
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\nospellcheck default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+
+\begin_inset Formula $FEM.Pc$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Harmonics of external forces:
+ named as 
+\begin_inset Formula $H\_F\_ext$
+\end_inset
+
+ in Matlab Workspace.
+ The elements inside the vector in the order of Fourier coefficient 
+\begin_inset Formula $H\_F\_ext$
+\end_inset
+
+ = 
+\begin_inset Formula $[a_{0},a_{1},b_{1},a_{2},b_{2},...,a_{n},b_{n}]$
+\end_inset
+
+.
+ For example,
+ if the external forces 
+\begin_inset Formula $f(t)=\cos(\Omega t)+\sin(2\Omega t)$
+\end_inset
+
+,
+ then 
+\begin_inset Formula $H\_F\_ext$
+\end_inset
+
+= 
+\begin_inset Formula $[0,1,0,0,1]$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+HBM parameters:
+ 
+\begin_inset Formula $H$
+\end_inset
+
+,
+ number of harmonics assumption,
+ 
+\begin_inset Formula $H=k$
+\end_inset
+
+ in equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Harmonic assumption"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+,
+ should be bigger than 
+\begin_inset Formula $H\_F\_ext$
+\end_inset
+
+;
+ 
+\begin_inset Formula $N$
+\end_inset
+
+,
+ discretized time points per external forces cycle,
+ 
+\begin_inset Formula $t=\left[0,N-1\right]\cdot\frac{2\pi}{k\Omega}$
+\end_inset
+
+ in equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Harmonic assumption"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+;
+ 
+\begin_inset Formula $Nx$
+\end_inset
+
+,
+ number of contact points,
+ means having 
+\begin_inset Formula $3Nx$
+\end_inset
+
+ dofs (unknows) in contact part;
+ 
+\begin_inset Formula $Na$
+\end_inset
+
+,
+ number of CB modes;
+ 
+\begin_inset Formula $xi$
+\end_inset
+
+ is 
+\begin_inset Formula $\xi$
+\end_inset
+
+ in modal equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:motion"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Newton Method parameters:
+ 
+\begin_inset Formula $epsx$
+\end_inset
+
+ and 
+\begin_inset Formula $epsy$
+\end_inset
+
+ are the tolerances of independent variables 
+\begin_inset Formula $x$
+\end_inset
+
+ and dependent variables
+\begin_inset Formula $y$
+\end_inset
+
+ in Newton iteration ,
+ 
+\begin_inset Formula $maxiter$
+\end_inset
+
+ is the maximum iterations in continuation method and preload calculation.
+\end_layout
+
+\begin_layout Itemize
+Coulomb friction parameters:
+ 
+\begin_inset Formula $kn$
+\end_inset
+
+,
+ stiffness in normal direction of each contact point;
+ 
+\begin_inset Formula $xn0$
+\end_inset
+
+,
+ normal direction gaps of each contact point;
+ 
+\begin_inset Formula $mu$
+\end_inset
+
+,
+ friction factor in two tangential directions of each contact point;
+ 
+\begin_inset Formula $kt$
+\end_inset
+
+,
+ stiffness in two tangential directions before sliding of each contact point.
+ 
+\begin_inset Formula $kn$
+\end_inset
+
+ and 
+\begin_inset Formula $xn0$
+\end_inset
+
+ have the size of 
+\begin_inset Formula $1\times Nx$
+\end_inset
+
+ (row vector) or 
+\begin_inset Formula $1\times1$
+\end_inset
+
+ (scale),
+ we can define the different parameters for each contact point in row vector,
+ or keep the same values for each contact point in scale type.
+ 
+\begin_inset Formula $mu$
+\end_inset
+
+ and 
+\begin_inset Formula $kt$
+\end_inset
+
+ have the size of 
+\begin_inset Formula $2\times Nx$
+\end_inset
+
+ (matrix) or 
+\begin_inset Formula $2\times1$
+\end_inset
+
+ (column vector),
+ the first row are the parameters of first tangential direction,
+ the second row are for the second direction.
+\end_layout
+
+\begin_layout Itemize
+Preload initial condition for Newton method:
+ 
+\begin_inset Formula $xp0$
+\end_inset
+
+ for contact preload calculation in equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:xp calculation"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+,
+ which solved by Newton iteration.
+ It's an optional setting,
+ if no value defined,
+ the default value inside is 0.
+\end_layout
+
+\begin_layout Itemize
+Continuation parameters:
+ 
+\begin_inset Formula $ds$
+\end_inset
+
+,
+ step length to the next continuation step,
+ sometimes need to set smaller if calculation diverge.
+ 
+\begin_inset Formula $maxstep$
+\end_inset
+
+,
+ maximum steps of continuation;
+ 
+\begin_inset Formula $omega\_0$
+\end_inset
+
+ and 
+\begin_inset Formula $omega\_end$
+\end_inset
+
+ are the beginning and the final 
+\begin_inset Formula $\Omega$
+\end_inset
+
+ of the continuation calculation;
+ 
+\begin_inset Formula $x0$
+\end_inset
+
+,
+ initial value of the 
+\begin_inset Formula $X$
+\end_inset
+
+ in 
+\begin_inset Formula $FUN(X)$
+\end_inset
+
+ of the equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:continuation func"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+,
+ is an optional setting.
+ Default value of 
+\begin_inset Formula $x0$
+\end_inset
+
+ is 
+\begin_inset Formula $0$
+\end_inset
+
+ column vector,
+ in the size of 
+\begin_inset Formula $(Na+3Nx)\times(2H+1)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+All the variables in data.m file described above should be stored in Matlab Workspace.
 \end_layout
 
 \begin_layout Standard
 Second,
  Criag-Bampton (CB) reduction from FEM matrices.
- We can call the CriagBamptonReduction.m to finish the CB reduction.
- Or we also can directly read the CB matrices from CSV file or other file if we already have the CB matrices.
+ We can call the CriagBamptonReduction.m to get the 
+\begin_inset Formula $M,K$
+\end_inset
+
+ matrices and 
+\begin_inset Formula $F$
+\end_inset
+
+ vectors in equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:after CB"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+.
+ To finish the CB reduction,
+ we need the 
+\begin_inset Formula $FEM$
+\end_inset
+
+ struct in the Matlab Workspace stored in data.m before.
+ If run the CriagBamptonReduction.m successfully,
+ we can get 
+\begin_inset Formula $CB$
+\end_inset
+
+ struct,
+ 
+\begin_inset Formula $xe0$
+\end_inset
+
+ and 
+\begin_inset Formula $Rx$
+\end_inset
+
+ vectors stored in Matlab Workspace and also at the same time saved in Current Folder in Matlab as 
+\begin_inset Quotes eld
+\end_inset
+
+.mat
+\begin_inset Quotes erd
+\end_inset
+
+ form so that can be used in next calculation.
+ Which 
+\begin_inset Formula $xe0$
+\end_inset
+
+ is a column vector with the size of degree of freedoms (dofs) of elastic part,
+ 
+\begin_inset Formula $Rx$
+\end_inset
+
+ is a column vector with the size of 
+\begin_inset Formula $3Nx$
+\end_inset
+
+,
+ 
+\begin_inset Formula $CB$
+\end_inset
+
+ struct is illustrated in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:CB struct"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+CB.\left\{ \begin{array}{rc}
+CBmodes. & \left\{ \begin{array}{c}
+Phi\\
+Psi\\
+K_{aa}
+\end{array}\right.\\
+CB\_MK. & \left\{ \begin{array}{c}
+M_{ax}\\
+M_{xx}\\
+K_{xx}\\
+K_{aa}
+\end{array}\right.\\
+CB\_F. & \left\{ \begin{array}{c}
+Fa\\
+Fx
+\end{array}\right.
+\end{array}\right.\label{eq:CB struct}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Inside CriagBamptonReduction.m,
+ there are three parts:
+\end_layout
+
+\begin_layout Itemize
+CBmodes function:
+ calculate the full-stuck elastic modes and constrain modes of the equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:motion"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+,
+ full-stuck elastic modes 
+\begin_inset Formula $\Phi$
+\end_inset
+
+ are calculated by eigenvalue problem in equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:full-stuck elastic modes Phi"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+,
+ which only keeps the modes of the number 
+\begin_inset Formula $Na$
+\end_inset
+
+ defined in data.m,
+ and constrained modes 
+\begin_inset Formula $\Psi$
+\end_inset
+
+ are calculated by static equilibrium equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:constrained modes Psi"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+(-\omega^{2}M_{ee}+K_{ee})\Phi=0\label{eq:full-stuck elastic modes Phi}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left.\begin{array}{l}
+K_{ee}e+K_{ec}x_{c}=0\\
+e=-K_{ee}\backslash K_{ec}x_{c}=\Psi x_{c}
+\end{array}\right.\label{eq:constrained modes Psi}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+cb_reduction_MK function:
+ make the Braig-Bampton reduction of M and K matrices in the equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:motion"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+ using the transformation matrix 
+\begin_inset Formula $T_{CB}$
+\end_inset
+
+ in equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:CB matrix"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+,
+ which:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left.\begin{array}{l}
+M_{ax}=M_{xa}^{\mathrm{T}}=\Phi^{\mathrm{T}}M_{ee}\Psi+\Phi^{\mathrm{T}}M_{ec}\\
+M_{xx}=\Psi^{\mathrm{T}}M_{ee}\Psi+\Psi^{\mathrm{T}}M_{ec}+M_{ce}\Psi+M_{cc}\\
+K_{xx}=K_{cc}-\Psi^{\mathrm{T}}K_{ee}\Psi\\
+K_{aa}=\mathrm{diag}(\omega_{j}^{2})
+\end{array}\right.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+cb_reduction_vector function:
+ make the Briag-Bampton reduction of column vector F in the equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:motion"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+,
+ which:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left.\begin{array}{l}
+F_{a}=\Phi^{\mathrm{T}}F_{e}\\
+F_{x}=\Psi^{\mathrm{T}}F_{e}+F_{c}
+\end{array}\right.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If CB matrices are already calculated,
+ we can directly read them from Current Folder or other file.
  In this case,
- FEM matrices are not needed in the first part.
+ FEM matrices are not needed in previous processes.
 \end_layout
 
 \begin_layout Standard
@@ -195,20 +1556,198 @@ Third,
  Nondimensionalization.
  We can define the different dimensionless parameters to different model,
  so this file stays together with main.m file.
+ If previous processes implement successfully,
+ we have 
+\begin_inset Formula $CB$
+\end_inset
+
+ struct (illustrated in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:CB struct"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+) ,
  
+\begin_inset Formula $R$
+\end_inset
+
+,
+ 
+\begin_inset Formula $kn$
+\end_inset
+
+,
+ 
+\begin_inset Formula $kt$
+\end_inset
+
+ and 
+\begin_inset Formula $xi$
+\end_inset
+
+ in Workspace of Matlab,
+ and can directly run Nondimensionalization to make the nondimensionalization of equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:final modal equation"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+ using the following changes:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left.\begin{array}{c}
+t\rightarrow\frac{1}{\omega_{0}}t\\
+a\rightarrow\alpha a\\
+x\rightarrow\beta x
+\end{array}\right.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $\omega_{0}$
+\end_inset
+
+ is selected to match that of the resonance of interest,
+ 
+\begin_inset Formula $\alpha=Fa/\omega_{0}^{2}$
+\end_inset
+
+,
+ 
+\begin_inset Formula $\beta=\mu\max(|R|)/k_{t}$
+\end_inset
+
+,
+ then we change the equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:after CB"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+ to equation :
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left.\begin{array}{c}
+\left(\begin{array}{cc}
+\mathbf{I} & \frac{\beta}{\alpha}M_{ax}\\
+\frac{\beta}{\alpha}M_{xa} & \frac{\beta^{2}}{\alpha^{2}}M_{xx}
+\end{array}\right)\left(\begin{array}{c}
+\ddot{a}\\
+\ddot{x}
+\end{array}\right)+(\xi\omega_{0})\xi\left(\begin{array}{cc}
+\frac{1}{\omega_{0}^{2}}K_{aa} & 0\\
+0 & \frac{\beta^{2}}{\alpha²\omega_{0}^{2}}K_{xx}
+\end{array}\right)\left(\begin{array}{c}
+\dot{a}\\
+\dot{x}
+\end{array}\right)\\
++\left(\begin{array}{cc}
+\frac{1}{\omega_{0}^{2}}K_{aa} & 0\\
+0 & \frac{\beta^{2}}{\alpha²\omega_{0}^{2}}K_{xx}
+\end{array}\right)\left(\begin{array}{c}
+a\\
+x
+\end{array}\right)+\frac{\beta^{2}}{\alpha²\omega_{0}^{2}}\left(\begin{array}{c}
+0\\
+g(x+x_{p})-g(x_{p})
+\end{array}\right)=\left(\begin{array}{c}
+\frac{1}{\alpha\omega_{0}²}F_{a}\\
+\frac{\beta}{\alpha²\omega_{0}^{2}}F_{x}
+\end{array}\right)\cdot f(t)
+\end{array}\right.
+\end{equation}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 Fourth,
  continuation calculation part,
- after all the parameters setting.
- We can do the calculation and get the x_cont and omega_cont frequency domain results for post processing in the fifth part.
+ after all the parameters setting,
+ we have all we need in Workspace of Matlab.
+ So we can do the calculation and get the 
+\begin_inset Formula $x\_cont$
+\end_inset
+
+ and 
+\begin_inset Formula $omega\_cont$
+\end_inset
+
+ frequency domain results in Workspace for post processing in the fifth part,
+ where 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\nospellcheck off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $x\_cont$
+\end_inset
+
+ is a matrix with row size 
+\begin_inset Formula $(2H+1)\cdot(Na+3Nx)$
+\end_inset
+
+ in the order of dofs,
+ each column stores the the Fourier coefficients results under different frequency of external forces;
+ 
+\begin_inset Formula $omega\_cont$
+\end_inset
+
+ is a row vector stores accordingly the frequency of external forces of each continuation step.
 \end_layout
 
 \begin_layout Standard
 Fifth,
  in the HBM post processing,
- we do the ifft to get the result in time domain to make the analysis.
+ we do the ifft to convert the result in time domain to make the analysis.
+ In the file HBMPostProcessing.m,
+ we can define which DOF to plot by setting the variable 
+\begin_inset Formula $Ndof$
+\end_inset
+
+ to plot the amplitude over each 
+\begin_inset Formula $\Omega$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -223,7 +1762,7 @@ HBM Continuation Code mex
 \end_inset
 
 ,
- which using g_mex function to calculate the friction forces coding in C++ and compile by matlab.
+ which using g_mex function to calculate the friction forces coded in C++ and compiled by matlab.
  
 \end_layout
 
@@ -237,7 +1776,7 @@ HBM Continuation Code Matlab
 \begin_inset Quotes erd
 \end_inset
 
- has the g function coding in 100% matlab language which we can see the calculation logic.
+ has the g function coded in 100% matlab language which we can see the calculation logic.
  But it's much slower than using g_mex.
  
 \end_layout
@@ -246,7 +1785,7 @@ HBM Continuation Code Matlab
 We can create a now folder for the now model each time,
  then copy the main.m,
  data.m,
- Nondimensionalization.m and HBMPostProcessing.m as templates pasting to the folder and modifying.
+ Nondimensionalization.m and HBMPostProcessing.m as templates that paste them to the folder and modifying.
 \end_layout
 
 \end_body

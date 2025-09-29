@@ -54,6 +54,9 @@ params.func.fc.w = Coulombstructfc.w;
 [xp, gxp, w] = Preloadxp(Rx, params); % preload displacement and preload forces in contact part
 params.func.fc.w = w; % update w
 params.func.static.preload = struct('xe0', xe0, 'Rx', Rx, 'xp', xp, 'gxp', gxp);
+if ~exist('x0', 'var')
+    x0 = zeros((Na + 3 * Nx)*(2 * H + 1), 1);
+end
 if size(x0,1) == 1
     x0 = x0 * ones((Na + 3 * Nx)*(2 * H + 1), 1);
 end

@@ -51,7 +51,7 @@ mu = [0.1;0.1];
 kt = [1e6;1e6];
 
 
-%% preload initial contition for Newton method
+%% preload initial condition for Newton method
 
 xp0 = 0; % if no value defined here, the default value inside is 0
 
@@ -69,7 +69,7 @@ omega_end = 0.85;
 
 
 
-x0 = 0;
+% x0 = 0;
 
 % tx0 = 0; % always 0 when calculating the first point so default inside the code
 % tomega0 = 1; % is defined by lambda0 and lambda_end
