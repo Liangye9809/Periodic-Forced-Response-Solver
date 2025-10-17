@@ -1,0 +1,72 @@
+function RenumberMesh(input_file, output_file, FirstSectionHeader, offset)
+% File paths
+% input_file = 'model.inp';
+% output_file = 'model_shifted.inp';
+
+% Offset value
+% offset = 1e6;
+
+% Read the file
+fid = fopen(input_file, 'r');
+lines = textscan(fid, '%s', 'Delimiter', '\n', 'Whitespace', '');
+fclose(fid);
+lines = lines{1};
+
+% Prepare output cell array
+out_lines = cell(size(lines));
+
+% Flags to know which section we are in
+in_node = false;
+in_element = false;
+
+for i = 1:length(lines)
+    line = strtrim(lines{i});
+
+    % Detect section headers
+    if startsWith(line, '*NODE', 'IgnoreCase', true)
+        in_node = true;
+        in_element = false;
+        out_lines{i} = line;
+        continue;
+    elseif startsWith(line, '*ELEMENT', 'IgnoreCase', true)
+        in_node = false;
+        in_element = true;
+        out_lines{i} = line;
+        continue;
+    elseif startsWith(line, '*') % Other headers
+        in_node = false;
+        in_element = false;
+        out_lines{i} = line;
+        continue;
+    end
+
+    % Process node lines
+    if in_node && ~isempty(line)
+        nums = sscanf(line, '%f,');
+        nums(1) = nums(1) + offset; % only change node index
+        out_lines{i} = sprintf('%d, %.10e, %.10e, %.10e', nums);
+        continue;
+    end
+
+    % Process element lines
+    if in_element && ~isempty(line)
+        nums = sscanf(line, '%f,');
+        nums = nums + offset; % add offset to all numbers (element ID and node indices)
+        out_lines{i} = sprintf('%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d,', nums);
+        continue;
+    end
+
+    % Other lines (like *NSET)
+    out_lines{i} = lines{i};
+end
+
+% Write the modified file
+fid = fopen(output_file, 'w');
+for i = 1:length(out_lines)
+    fprintf(fid, '%s\n', out_lines{i});
+end
+fclose(fid);
+
+disp('✅ Done! New file saved as model_shifted.inp');
+
+end

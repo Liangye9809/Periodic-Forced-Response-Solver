@@ -1,6 +1,6 @@
 clear
 %Build mass matrix (rotor without cyclic matrices)
-Mij=load('Blade1Anlysis.mas');
+Mij=load('Blade2Anlysis.mas');
 index=Mij(:,1)~=Mij(:,2);
 ii=[Mij(:,1);Mij(index,2)]; %symmetric part
 jj=[Mij(:,2);Mij(index,1)];
@@ -8,7 +8,7 @@ ss=[Mij(:,3);Mij(index,3)];
 clear Mij;
 M=sparse(ii,jj,ss);
 %Build stiffness matrix (rotor without cyclic matrices)
-Kij=load('Blade1Anlysis.sti');
+Kij=load('Blade2Anlysis.sti');
 index=Kij(:,1)~=Kij(:,2);
 ii=[Kij(:,1);Kij(index,2)];
 jj=[Kij(:,2);Kij(index,1)];

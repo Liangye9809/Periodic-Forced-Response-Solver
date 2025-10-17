@@ -2,7 +2,7 @@
 Model: Blade1
 
 
-*INCLUDE,INPUT=BladeMesh_1.inp
+*INCLUDE,INPUT=BladeMesh_1_shifted.inp
 
 *MATERIAL,NAME=MAT1
 *ELASTIC
@@ -16,8 +16,8 @@ Model: Blade1
 
 
 
-** *BOUNDARY 
-** boundary, 1, 3
+*BOUNDARY 
+Boundary_1, 1, 3
 
 ** *STEP
 ** *FREQUENCY,SOLVER=MATRIXSTORAGE
