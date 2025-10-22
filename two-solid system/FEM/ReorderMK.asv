@@ -26,7 +26,7 @@ function [M, K] = ReorderMK(M_file_1, M_file_2, K_file_1, K_file_2, ...
 if(size(CP_1) ~= size(CP_2))
     error('the number of contact points in two surfaces are not match');
 end
-Nc = size(CP_1, 1); % number of contacts
+Nc = size(CP_1, 1);
 
 %% Build mass and stiffness matrices
 
@@ -101,20 +101,18 @@ end
 
 % check the contact dof
 if length(idx_back) ~= 3 * 2 * Nc
-    error('the contacts dofs in two surfaces are fewer than (3 * 2 * Nc)');
 end
-
 new_order = [idx_front; idx_back];
 
 
 % permute the dof and M and K matrices
-% dof = dof(new_order);
+dof = dof(new_order);
 M = M(new_order, new_order);
 K = K(new_order, new_order);
 
 % check the M and K are symmetric still
 if issymmetric(M) && issymmetric(K)
-    disp('contact nodes put the end of dof in [CP_1; CP_2] order');
+    disp('contact nodes put the end of dof in CP order');
 else
     error('after permutation - put the contact dofs to the end, M or K loss the symmetricity');
 end
@@ -309,6 +307,14 @@ else
     error('after transformation - change contact basis to tangential and normal, M or K loss the symmetricity');
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+
+
 
 
 

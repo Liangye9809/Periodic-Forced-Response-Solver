@@ -53,6 +53,6 @@ for i = 1:length(out_lines)
 end
 fclose(fid);
 
-disp('Done! New file saved as model_shifted.inp');
+disp('Done! New file saved as ' + string(output_file));
 
 end

@@ -17,3 +17,66 @@ Nc2 = [499, 3427, 3467;
        504, 3442, 3482;
        451, 3275, 3315;
        456, 3290, 3330] + 2e6;
+%%
+M1 = rand(3);
+M2 = 10 * rand(4);
+blkdiag(M1, M2)
+%%
+move_idx = [0,1,1,1,1,0,0]';
+keep_idx = ~move_idx;
+find(move_idx);
+
+%%
+M_file_1 = 'Blade1Anlysis.mas';
+M_file_2 = 'Blade2Anlysis.mas';
+K_file_1 = 'Blade1Anlysis.sti';
+K_file_2 = 'Blade2Anlysis.sti';
+dof_file_1 = 'Blade1Anlysis.dof';
+dof_file_2 = 'Blade2Anlysis.dof';
+mesh_file_1 = 'BladeMesh_1_shifted.inp';
+mesh_file_2 = 'BladeMesh_2_shifted.inp';
+node_header_1 = '*NODE';
+node_header_2 = '*NODE';
+Nc1 = [153, 3915, 3952;
+       148, 3900, 3937;
+       105, 3763, 3800;
+       100, 3748, 3785] + 1e6;
+% in balde 2
+Nc2 = [499, 3427, 3467;
+       504, 3442, 3482;
+       451, 3275, 3315;
+       456, 3290, 3330] + 2e6;
+[M, K] = ReorderMK(M_file_1, M_file_2, ...
+                   K_file_1, K_file_2, ...
+                   dof_file_1, dof_file_2, ...
+                   mesh_file_1, mesh_file_2, ...
+                   Nc1, Nc2);
+%%
+M_file_1 = 'test_box/BoxAnlysis1.mas';
+M_file_2 = 'test_box/BoxAnlysis2.mas';
+K_file_1 = 'test_box/BoxAnlysis1.sti';
+K_file_2 = 'test_box/BoxAnlysis2.sti';
+dof_file_1 = 'test_box/BoxAnlysis1.dof';
+dof_file_2 = 'test_box/BoxAnlysis2.dof';
+mesh_file_1 = 'test_box/Mesh_1_shifted.inp';
+mesh_file_2 = 'test_box/Mesh_2_shifted.inp';
+node_header_1 = '*NODE';
+node_header_2 = '*NODE';
+Nc1 = [3, 20, 10;
+       20, 7, 26;
+       10, 26, 1;
+       26, 14, 18] + 1e4;
+% in balde 2
+Nc2 = [4, 19, 12;
+       19, 8, 25;
+       12, 25, 2;
+       25, 16, 17] + 2e4;
+[M, K] = ReorderMK(M_file_1, M_file_2, ...
+                   K_file_1, K_file_2, ...
+                   dof_file_1, dof_file_2, ...
+                   mesh_file_1, mesh_file_2, ...
+                   node_header_1, node_header_2, ...
+                   Nc1, Nc2);
+%%
+I = eye(6);
+P = [I, I; I, -I];
