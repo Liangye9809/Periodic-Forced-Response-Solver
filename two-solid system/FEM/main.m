@@ -18,3 +18,10 @@ K=sparse(ii,jj,ss);
 clear ii jj ss;
 [Phi, D] = eigs(K, M, 40, 'smallestabs');
 e = diag(D);
+
+%%
+a = [1,2,3,4,5]';
+b = [2,4]';
+moveid = ismember(a,b);
+keepid = ~moveid;
+neworder = [find(keepid); find(moveid)];

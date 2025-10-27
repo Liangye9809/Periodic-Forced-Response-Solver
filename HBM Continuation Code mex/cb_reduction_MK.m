@@ -50,10 +50,12 @@ function CB = cb_reduction_MK(FEMinput,CBmodes)
     Phi = CBmodes.Phi;
     Psi = CBmodes.Psi;
     if issymmetric(Mcc) && issymmetric(Kcc)
-        Max = Phi'*Mee*Psi + Phi'*Mec; 
-        Mxx = Psi'*Mee*Psi + Psi'*Mec + Mce*Psi + Mcc; 
+        Max = Phi' * Mee * Psi + Phi' * Mec; 
+        Mxx = Psi' * Mee * Psi + Psi' * Mec + Mce * Psi + Mcc; 
+        Mxx = (Mxx + Mxx.') / 2; % keep the symmetricity
         Mxa = Max';
-        Kxx = Kcc - Psi'*Kee*Psi; 
+        Kxx = Kcc - Psi' * Kee * Psi; 
+        Kxx = (Kxx + Kxx.') / 2; % keep the symmetricity
         Kaa = CBmodes.Kaa;
         
         CB.Max = Max;

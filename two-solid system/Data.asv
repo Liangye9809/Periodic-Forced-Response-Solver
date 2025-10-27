@@ -1,0 +1,108 @@
+%% FEM matrices for test
+% get the FEM matrices
+cd FEM/
+load('CP4.mat');
+cd ../
+% calculate external forces from Fa and Fx
+path = pwd;
+filename = 'matrices.csv';
+fid = fopen(filename, 'r');
+
+matrices = struct();  % Store matrices here
+currentName = '';
+dataBlock = {};
+
+while ~feof(fid)
+    line = strtrim(fgetl(fid));
+
+    if startsWith(line, 'Name:')
+        % Save previous matrix if exists
+        if ~isempty(currentName)
+            matrices.(currentName) = cell2mat(dataBlock);
+        end
+
+        % Clean and validate field name
+        rawName = strrep(line, 'Name:', '');
+        currentName = matlab.lang.makeValidName(strtrim(rawName));
+        dataBlock = {};
+    elseif ~isempty(line)
+        row = str2double(strsplit(line, ','));
+        dataBlock{end+1,1} = row;
+    end
+end
+
+% Save the last matrix
+if ~isempty(currentName)
+    matrices.(currentName) = cell2mat(dataBlock);
+end
+
+fclose(fid);
+
+% Access with:
+% matrices.Mxx
+% matrices.Kxx
+
+cd(path);
+Fa = matrices.fa;
+Fx = matrices.fx;
+Phi = matrices.Phi;
+Psi = matrices.Psi;
+
+FEM.Fe = Phi' \ Fa;
+FEM.Fc = Fx - Phi' * Fe;
+
+
+
+%% External  forces
+
+H_F_ext = [0,0,1]; % fourier coefficient of f(t)
+
+
+%% HBM parameters
+
+H = 10; % number of harmonics assumption
+N = 2^8; % number of time points per force cycle
+Nx = 4; % number of contact points, means having 4 * 3 = 12 dofs
+Na = 5; % number of CB modes
+xi = 1e-6; 
+
+% calculate the preload forces by predisplacement in normal direction 1 mm
+Xcn0 = [0,0,0.001]
+
+%% Newton Method parameters
+
+epsx = 1e-3;
+epsf = 1e-3;
+maxiter = 100;
+
+%% Coulomb friction
+
+kn = 1e9;
+xn0 = 0;
+mu = [0.1;0.1];
+kt = [1e6;1e6];
+
+
+%% preload initial condition for Newton method
+
+xp0 = 0; % if no value defined here, the default value inside is 0
+
+
+%% continuation parameters
+
+
+ds = 0.5;
+maxstep = 20000;
+omega_0 = 0.81; % 
+omega_end = 0.85;
+% omega_0 = 4115;
+% omega_end = 4318;
+
+
+
+
+% x0 = 0;
+
+% tx0 = 0; % always 0 when calculating the first point so default inside the code
+% tomega0 = 1; % is defined by lambda0 and lambda_end
+

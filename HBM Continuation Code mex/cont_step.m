@@ -21,6 +21,8 @@ G = [F
 for k=1:maxiter
     JG = [jacob(x, omega, params.func) deromega(x, omega, params.func)
           tx0' tomega0];
+    A = [jacob(x, omega, params.func) deromega(x, omega, params.func)];
+    e_ = svd(A);
     dz = -JG\G;
     z = z + dz;
     x = z(1:end-1);
