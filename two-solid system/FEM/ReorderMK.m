@@ -70,6 +70,11 @@ clear ii jj ss;
 M = blkdiag(M1, M2); clear M1 M2;
 K = blkdiag(K1, K2); clear K1 K2;
 
+%% for debug
+% M = full(M);
+% K = full(K);
+%%%%%%%%%%%%%%
+%%
 % read dof file
 
 fid = fopen(dof_file_1,'r');
@@ -84,7 +89,8 @@ dof2 = dof2{1};  % [2000001.1; 2000001.2; ...]
 
 dof = [dof1; dof2]; clear dof1 dof2;
 
-
+%% for debug
+% b1 = M * (1e-6 .* dof) + (1e-6 .* K) * (1e-6 .* dof);
 %% permute the matrices and dofs
 
 % separate nodes' id and dofs
@@ -219,7 +225,7 @@ for i = 1:Nc
     for j = 1:3
         d = norm(coords_1(j, : ,i) - coords_2(j, : ,i));
         if d > 1e-8
-            error('node pair %d does not match, the distance is %f', i, d);
+            warning('node pair %d does not match, the distance is %f', i, d);
         end
     end
     % t1 direction
@@ -243,8 +249,14 @@ for i = 1:Nc
     N_2 = cross(t1_2, t2_2);
     n_2 = N_2 / norm(N_2);
 
-    coords_1(4:6, :, i) = [t1_1; t2_1; n_1];
-    coords_2(4:6, :, i) = [t1_2; t2_2; n_2];
+    B1 = [t1_1; t2_1; n_1];
+    B2 = [t1_2; t2_2; n_2];
+    % check if the basis are the same
+    if norm(B1-B2) > 1e-8
+        error('the bases in contact pair are different! norm(B1-B2) = %f', norm(B1-B2));
+    end
+    coords_1(4:6, :, i) = B1;
+    coords_2(4:6, :, i) = B2;
 
 end
 
@@ -286,7 +298,8 @@ end
 
 % build permutation matrix P - build contact nodes pairs
 I = eye(Nc * 3);
-P = [I, I; I, -I];
+P = 0.5 .* [I, I; I, -I];
+% P = inv(P);
 
 M12 = M12 * Q * P;
 M22 = P' * Q' * M22 * Q * P;

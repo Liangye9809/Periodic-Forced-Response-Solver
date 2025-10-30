@@ -54,41 +54,176 @@ Nc2 = [499, 3427, 3467;
        % 530, 3524, 3553;
        % 425, 3193, 3233;
        % 434, 3220, 3260] + 2e6;
-[FEM.Mee, FEM.Mec, FEM.Mcc, FEM.Kee, FEM.Kec, FEM.Kcc] = ReorderMK(M_file_1, M_file_2, ...
+[FEM.Mee, FEM.Mec, FEM.Mcc, FEM.Kee, FEM.Kec, FEM.Kcc, dof] = ReorderMK(M_file_1, M_file_2, ...
                    K_file_1, K_file_2, ...
                    dof_file_1, dof_file_2, ...
                    mesh_file_1, mesh_file_2, ...
                    node_header_1, node_header_2, ...
                    Nc1, Nc2);
-% [Phi, D] = eigs(Kee, Mee, 40, 'smallestabs');
-% e = diag(D);
-save CP8 FEM
+[Phi, D] = eigs(FEM.Kee, FEM.Mee, 40, 'smallestabs');
+e = diag(D);
+save CP4 FEM
+% Fe_dof = [1000572.2, 1000574.2, 2000596.2, 2000592.2]';
+% idx_Fe = find(ismember(dof, Fe_dof));
 %%
-M_file_1 = 'test_box/BoxAnlysis1.mas';
-M_file_2 = 'test_box/BoxAnlysis2.mas';
-K_file_1 = 'test_box/BoxAnlysis1.sti';
-K_file_2 = 'test_box/BoxAnlysis2.sti';
-dof_file_1 = 'test_box/BoxAnlysis1.dof';
-dof_file_2 = 'test_box/BoxAnlysis2.dof';
+M_file_1 = 'test_box/analysis_1.mas';
+M_file_2 = 'test_box/analysis_2.mas';
+K_file_1 = 'test_box/analysis_1.sti';
+K_file_2 = 'test_box/analysis_2.sti';
+dof_file_1 = 'test_box/analysis_1.dof';
+dof_file_2 = 'test_box/analysis_2.dof';
 mesh_file_1 = 'test_box/Mesh_1_shifted.inp';
 mesh_file_2 = 'test_box/Mesh_2_shifted.inp';
 node_header_1 = '*NODE';
 node_header_2 = '*NODE';
-Nc1 = [3, 20, 10;
-       20, 7, 26;
-       10, 26, 1;
-       26, 14, 18] + 1e4;
+Nc1 = [18, 11, 16] + 1e6;
+       % 20, 7, 26;
+       % 10, 26, 1;
+       % 26, 14, 18] + 1e6;
 % in balde 2
-Nc2 = [4, 19, 12;
-       19, 8, 25;
-       12, 25, 2;
-       25, 16, 17] + 2e4;
-[Mee, Mec, Mcc, Kee, Kec, Kcc] = ReorderMK(M_file_1, M_file_2, ...
+Nc2 = [18, 16, 15] + 2e6;
+       % 19, 8, 25;
+       % 12, 25, 2;
+       % 25, 16, 17] + 2e6;
+[FEM.Mee, FEM.Mec, FEM.Mcc, FEM.Kee, FEM.Kec, FEM.Kcc, dof] = ReorderMK(M_file_1, M_file_2, ...
                    K_file_1, K_file_2, ...
                    dof_file_1, dof_file_2, ...
                    mesh_file_1, mesh_file_2, ...
                    node_header_1, node_header_2, ...
                    Nc1, Nc2);
+[Phi, D] = eigs(FEM.Kee, FEM.Mee, 40, 'smallestabs');
+e = diag(D);
+save test_box/CP1 FEM
 %%
 I = eye(6);
 P = [I, I; I, -I];
+P = inv(P);
+%%
+filename = '/mnt/data/liangye/Downloads/two_blades/inputs/input_CBtest.txt';  % change to your filename
+% Read the mesh file1
+fid = fopen(filename, 'r');
+data = textscan(fid, '%s', 'Delimiter', '\n', 'Whitespace', '');
+fclose(fid);
+data = data{1};
+
+% extract all the nodes coordinate in *NODE section
+DATA = struct();
+entries = [];
+currentName = '';
+% Name = false;
+for i = 1:length(data)
+    line = strtrim(data{i});
+    
+    % Detect section headers
+    if startsWith(line, 'Name:', 'IgnoreCase', true) % ignore letter case (uppercase/lowercase)
+        if ~isempty(currentName)
+            DATA.(currentName) = entries;
+        end
+        currentName = strtrim(extractAfter(line, 'Name:'));
+        % Name = true;
+        entries = [];
+        continue;
+    end
+    
+    % Process node lines
+    if ~isempty(line)
+        nums = sscanf(line, '%f,');
+        entries = [entries; nums'];
+    end
+
+end
+save DATA.mat DATA
+% load("DATA.mat");
+DATA.Kec = sparse(DATA.Kec(:,1), DATA.Kec(:,2), DATA.Kec(:,3));
+DATA.Kcc = sparse(DATA.Kcc(:,1), DATA.Kcc(:,2), DATA.Kcc(:,3));
+DATA.Kee = sparse(DATA.Kee(:,1), DATA.Kee(:,2), DATA.Kee(:,3));
+
+DATA.Mec = sparse(DATA.Mec(:,1), DATA.Mec(:,2), DATA.Mec(:,3));
+DATA.Mcc = sparse(DATA.Mcc(:,1), DATA.Mcc(:,2), DATA.Mcc(:,3));
+DATA.Mee = sparse(DATA.Mee(:,1), DATA.Mee(:,2), DATA.Mee(:,3));
+
+DATA.Fe = sparse(DATA.Fe(:,1), DATA.Fe(:,2), DATA.Fe(:,3));
+
+DATA.Pc = sparse(DATA.Pc(:,1), DATA.Pc(:,2), DATA.Pc(:,3));
+DATA.Pe = - Pe;
+
+Pe = - Kec * Xcn0;
+Pc = - Kcc * Xcn0;
+
+
+DATA.Fc = zeros(12,1);
+Fe = zeros(size(DATA.Mee,1),1);
+Fe(1:5800) = DATA.Fe;
+DATA.Fe = sparse(Fe);
+DATA.Pe = sparse(DATA.Pe);
+
+Kec = zeros(size(DATA.Mee,1),12);
+Mec = zeros(size(DATA.Mee,1),12);
+Kec(1:10563,:) = DATA.Kec;
+Mec(1:10563,:) = DATA.Mec;
+DATA.Kec = sparse(Kec);
+DATA.Mec = sparse(Mec);
+Xcn0 = [0,0,0.001,0,0,0.001,0,0,0.001,0,0,0.001]';
+DATA.Pe = - DATA.Kec * Xcn0;
+
+%% for old mesh
+M_file_1 = 'two_blades_old/mesh_files/analysis_left.mas';
+M_file_2 = 'two_blades_old/mesh_files/analysis_right.mas';
+K_file_1 = 'two_blades_old/mesh_files/analysis_left.sti';
+K_file_2 = 'two_blades_old/mesh_files/analysis_right.sti';
+dof_file_1 = 'two_blades_old/mesh_files/analysis_left.dof';
+dof_file_2 = 'two_blades_old/mesh_files/analysis_right.dof';
+mesh_file_1 = 'two_blades_old/mesh_files/blade-left-mesh-clean.inp';
+mesh_file_2 = 'two_blades_old/mesh_files/blade-right-mesh-clean.inp';
+node_header_1 = '*NODE';
+node_header_2 = '*NODE';
+Nc1 = [545, 23, 543;
+       548, 24, 546;
+       529, 19, 527;
+       532, 20, 530] + 1e6;
+       
+% in balde 2
+Nc2 = [43, 33, 40;
+       47, 36, 44;
+       63, 51, 60;
+       67, 55, 64] + 2e6;
+       
+[FEM.Mee, FEM.Mec, FEM.Mcc, FEM.Kee, FEM.Kec, FEM.Kcc, dof] = ReorderMK(M_file_1, M_file_2, ...
+                   K_file_1, K_file_2, ...
+                   dof_file_1, dof_file_2, ...
+                   mesh_file_1, mesh_file_2, ...
+                   node_header_1, node_header_2, ...
+                   Nc1, Nc2);
+[Phi, D] = eigs(FEM.Kee, FEM.Mee, 40, 'smallestabs');
+e = diag(D);
+save two_blades_old/mesh_files/CP4 FEM
+%%
+input_file = 'test_box/Mesh_1.inp';
+output_file = 'test_box/Mesh_1_shifted.inp';
+first_section_header = '*NODE, NSET=NALL';
+offset = 1e6;
+RenumberMesh(input_file, output_file, first_section_header, offset);
+%% test if CB modes and matrices are the same with doc.
+% read from file
+clear
+ReadFromCSV;
+CB_doc = CB;
+Rx_doc = Rx;
+xe0_doc = xe0;
+
+% calculate from Mee file
+Data;
+CriagBamptonReduction;
+
+%% compare CBmodes
+eps_Kaa = norm(CB_doc.CBmods.Kaa - CB.CBmods.Kaa) / norm(CB.CBmods.Kaa)
+eps_Psi = norm(full(CB_doc.CBmods.Psi - CB.CBmods.Psi)) / norm(full(CB.CBmods.Psi))
+eps_Phi = norm(full(CB_doc.CBmods.Phi - CB.CBmods.Phi)) / norm(full(CB.CBmods.Phi))
+eps_Max = norm(full(CB_doc.CB_MK.Max - CB.CB_MK.Max)) / norm(full(CB.CB_MK.Max))
+eps_Mxx = norm(full(CB_doc.CB_MK.Mxx - CB.CB_MK.Mxx)) / norm(full(CB.CB_MK.Mxx))
+eps_Kxx = norm(full(CB_doc.CB_MK.Kxx - CB.CB_MK.Kxx)) / norm(full(CB.CB_MK.Kxx))
+eps_Fa = norm(full(CB_doc.CB_F.Fa - CB.CB_F.Fa)) / norm(full(CB.CB_F.Fa))
+eps_Fx = norm(full(CB_doc.CB_F.Fx - CB.CB_F.Fx)) / norm(full(CB.CB_F.Fx))
+
+eps_Rx = norm(Rx_doc - Rx);
+eps_

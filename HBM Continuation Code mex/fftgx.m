@@ -16,7 +16,8 @@ function [F, w] = fftgx(x, pfunc) % x(t) = E*X
         X(:,i) = x(r1:r2); % reorder in dofs in column
     end
     xt = E * X; 
-    [Ft, w] = g_mex(xt + xp', pfunc.fc); % call mex function
+    % [Ft, w] = g_mex(xt + xp', pfunc.fc); % call mex function
+    [Ft, w] = g(xt + xp', pfunc.fc); % call mex function inside g
     
     Ft = Ft - gxp';
     hndn = EH * Ft;

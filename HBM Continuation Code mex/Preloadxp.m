@@ -32,7 +32,8 @@ maxiter = params.Newton.maxiter;
 epsx = params.Newton.epsx;
 epsf = params.Newton.epsf;
 Kxx = params.func.CB_MK.Kxx;
-[F, w] = g_mex(xp', fc); 
+% [F, w] = g_mex(xp', fc); 
+[F, w] = g(xp', fc); 
 f = Kxx * xp + F' + Rx; %%% transpose
 disp('preload iterations:'); 
 disp('i xp w gxp errxp errf'); 
@@ -41,7 +42,8 @@ for i = 1:maxiter
     dxp = - Jf \ f;
     xp = xp + dxp;
     %%%%%
-    [F, w] = g_mex(xp', fc); 
+    % [F, w] = g_mex(xp', fc); 
+    [F, w] = g(xp', fc); 
     f = Kxx * xp + F' + Rx; %%% transpose
     %%%%%
     errorxp = norm(dxp);

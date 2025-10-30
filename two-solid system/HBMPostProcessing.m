@@ -10,7 +10,7 @@ Amax = max(abs(A));
 % figure;
 frq = omega_cont; % ./ (2*pi);
 % frq = omega_cont ./ (2*pi);
-plot(frq, Amax,'b-'),hold on;
+plot(frq, Amax,'g-'),hold on;
 % xlabel('Omega [Hz]');
 xlabel('Omega');
 ylabel('||dof_' + string(Ndof) + '(t)||');

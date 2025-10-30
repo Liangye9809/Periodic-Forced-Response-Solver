@@ -1,6 +1,6 @@
 %% clear workspace and close all
 clear
-close all
+% close all
 clc
 %**************************************************************************************************
 % This file using continuation method to solve the equation under Harmonic Balance Method assumption :

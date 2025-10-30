@@ -1,58 +1,39 @@
 %% FEM matrices for test
 % get the FEM matrices
+
+% for fine mesh
+
+% tep = pwd;
+% cd FEM/
+% load('CP4.mat');
+% cd(tep)
+% 
+% FEM.Fe = zeros(size(FEM.Mee, 1), 1);
+% Fe_idx = [1661, 1667, 31355, 31367];
+% FEM.Fe(Fe_idx) = 1;
+% FEM.Fc = zeros(size(FEM.Mcc, 1), 1);
+
+% for old mesh
+
+% tep = pwd;
+% cd FEM/two_blades_old/mesh_files/
+% load('CP4.mat');
+% cd(tep)
+% 
+% FEM.Fe = zeros(size(FEM.Mee, 1), 1);
+% Fe_idx = [112, 118, 5764, 5800];
+% FEM.Fe(Fe_idx) = 1;
+% FEM.Fc = zeros(size(FEM.Mcc, 1), 1);
+
+% from old input
+tep = pwd;
 cd FEM/
-load('CP4.mat');
-cd ../
-% calculate external forces from Fa and Fx
-path = pwd;
-filename = 'matrices.csv';
-fid = fopen(filename, 'r');
+load('DATA.mat');
+FEM = DATA;
+clear DATA
+cd(tep)
 
-matrices = struct();  % Store matrices here
-currentName = '';
-dataBlock = {};
-
-while ~feof(fid)
-    line = strtrim(fgetl(fid));
-
-    if startsWith(line, 'Name:')
-        % Save previous matrix if exists
-        if ~isempty(currentName)
-            matrices.(currentName) = cell2mat(dataBlock);
-        end
-
-        % Clean and validate field name
-        rawName = strrep(line, 'Name:', '');
-        currentName = matlab.lang.makeValidName(strtrim(rawName));
-        dataBlock = {};
-    elseif ~isempty(line)
-        row = str2double(strsplit(line, ','));
-        dataBlock{end+1,1} = row;
-    end
-end
-
-% Save the last matrix
-if ~isempty(currentName)
-    matrices.(currentName) = cell2mat(dataBlock);
-end
-
-fclose(fid);
-
-% Access with:
-% matrices.Mxx
-% matrices.Kxx
-
-cd(path);
-Fa = matrices.fa;
-Fx = matrices.fx;
-Phi = matrices.Phi;
-Psi = matrices.Psi;
-
-FEM.Fe = Phi' \ Fa;
-FEM.Fc = Fx - Phi' * Fe;
-
-
-
+FEM.Pe =
 %% External  forces
 
 H_F_ext = [0,0,1]; % fourier coefficient of f(t)
@@ -67,7 +48,14 @@ Na = 5; % number of CB modes
 xi = 1e-6; 
 
 % calculate the preload forces by predisplacement in normal direction 1 mm
-Xcn0 = [0,0,0.001]
+
+% Xcn0 = [];
+% X00 = [0,0,0.001]';
+% for i = 1:Nx
+%     Xcn0 = [Xcn0; X00];
+% end
+% FEM.Pe = - FEM.Kec * Xcn0;
+% FEM.Pc = - FEM.Kcc * Xcn0;
 
 %% Newton Method parameters
 
@@ -77,10 +65,10 @@ maxiter = 100;
 
 %% Coulomb friction
 
-kn = 1e9;
+kn = 1e9; % .* 1e5;
 xn0 = 0;
-mu = [0.1;0.1];
-kt = [1e6;1e6];
+mu = [0.1;0.1]; % .* 1e5;
+kt = [1e6;1e6]; % .* 1e5;
 
 
 %% preload initial condition for Newton method
