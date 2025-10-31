@@ -1,4 +1,6 @@
 %% clear workspace and close all
+% for H = 7:2:15
+% clearvars -except H
 clear
 % close all
 clc
@@ -22,9 +24,13 @@ Data
 %% Craig-Bampton reduction from FEM matrices
 
 
-CriagBamptonReduction
+% CriagBamptonReduction
 
-% ReadFromCSV % here we directly read the Criag-Bampton matrices from CSV file 
+% load('CB.mat');
+% load('Rx.mat');
+% load('xe0.mat');
+
+ReadFromCSV % here we directly read the Criag-Bampton matrices from CSV file 
 
 %% Dimensionless
 
@@ -74,11 +80,72 @@ Nondimensionalization
 %% continuation calculation with HBM
 
 
-tic;
+
+% tic;
+
+
 ContinuationCalculation
-toc;
+
+% toc;
 
 %%
 
 HBMPostProcessing;
+
+
+% end
+
+
+%%
+figure;
+c = jet(15);
+for i = 1:2:15
+    name = 'data/NewMesh/dof_H' + string(i) + '.mat';
+    load(name);
+    frq = a1(:, 1);
+
+    subplot(2, 2, 1); % a1
+    plot(frq, a1(:, 2), 'Color', c(i, :)), hold on;
+
+    subplot(2, 2, 3); % t1
+    plot(frq, a1(:, 3), 'Color', c(i, :)), hold on;
+
+    subplot(2, 2, 4); % t2
+    plot(frq, a1(:, 4), 'Color', c(i, :)), hold on;
+
+    subplot(2, 2, 2); % n
+    plot(frq, a1(:, 5), 'Color', c(i, :)), hold on;
+
+end
+subplot(2, 2, 1); % a1
+title('a1');
+xlabel('Omega');
+ylabel('||dof_1||');
+grid on;
+legend('H1', 'H3', 'H5', 'H7', 'H9', 'H11', 'H13', 'H15');
+
+subplot(2, 2, 3); % t1
+plot(frq, a1(:, 3), 'Color', c(i, :)), hold on;
+title('x1-t1');
+xlabel('Omega');
+ylabel('||dof_6||');
+grid on;
+legend('H1', 'H3', 'H5', 'H7', 'H9', 'H11', 'H13', 'H15');
+
+subplot(2, 2, 4); % t2
+plot(frq, a1(:, 4), 'Color', c(i, :)), hold on;
+title('x1-t2');
+xlabel('Omega');
+ylabel('||dof_7||');
+grid on;
+legend('H1', 'H3', 'H5', 'H7', 'H9', 'H11', 'H13', 'H15');
+
+subplot(2, 2, 2); % n
+plot(frq, a1(:, 5), 'Color', c(i, :)), hold on;
+title('x1-n');
+xlabel('Omega');
+ylabel('||dof_8||');
+grid on;
+legend('H1', 'H3', 'H5', 'H7', 'H9', 'H11', 'H13', 'H15');
+
 

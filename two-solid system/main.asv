@@ -1,6 +1,7 @@
 %% clear workspace and close all
-clear
-close all
+for H = 7:2:15
+clearvars -except H
+% close all
 clc
 %**************************************************************************************************
 % This file using continuation method to solve the equation under Harmonic Balance Method assumption :
@@ -15,6 +16,7 @@ clc
 
 %% Get parameters from file
 
+
 Data
 
 
@@ -22,8 +24,10 @@ Data
 
 
 % CriagBamptonReduction
-
-ReadFromCSV % here we directly read the Criag-Bampton matrices from CSV file 
+load('CB.mat');
+load('Rx.mat');
+load('xe0.mat');
+% ReadFromCSV % here we directly read the Criag-Bampton matrices from CSV file 
 
 %% Dimensionless
 
@@ -73,11 +77,52 @@ Nondimensionalization
 %% continuation calculation with HBM
 
 
-tic;
+
+% tic;
+
+
 ContinuationCalculation
-toc;
+
+% toc;
 
 %%
 
-% HBMPostProcessing;
+HBMPostProcessing;
 
+
+end
+
+
+%%
+figure;
+c = jet(15);
+for i = 1:2:15
+    name = 'data/NewMesh/dof_H' + string(i) + '.mat';
+    load(name);
+    frq = a1(:, 1);
+
+    subplot(2, 2, 1); % a1
+    plot(frq, a1(:, 2), 'Color', c(i, :)), hold on;
+
+    subplot(2, 2, 2); % t1
+    plot(frq, a1(:, 3), 'Color', c(i, :)), hold on;
+
+    subplot(2, 2, 1); % t2
+    plot(frq, a1(:, 4), 'Color', c(i, :)), hold on;
+
+    subplot(2, 2, 2); % n
+    plot(frq, a1(:, 5), 'Color', c(i, :)), hold on;
+
+end
+subplot(2, 2, 1); % a1
+title('a1');
+xlab
+
+subplot(2, 2, 2); % t1
+plot(frq, a1(:, 3), 'Color', c(i, :)), hold on;
+
+subplot(2, 2, 1); % t2
+plot(frq, a1(:, 4), 'Color', c(i, :)), hold on;
+
+subplot(2, 2, 2); % n
+plot(frq, a1(:, 5), 'Color', c(i, :)), hold on;

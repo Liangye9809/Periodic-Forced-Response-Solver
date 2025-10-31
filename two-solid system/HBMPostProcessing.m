@@ -1,16 +1,17 @@
 %% plot Amplitude vs omega
 
-Ndof = 1;
+
 [E, EH] = HBM.fft_matrices(N, H);
 for i = 1:3*Nx + Na
     x_contNx(:,:,i) = x_cont((2*H+1)*(i-1)+1:(2*H+1)*i,:);
 end
+Ndof = 1;
 A = E * x_contNx(:,:,Ndof);
 Amax = max(abs(A));
-% figure;
+figure;
 frq = omega_cont; % ./ (2*pi);
 % frq = omega_cont ./ (2*pi);
-plot(frq, Amax,'g-'),hold on;
+plot(frq, Amax,'b-'),hold on;
 % xlabel('Omega [Hz]');
 xlabel('Omega');
 ylabel('||dof_' + string(Ndof) + '(t)||');
@@ -19,6 +20,16 @@ legend('H = ' + string(H));
 grid on;
 a1 = [frq', Amax'];
 
+% frq = omega_cont; 
+% a1 = frq';
+% for Ndof = [1, Na + 1, Na + 2, Na + 3]
+%     A = E * x_contNx(:,:,Ndof);
+%     Amax = max(abs(A));
+% 
+%     a1 = [a1, Amax']; % frq, a1, x1, x2, x3
+% end
+% save('data/NewMesh/dof_H' + string(H),'a1');
+save('data/Cont_Friction_F1H_a1_H' + string(H),'a1');
 %% ifft and convert a to Xe
 % Nc = 3*Nx;
 % clear x_contDOF xt A_cont A_a A_x A_Xe at Xet
