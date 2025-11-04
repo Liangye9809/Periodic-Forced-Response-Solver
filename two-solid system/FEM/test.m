@@ -287,11 +287,54 @@ eps_Rx = norm(Rx_doc - Rx) / norm(Rx)
 eps_xe0 = norm(xe0_doc - xe0) / norm(xe0)
 
 %% full stuck frq by increasing contact pairs
+% clear
+% c = jet(5);
+% for j = 1:5
+%     figure;
+%     for i = 4:4:36
+%         names = 'full_stuck_modes_CP' + string(i) + '.mat';
+%         load(names);
+%         plot(i, sqrt(e(j)), 'Color', c(j,:), 'Marker', 'o','MarkerFaceColor', c(j,:)), hold on;
+%     end
+%     grid on;
+%     xlabel('number of contact pairs');
+%     ylabel('Omega_' + string(j));
+%     title('frequency of mode ' + string(j) + ' VS number of contact pairs');
+% end
+
 clear
-figure;
+close all
+frqs = zeros(20,9);
 for i = 4:4:36
     names = 'full_stuck_modes_CP' + string(i) + '.mat';
     load(names);
-    plot(i, e(1), 'bo'), hold on;
+    frqs(:, i/4) = e;
 end
-grid on;
+
+% figure
+% c = jet(5);
+% CP = [4:4:36];
+% for i = 1:5
+%     plot(CP, frqs(i, :), 'Color', c(i,:), 'Marker', 'o','MarkerFaceColor', c(i,:), 'LineStyle', '-'), hold on;
+% end
+% xlabel('number of contact pairs');
+% ylabel('Omega');
+% title('frequency of first 5 modes VS number of contact pairs');
+% grid on;
+
+% path = pwd;
+% cd ../pictures/NewMesh/
+c = jet(5);
+CP = [4:4:36];
+
+for i = 1:5
+    figure
+    plot(CP, sqrt(frqs(i, :)), 'Color', c(i,:), 'Marker', 'o','MarkerFaceColor', c(i,:), 'LineStyle', '-'), hold on;
+
+    xlabel('number of contact pairs');
+    ylabel('Omega_' + string(i));
+    titlename = 'frequency of mode ' + string(i) + ' VS number of contact pairs';
+    title(titlename);
+    grid on;
+    % savefig(titlename);
+end

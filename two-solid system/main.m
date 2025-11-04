@@ -1,6 +1,6 @@
 %% clear workspace and close all
-% for H = 7:2:15
-% clearvars -except H
+% for Nx = 8:4:36
+% clearvars -except Nx
 clear
 % close all
 clc
@@ -18,19 +18,27 @@ clc
 %% Get parameters from file
 
 
+    
+% dataname = 'CP' + string(Nx) + '.mat';
+
+% tep = pwd;
+% cd FEM/
+% load(dataname);
+% cd(tep)
+
 Data
 
 
 %% Craig-Bampton reduction from FEM matrices
 
 
-% CriagBamptonReduction
+CriagBamptonReduction
 
 % load('CB.mat');
 % load('Rx.mat');
 % load('xe0.mat');
 
-ReadFromCSV % here we directly read the Criag-Bampton matrices from CSV file 
+% ReadFromCSV % here we directly read the Criag-Bampton matrices from CSV file 
 
 %% Dimensionless
 
@@ -79,10 +87,10 @@ ReadFromCSV % here we directly read the Criag-Bampton matrices from CSV file
 Nondimensionalization
 %% continuation calculation with HBM
 
-
-
 % tic;
 
+omega_0 = 4050 / sqrt(omega02);
+omega_end = 4350 / sqrt(omega02);
 
 ContinuationCalculation
 
@@ -94,9 +102,5 @@ HBMPostProcessing;
 
 
 % end
-
-
-%%
-
 
 

@@ -5,20 +5,29 @@
 for i = 1:3*Nx + Na
     x_contNx(:,:,i) = x_cont((2*H+1)*(i-1)+1:(2*H+1)*i,:);
 end
-Ndof = 1;
-A = E * x_contNx(:,:,Ndof);
-Amax = max(abs(A));
-figure;
-frq = omega_cont; % ./ (2*pi);
-% frq = omega_cont ./ (2*pi);
-plot(frq, Amax,'b-'),hold on;
-% xlabel('Omega [Hz]');
-xlabel('Omega');
-ylabel('||dof_' + string(Ndof) + '(t)||');
-% ylabel('Max Amplitude of x_3');
-legend('H = ' + string(H));
-grid on;
-a1 = [frq', Amax'];
+Adof = omega_cont';
+for Ndof = 1:3*Nx + Na
+    A = E * x_contNx(:,:,Ndof);
+    Amax = max(abs(A));
+    Adof(:, Ndof + 1) = Amax';
+end
+
+filename = 'data/NewMesh/Adof_CP' + string(Nx) + '.mat';
+save(filename, "Adof");
+% Ndof = 1;
+% A = E * x_contNx(:,:,Ndof);
+% Amax = max(abs(A));
+% % figure;
+% frq = omega_cont; % ./ (2*pi);
+% % frq = omega_cont ./ (2*pi);
+% plot(frq, Amax,'r--'),hold on;
+% % xlabel('Omega [Hz]');
+% xlabel('Omega');
+% ylabel('||dof_' + string(Ndof) + '(t)||');
+% % ylabel('Max Amplitude of x_3');
+% legend('H = ' + string(H));
+% grid on;
+% a1 = [frq', Amax'];
 
 % frq = omega_cont; 
 % a1 = frq';
@@ -29,7 +38,7 @@ a1 = [frq', Amax'];
 %     a1 = [a1, Amax']; % frq, a1, x1, x2, x3
 % end
 % save('data/NewMesh/dof_H' + string(H),'a1');
-save('data/Cont_Friction_F1H_a1_H' + string(H),'a1');
+% save('data/Cont_Friction_F1H_a1_H' + string(H),'a1');
 
 %% H validation
 % figure;
