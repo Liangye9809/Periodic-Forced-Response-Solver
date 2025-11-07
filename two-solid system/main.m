@@ -1,7 +1,7 @@
 %% clear workspace and close all
-% for Nx = 8:4:36
-% clearvars -except Nx
-clear
+for Nx = 16:4:16
+clearvars -except Nx
+% clear
 % close all
 clc
 %**************************************************************************************************
@@ -19,12 +19,12 @@ clc
 
 
     
-% dataname = 'CP' + string(Nx) + '.mat';
+dataname = 'CP' + string(Nx) + '.mat';
 
-% tep = pwd;
-% cd FEM/
-% load(dataname);
-% cd(tep)
+tep = pwd;
+cd FEM/
+load(dataname);
+cd(tep)
 
 Data
 
@@ -90,7 +90,9 @@ Nondimensionalization
 % tic;
 
 omega_0 = 4050 / sqrt(omega02);
-omega_end = 4350 / sqrt(omega02);
+% omega_end = 4350 / sqrt(omega02);
+% omega_end = 4400 / sqrt(omega02);
+omega_end = 4217 / sqrt(omega02);
 
 ContinuationCalculation
 
@@ -101,6 +103,6 @@ ContinuationCalculation
 HBMPostProcessing;
 
 
-% end
+end
 
 

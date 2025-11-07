@@ -8,10 +8,10 @@
 % load('CP4.mat');
 % cd(tep)
 
-% FEM.Fe = zeros(size(FEM.Mee, 1), 1);
-% Fe_idx = [1661, 1667, 31355, 31367] - 1;
-% FEM.Fe(Fe_idx) = 1;
-% FEM.Fc = zeros(size(FEM.Mcc, 1), 1);
+FEM.Fe = zeros(size(FEM.Mee, 1), 1);
+Fe_idx = [1661, 1667, 31355, 31367] - 1;
+FEM.Fe(Fe_idx) = 1;
+FEM.Fc = zeros(size(FEM.Mcc, 1), 1);
 
 % for old mesh
 
@@ -36,26 +36,26 @@
 % FEM.Pe = - FEM.Pe;
 %% External  forces
 
-H_F_ext = [0,0,1]; % fourier coefficient of f(t)
+H_F_ext = [0, 0, 1]; % fourier coefficient of f(t)
 
 
 %% HBM parameters
 
-H = 7; % number of harmonics assumption
-N = 2^8; % number of time points per force cycle
+H = 1; % number of harmonics assumption
+N = 2^6; % number of time points per force cycle
 % Nx = 4; % number of contact points, means having 4 * 3 = 12 dofs
 Na = 5; % number of CB modes
 xi = 1e-6; 
 
 % calculate the preload forces by predisplacement in normal direction 1 mm
 
-Xcn0 = [];
-X00 = [0,0,0.001]';
+Xcn0 = zeros(3*Nx, 1);
+X00 = [0, 0, 0.001]';
 for i = 1:Nx
-    Xcn0 = [Xcn0; X00];
+    Xcn0(3 * i - 2:3 * i) = X00;
 end
-FEM.Pe = FEM.Kec * Xcn0 ./ (Nx/4);
-FEM.Pc = FEM.Kcc * Xcn0 ./ (Nx/4);
+FEM.Pe = FEM.Kec * Xcn0;
+FEM.Pc = FEM.Kcc * Xcn0;
 
 %% Newton Method parameters
 
@@ -66,9 +66,10 @@ maxiter = 100;
 %% Coulomb friction
 
 kn = 1e9 ./ (Nx/4); % .* 1e5;
+% kn = 3.3e7 ./ (Nx/4); % .* 1e5;
 xn0 = 0;
-mu = [0.1;0.1]; % .* 1e5;
-kt = [1e6;1e6] ./ (Nx/4); % .* 1e5;
+mu = [0.1; 0.1]; % .* 1e5;
+kt = [1e6; 1e6] ./ (Nx/4); % .* 1e5;
 
 
 %% preload initial condition for Newton method

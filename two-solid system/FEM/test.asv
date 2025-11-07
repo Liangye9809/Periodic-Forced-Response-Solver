@@ -322,19 +322,26 @@ end
 % title('frequency of first 5 modes VS number of contact pairs');
 % grid on;
 
-path = pwd;
-cd ../pictures/NewMesh/
+% path = pwd;
+% cd ../pictures/NewMesh/
 c = jet(5);
 CP = [4:4:36];
 
 for i = 1:5
     figure
-    p = plot(CP, sqrt(frqs(i, :)), 'Color', c(i,:), 'Marker', 'o','MarkerFaceColor', c(i,:), 'LineStyle', '-'), hold on;
+    plot(CP, sqrt(frqs(i, :)), 'Color', c(i,:), 'Marker', 'o','MarkerFaceColor', c(i,:), 'LineStyle', '-'), hold on;
 
     xlabel('number of contact pairs');
     ylabel('Omega_' + string(i));
     titlename = 'frequency of mode ' + string(i) + ' VS number of contact pairs';
     title(titlename);
     grid on;
-    save(titlename, 'p', '-append');
+    % savefig(titlename);
 end
+
+%% plot a1 resonance curve
+for i = 4:4:32
+    names = 'data/NewMesh/Lower_Adof_CP' + string(i) + '.mat';
+    load(names);
+    plot()
+legend('CP4', 'CP8', 'CP12', 'CP16', 'CP20', 'CP24', 'CP28', 'CP32', 'CP36')
