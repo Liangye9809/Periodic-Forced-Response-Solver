@@ -77,8 +77,10 @@ para.xp = xp;
 para.gxp = gxp;
 para.fc = params.func.fc;
 para.HBM = params.func.HBM;
+para.Pe = FEM.Pe;
+para.Pc = FEM.Pc;
 
-save('data/NewMesh/Data_Omega_4217_Nx_' + string(Nx) + '.mat','para');
+save('data/NewMesh/Data_Omega_4218_Nx_' + string(Nx) + '.mat','para');
 %% H validation
 % figure;
 % c = jet(15);

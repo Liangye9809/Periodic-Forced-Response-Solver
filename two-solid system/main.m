@@ -1,5 +1,5 @@
 %% clear workspace and close all
-for Nx = 16:4:16
+for Nx = 4:4:36
 clearvars -except Nx
 % clear
 % close all
@@ -27,6 +27,8 @@ load(dataname);
 cd(tep)
 
 Data
+
+
 
 
 %% Craig-Bampton reduction from FEM matrices
@@ -92,7 +94,7 @@ Nondimensionalization
 omega_0 = 4050 / sqrt(omega02);
 % omega_end = 4350 / sqrt(omega02);
 % omega_end = 4400 / sqrt(omega02);
-omega_end = 4217 / sqrt(omega02);
+omega_end = 4218 / sqrt(omega02);
 
 ContinuationCalculation
 

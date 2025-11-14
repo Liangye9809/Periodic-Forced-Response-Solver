@@ -206,17 +206,21 @@ for i = 1:5
     % savefig(titlename);
 end
 
-%% plot a1 resonance curve - lower Adof - average preload in all contacts
+%% plot a1 resonance curve 
 figure
+dof_plot = 1;
 for i = 4:4:36
-    names = 'data/NewMesh/Lower_Adof_CP' + string(i) + '.mat';
+    names = 'data/NewMesh/Lower_Adof_CP' + string(i) + '_PreDisAll.mat';
     load(names);
-    plot(Adof(:,1), Adof(:,3)), hold on;
+    plot(Adof(:, 1), Adof(:, dof_plot + 2)), hold on;
 end
 grid on;
 xlabel('Omega');
-ylabel('|a1|');
-legend('CP4', 'CP8', 'CP12', 'CP16', 'CP20', 'CP24', 'CP28', 'CP32', 'CP36')
+namey = '|dof' + string(dof_plot) + '|';
+ylabel(namey);
+legend('CP4', 'CP8', 'CP12', 'CP16', 'CP20', 'CP24', 'CP28', 'CP32', 'CP36');
+xlim([4050,4400]);
+plot([4218,4218], [0, 300], 'k--')
 
 %% plot a1 resonance curve - preload act only in first 4 contacts
 figure
@@ -276,9 +280,89 @@ end
 
 %% rename the file
 for i = 4:4:36
-    oldfilename = 'data/NewMesh/Adof_CP' + string(i) + '_PreDisAll.mat';
-    newfilename = 'data/NewMesh/Adof_CP' + string(i) + '_PreDisAllDiv.mat';
+    oldfilename = 'data/NewMesh/Adof_CP' + string(i) + '.mat';
+    newfilename = 'data/NewMesh/Adof_CP' + string(i) + '_PreDisOnly4.mat';
     movefile(oldfilename, newfilename);
 end
-%% rename the file test
-movefile('oldfilename.m', 'newfilename.m');
+
+
+%% plot property of friction effects
+
+% F vs t
+for Nx = 16:4:16
+
+    a = floor(sqrt(Nx));
+    while mod(Nx, a) ~= 0
+        a = a - 1;
+    end
+    b = Nx / a;
+
+    paraname = 'data/NewMesh/Data_Omega_4217_Nx_' + string(Nx) + '.mat';
+    load(paraname);
+    figure
+    for i = 1:Nx
+        subplot(a,b,i) % Cp1
+        plot(para.t, para.Ft(:, 3 * i - 2), 'b-'), hold on;
+        plot(para.t, para.Ft(:, 3 * i - 1), 'r-'), hold on;
+        muFn = para.fc.mu(1, 1) .* para.Ft(:, 3 * i);
+        plot(para.t, muFn, 'k-'), hold on;
+        plot(para.t, -muFn, 'k-'), hold on;
+    end
+end
+
+%%
+for i = [1,3,4,5,9]
+    disp(i);
+end
+
+%% Pc-CP; Xp-CP
+Pc = zeros(36 * 3, 9);
+Xp = zeros(36 * 3, 9);
+figure; % Pe-CP
+for i = 4:4:36
+    dataname = 'data/NewMesh/Data_Omega_4218_Nx_' + string(i) + '.mat';
+    load(dataname);
+    Pc(1:i * 3, i / 4) = para.Pc;
+    Xp(1:i * 3, i / 4) = para.xp;
+    plot(i * ones(i*3, 1), para.Pc, '.'), hold on;
+end
+xlabel('CP');
+ylabel('Pc');
+xticks(0:4:40);
+grid on;
+
+figure; % xp-CP
+for i = 4:4:36
+    for j = 3*i-11 : 3*i
+        plot([i:4:36], Xp(j, i/4:end), '-o'), hold on;
+    end
+end
+xlabel('CP');
+ylabel('xp');
+xticks(0:4:40);
+grid on;
+
+%% compare the displacements of first 4 CP
+
+linestyles = {'-','--',':','-.'};
+markers    = {'o','s','d','^'};
+
+figure; 
+for i = 4:4:36
+    dataname = 'data/NewMesh/Data_Omega_4218_Nx_' + string(i) + '.mat';
+    load(dataname);
+
+    for j = 1:12
+        subplot(3,4,j);
+        plot(para.t, para.xt(:, 5 + j), 'LineStyle',linestyles{1 + mod(i/4,4)}), hold on;
+    end
+    
+end
+
+for j = 1:12
+    subplot(3,4,j);
+    grid on;
+    legend('CP4', 'CP8', 'CP12', 'CP16', 'CP20', 'CP24', 'CP28', 'CP32', 'CP36');
+    xlabel('t');
+    ylabel('displacement');
+end

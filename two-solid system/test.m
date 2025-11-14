@@ -218,7 +218,9 @@ grid on;
 xlabel('Omega');
 namey = '|dof' + string(dof_plot) + '|';
 ylabel(namey);
-legend('CP4', 'CP8', 'CP12', 'CP16', 'CP20', 'CP24', 'CP28', 'CP32', 'CP36')
+legend('CP4', 'CP8', 'CP12', 'CP16', 'CP20', 'CP24', 'CP28', 'CP32', 'CP36');
+xlim([4050,4400]);
+plot([4218,4218], [0, 300], 'k--','DisplayName','Omega4218');
 
 %% plot a1 resonance curve - preload act only in first 4 contacts
 figure
@@ -306,4 +308,61 @@ for Nx = 16:4:16
         plot(para.t, muFn, 'k-'), hold on;
         plot(para.t, -muFn, 'k-'), hold on;
     end
+end
+
+%%
+for i = [1,3,4,5,9]
+    disp(i);
+end
+
+%% Pc-CP; Xp-CP
+Pc = zeros(36 * 3, 9);
+Xp = zeros(36 * 3, 9);
+figure; % Pe-CP
+for i = 4:4:36
+    dataname = 'data/NewMesh/Data_Omega_4218_Nx_' + string(i) + '.mat';
+    load(dataname);
+    Pc(1:i * 3, i / 4) = para.Pc;
+    Xp(1:i * 3, i / 4) = para.xp;
+    plot(i * ones(i*3, 1), para.Pc, '.'), hold on;
+end
+xlabel('CP');
+ylabel('Pc');
+xticks(0:4:40);
+grid on;
+
+figure; % xp-CP
+for i = 4:4:36
+    for j = 3*i-11 : 3*i
+        plot([i:4:36], Xp(j, i/4:end), '-o'), hold on;
+    end
+end
+xlabel('CP');
+ylabel('xp');
+xticks(0:4:40);
+grid on;
+
+%% compare the displacements of first 4 CP
+
+linestyles = {'-','--',':','-.'};
+markers    = {'o','s','d','^'};
+
+figure; 
+for i = 4:4:36
+    dataname = 'data/NewMesh/Data_Omega_4218_Nx_' + string(i) + '.mat';
+    load(dataname);
+
+    for j = 1:12
+        subplot(3,4,j);
+        plot(para.t, para.xt(:, 5 + j), 'LineStyle',linestyles{1 + mod(i/4,4)}), hold on;
+    end
+    
+end
+
+for j = 1:12
+    subplot(3,4,j);
+    grid on;
+    legend('CP4', 'CP8', 'CP12', 'CP16', 'CP20', 'CP24', 'CP28', 'CP32', 'CP36');
+    xlabel('t');
+    ylabel('displacement');
 end
