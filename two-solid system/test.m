@@ -207,21 +207,22 @@ for i = 1:5
 end
 
 %% plot a1 resonance curve 
-figure
-dof_plot = 1;
-for i = 4:4:36
-    names = 'data/NewMesh/Lower_Adof_CP' + string(i) + '_PreDisAll.mat';
-    load(names);
-    plot(Adof(:, 1), Adof(:, dof_plot + 2)), hold on;
+for CBmode = 1:5
+    figure
+    dof_plot = CBmode;
+    for i = 4:4:36
+        names = 'data/NewMesh/Lower_Adof_CP' + string(i) + '_PreDisAll_PreloadFixed.mat';
+        load(names);
+        plot(Adof(:, 1), Adof(:, dof_plot + 2)), hold on; 
+    end
+    grid on;
+    xlabel('Omega');
+    namey = '|dof' + string(dof_plot) + '|';
+    ylabel(namey);
+    legend('CP4', 'CP8', 'CP12', 'CP16', 'CP20', 'CP24', 'CP28', 'CP32', 'CP36');
+    xlim([4050,4400]);
+    % plot([4218,4218], [0, 300], 'k--','DisplayName','Omega4218');
 end
-grid on;
-xlabel('Omega');
-namey = '|dof' + string(dof_plot) + '|';
-ylabel(namey);
-legend('CP4', 'CP8', 'CP12', 'CP16', 'CP20', 'CP24', 'CP28', 'CP32', 'CP36');
-xlim([4050,4400]);
-plot([4218,4218], [0, 300], 'k--','DisplayName','Omega4218');
-
 %% plot a1 resonance curve - preload act only in first 4 contacts
 figure
 for i = 4:4:24
@@ -316,20 +317,53 @@ for i = [1,3,4,5,9]
 end
 
 %% Pc-CP; Xp-CP
-Pc = zeros(36 * 3, 9);
+% Pe = zeros(36 * 3, 9);
+% Pc = zeros(36 * 3, 9);
+PeSum = zeros(3, 9); % x, y, z 3-direction in 9 different contacts
+PcSum = zeros(3, 9); % t1, t2, n 3-direction in 9 different contacts
 Xp = zeros(36 * 3, 9);
-figure; % Pe-CP
+figure; % Pc-CP
 for i = 4:4:36
     dataname = 'data/NewMesh/Data_Omega_4218_Nx_' + string(i) + '.mat';
     load(dataname);
-    Pc(1:i * 3, i / 4) = para.Pc;
+    % Pe(1:i * 3, i / 4) = para.Pe;
+    % Pc(1:i * 3, i / 4) = para.Pc;
     Xp(1:i * 3, i / 4) = para.xp;
     plot(i * ones(i*3, 1), para.Pc, '.'), hold on;
+
+    for k = 1:3
+        PeSum(k, i / 4) = sum(abs(para.Pe(k:3:end))) ./ 2;
+        PcSum(k, i / 4) = sum(para.Pc(k:3:end));
+    end
 end
 xlabel('CP');
 ylabel('Pc');
 xticks(0:4:40);
 grid on;
+
+% plot Pe sum up in x, y and z directions
+figure; 
+for i = 1:3
+    plot([4:4:36], PeSum(i, :), '-o'), hold on;
+end
+xlabel('CP');
+ylabel('PeSum');
+xticks(0:4:40);
+legend('x', 'y', 'z');
+grid on;
+
+% plot Pc sum up in normal and two tangential directions
+figure; 
+for i = 1:3
+    plot([4:4:36], PcSum(i, :), '-o'), hold on;
+end
+xlabel('CP');
+ylabel('PcSum');
+xticks(0:4:40);
+legend('T1', 'T2', 'Normal');
+grid on;
+
+
 
 figure; % xp-CP
 for i = 4:4:36
@@ -365,4 +399,111 @@ for j = 1:12
     legend('CP4', 'CP8', 'CP12', 'CP16', 'CP20', 'CP24', 'CP28', 'CP32', 'CP36');
     xlabel('t');
     ylabel('displacement');
+end
+
+%% plot property of friction effects
+omega_plot = 4210;
+
+% F vs t
+for Nx = 4:4:36
+
+    switch Nx
+        case 4
+            omega_plot = 4210;
+        case 8
+            omega_plot = 4214.8;
+        case 12
+            omega_plot = 4216.2;
+        case 16
+            omega_plot = 4185;
+        case 20 
+            omega_plot = 4167.52;
+        case 24
+            omega_plot = 4175.41;
+        case 28
+            omega_plot = 4163.58;
+        case 32
+            omega_plot = 4170;
+        case 36
+            omega_plot = 4170;
+    end
+    
+    paraname = 'data/NewMesh/Data_PeFixed_Omega_'+ string(omega_plot) + '_Nx_' + string(Nx) + '.mat';
+    load(paraname);
+    % plot T1, T2 and N forces
+    figure
+
+    a = floor(sqrt(Nx));
+    while mod(Nx, a) ~= 0
+        a = a - 1;
+    end
+    b = Nx / a;
+
+    for i = 1:Nx
+        subplot(a,b,i) % Cp1
+        plot(para.t, para.Ft(:, 3 * i - 2), 'b-'), hold on;
+        plot(para.t, para.Ft(:, 3 * i - 1), 'r-'), hold on;
+        muFn = para.fc.mu(1, 1) .* para.Ft(:, 3 * i);
+        plot(para.t, muFn, 'k-'), hold on;
+        plot(para.t, -muFn, 'k-'), hold on;
+        % legend('T1', 'T2', 'muFn', '-muFn');
+        title(i);
+    end
+end
+
+%% plot x-F
+omega_plot = 4210;
+
+% F vs t
+for Nx = 4:4:36
+
+    switch Nx
+        case 4
+            omega_plot = 4210;
+        case 8
+            omega_plot = 4214.8;
+        case 12
+            omega_plot = 4216.2;
+        case 16
+            omega_plot = 4185;
+        case 20 
+            omega_plot = 4167.52;
+        case 24
+            omega_plot = 4175.41;
+        case 28
+            omega_plot = 4163.58;
+        case 32
+            omega_plot = 4170;
+        case 36
+            omega_plot = 4170;
+    end
+    
+    paraname = 'data/NewMesh/Data_PeFixed_Omega_'+ string(omega_plot) + '_Nx_' + string(Nx) + '.mat';
+    load(paraname);
+    
+    a = floor(sqrt(Nx));
+    while mod(Nx, a) ~= 0
+        a = a - 1;
+    end
+    b = Nx / a;
+    
+    % plot displacements - forces T1
+    figure
+
+    for i = 1:Nx
+        subplot(a,b,i) % Cp1
+        plot(para.xtpxp(:, 3 * i - 2), para.Ft(:, 3 * i - 2), 'b-'), hold on;
+        % plot(para.xtpxp(:, 3 * i - 1), para.Ft(:, 3 * i - 1), 'r-'), hold on;
+        title(i);
+    end
+
+    % plot displacements - forces T2
+    figure
+
+    for i = 1:Nx
+        subplot(a,b,i) % Cp1
+        % plot(para.xtpxp(:, 3 * i - 2), para.Ft(:, 3 * i - 2), 'b-'), hold on;
+        plot(para.xtpxp(:, 3 * i - 1), para.Ft(:, 3 * i - 1), 'r-'), hold on;
+        title(i);
+    end
 end

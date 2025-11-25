@@ -15,7 +15,7 @@
 % Adof = [OMEGA, Adof];
 % figure
 % plot(Adof(:,1), Adof(:,3)), hold on;
-% filename = 'data/NewMesh/Lower_Adof_CP' + string(Nx) + '_PreDisAll.mat';
+% filename = 'data/NewMesh/Lower_Adof_CP' + string(Nx) + '_PreDisAll_PreloadFixed.mat';
 % save(filename, "Adof");
 
 % Ndof = 1;
@@ -45,6 +45,7 @@
 % save('data/Cont_Friction_F1H_a1_H' + string(H),'a1');
 
 %% calculate nonlinear forces
+
 % check FUN(x) = 0;
 omega_poss = omega_end;
 x_poss = x_cont(:, end);
@@ -80,7 +81,7 @@ para.HBM = params.func.HBM;
 para.Pe = FEM.Pe;
 para.Pc = FEM.Pc;
 
-save('data/NewMesh/Data_Omega_4218_Nx_' + string(Nx) + '.mat','para');
+% save('data/NewMesh/Data_PeFixed_Omega_'+ string(omega_plot) + '_Nx_' + string(Nx) + '.mat','para');
 %% H validation
 % figure;
 % c = jet(15);

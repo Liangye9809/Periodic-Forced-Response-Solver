@@ -36,7 +36,7 @@ FEM.Fc = zeros(size(FEM.Mcc, 1), 1);
 % FEM.Pe = - FEM.Pe;
 %% External  forces
 
-H_F_ext = [0, 0, 6]; % fourier coefficient of f(t)
+H_F_ext = [0, 0, 1]; % fourier coefficient of f(t)
 
 
 %% HBM parameters
@@ -49,14 +49,16 @@ xi = 1e-6;
 
 % calculate the preload forces by predisplacement in normal direction 1 mm
 
-Xcn0 = zeros(3*Nx, 1);
-X00 = [0, 0, 0.001]';
-for i = 1:Nx
-    Xcn0(3 * i - 2:3 * i) = X00;
-end
-FEM.Pe = FEM.Kec * Xcn0;
-FEM.Pc = FEM.Kcc * Xcn0;
+% Xcn0 = zeros(3*Nx, 1);
+% X00 = [0, 0, 0.001]';
+% for i = 1:Nx
+%     Xcn0(3 * i - 2:3 * i) = X00;
+% end
+% FEM.Pe = FEM.Kec * Xcn0;
+% FEM.Pc = FEM.Kcc * Xcn0;
 
+FEM.Pe = zeros(size(FEM.Kcc, 1), 1);
+FEM.Pc = zeros(size(FEM.Kcc, 1), 1);
 %% Newton Method parameters
 
 epsx = 1e-3;
@@ -65,10 +67,11 @@ maxiter = 100;
 
 %% Coulomb friction
 
-kn = 1e9 ./ (Nx/4); % .* 1e5;
+kn = 1e9; % ./ (Nx/4); % .* 1e5;
+% kn = 3.3e7 ./ (Nx/4); % .* 1e5;
 xn0 = 0;
 mu = [0.1; 0.1]; % .* 1e5;
-kt = [1e7; 1e7] ./ (Nx/4); % .* 1e5;
+kt = [1e6; 1e6]; % ./ (Nx/4); % .* 1e5;
 
 
 %% preload initial condition for Newton method

@@ -1,0 +1,41 @@
+# encoding: utf-8
+# 2025 R2
+SetScriptVersion(Version="25.2.170")
+template1 = GetTemplate(
+    TemplateName="Modal",
+    Solver="ANSYS")
+system1 = template1.CreateSystem()
+template2 = GetTemplate(
+    TemplateName="Static Structural",
+    Solver="ANSYS")
+system2 = template2.CreateSystem(
+    Position="Right",
+    RelativeTo=system1)
+system2.Delete()
+geometry1 = system1.GetContainer(ComponentName="Geometry")
+geometry1.Edit(IsDiscoveryGeometry=True)
+geometry1.SetFile(FilePath="//tsclient/data/liangye/study loves me/data/non-linear problem/Periodic Forced Response Solver/two-solid system/FEM/test_box/Box.iges")
+modelComponent1 = system1.GetComponent(Name="Model")
+modelComponent1.Refresh()
+model1 = system1.GetContainer(ComponentName="Model")
+model1.Edit()
+template3 = GetTemplate(TemplateName="Mechanical APDL")
+solutionComponent1 = system1.GetComponent(Name="Solution")
+componentTemplate1 = GetComponentTemplate(Name="ANSYSSetupCellTemplate")
+system3 = template3.CreateSystem(
+    DataTransferFrom=[Set(FromComponent=solutionComponent1, TransferName=None, ToComponentTemplate=componentTemplate1)],
+    Position="Right",
+    RelativeTo=system1)
+solutionComponent1.Update(AllDependencies=True)
+setupComponent1 = system3.GetComponent(Name="Setup")
+setupComponent1.Refresh()
+setup1 = system3.GetContainer(ComponentName="Setup")
+setup1.Edit(
+    Interactive=True,
+    LoadInputFiles=True)
+model1.Exit()
+model1.Edit()
+model1.Exit()
+Save(Overwrite=True)
+setup1.Exit()
+Save(Overwrite=True)

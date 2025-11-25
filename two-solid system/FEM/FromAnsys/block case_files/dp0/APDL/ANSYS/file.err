@@ -1,0 +1,24 @@
+/COM,ANSYS RELEASE 2025 R2           BUILD 25.2      UP20250519       18:26:21
+
+ *** WARNING ***                         CP =       3.078   TIME= 18:27:25
+ The EPLOT command cannot be executed.  The selected elements cannot be  
+ displayed by PowerGraphics.  To correct this situation, select          
+ different elements or turn off PowerGraphics.                           
+
+ *** WARNING ***                         CP =       3.516   TIME= 18:27:50
+ The EPLOT command cannot be executed.  The selected elements cannot be  
+ displayed by PowerGraphics.  To correct this situation, select          
+ different elements or turn off PowerGraphics.                           
+
+ *** WARNING ***                         CP =       4.141   TIME= 18:28:23
+ The EPLOT command cannot be executed.  The selected elements cannot be  
+ displayed by PowerGraphics.  To correct this situation, select          
+ different elements or turn off PowerGraphics.                           
+
+ *** WARNING ***                         CP =       4.875   TIME= 18:28:59
+ This function requires that files currently open be closed.             
+ Executing the function will exit the general postprocessor.             
+
+ *** ERROR ***                           CP =       9.125   TIME= 18:31:35
+ The selected matrix to be dumped (damping) does not exist on the chosen 
+ .FULL file (..\..\SYS\MECH\file.full).                                  

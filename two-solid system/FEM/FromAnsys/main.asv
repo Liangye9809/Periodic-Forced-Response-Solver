@@ -1,0 +1,17 @@
+clear
+clc
+
+M = read_sparse_ansys('M_cubic.mass');
+Mp = M + M' - sparse(1:length(M), 1:length(M), spdiags(M, 0));
+M_full = full(Mp);
+
+K = read_sparse_ansys('K_block.sti');
+Kp = K + K' - sparse(1:length(K), 1:length(K), spdiags(K, 0));
+K_full = full(Kp);
+
+
+[Phi, D] = eigs(K_full, M_full, 20, 'smallestabs');
+e = diag(D);
+
+[Phi_M, D_M] = eigs(M_full, 20, 'smallestabs');
+e_M = diag(D_M);
