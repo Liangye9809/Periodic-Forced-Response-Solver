@@ -1,0 +1,207 @@
+
+ Ansys Mechanical Enterprise Academic Research     
+
+
+ *------------------------------------------------------------------*
+ |                                                                  |
+ |   W E L C O M E   T O   T H E   A N S Y S (R)  P R O G R A M     |
+ |                                                                  |
+ *------------------------------------------------------------------*
+
+
+
+
+ ***************************************************************
+ *         ANSYS MAPDL 2025 R2          LEGAL NOTICES          *
+ ***************************************************************
+ *                                                             *
+ * Copyright 1971-2025 Ansys, Inc.  All rights reserved.       *
+ * Unauthorized use, distribution or duplication is            *
+ * prohibited.                                                 *
+ *                                                             *
+ * Ansys is a registered trademark of Ansys, Inc. or its       *
+ * subsidiaries in the United States or other countries.       *
+ * See the Ansys, Inc. online documentation or the Ansys, Inc. *
+ * documentation CD or online help for the complete Legal      *
+ * Notice.                                                     *
+ *                                                             *
+ ***************************************************************
+ *                                                             *
+ * THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION       *
+ * INCLUDE TRADE SECRETS AND CONFIDENTIAL AND PROPRIETARY      *
+ * PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR LICENSORS.    *
+ * The software products and documentation are furnished by    *
+ * Ansys, Inc. or its subsidiaries under a software license    *
+ * agreement that contains provisions concerning               *
+ * non-disclosure, copying, length and nature of use,          *
+ * compliance with exporting laws, warranties, disclaimers,    *
+ * limitations of liability, and remedies, and other           *
+ * provisions.  The software products and documentation may be *
+ * used, disclosed, transferred, or copied only in accordance  *
+ * with the terms and conditions of that software license      *
+ * agreement.                                                  *
+ *                                                             *
+ * Ansys, Inc. is a UL registered                              *
+ * ISO 9001:2015 company.                                      *
+ *                                                             *
+ ***************************************************************
+ *                                                             *
+ * This product is subject to U.S. laws governing export and   *
+ * re-export.                                                  *
+ *                                                             *
+ * For U.S. Government users, except as specifically granted   *
+ * by the Ansys, Inc. software license agreement, the use,     *
+ * duplication, or disclosure by the United States Government  *
+ * is subject to restrictions stated in the Ansys, Inc.        *
+ * software license agreement and FAR 12.212 (for non-DOD      *
+ * licenses).                                                  *
+ *                                                             *
+ ***************************************************************
+
+ 2025 R2 
+     
+ Point Releases and Patches installed:   
+     
+ Ansys, Inc. License Manager 2025 R2 
+ Discovery (reduced install) 2025 R2 
+ Core WB Files 2025 R2   
+ Additive 2025 R2
+ optiSLang 2025 R2   
+ Electromagnetics Suite 2025 R2  
+ CFD-Post only 2025 R2   
+ CFX (includes CFD-Post) 2025 R2 
+ Chemkin 2025 R2 
+ FENSAP-ICE 2025 R2  
+ Fluent (includes CFD-Post) 2025 R2  
+ Polyflow (includes CFD-Post) 2025 R2
+ Forte (includes EnSight) 2025 R2
+ ICEM CFD 2025 R2
+ TurboGrid 2025 R2   
+ Granta EduPack 2025 R2  
+ Speos HPC 2025 R2   
+ Remote Solve Manager Standalone Services 2025 R2
+ ACIS Geometry Interface 2025 R2 
+ AutoCAD Geometry Interface 2025 R2  
+ Catia, Version 4 Geometry Interface 2025 R2 
+ Catia, Version 5 Geometry Interface 2025 R2 
+ Catia, Version 6 Geometry Interface 2025 R2 
+ Creo Elements/Direct Modeling Geometry Interface 2025 R2
+ Creo Parametric Geometry Interface 2025 R2  
+ Inventor Geometry Interface 2025 R2 
+ JTOpen Geometry Interface 2025 R2   
+ NX Geometry Interface 2025 R2   
+ Parasolid Geometry Interface  2025 R2   
+ Solid Edge Geometry Interface 2025 R2   
+ SOLIDWORKS Geometry Interface 2025 R2   
+
+
+          *****  MAPDL COMMAND LINE ARGUMENTS  *****
+  INITIAL JOBNAME              = file                                                                                                                                                                                                                                                    
+  BATCH MODE REQUESTED (-b)    = NOLIST
+  INPUT FILE COPY MODE (-c)    = COPY
+  SHARED MEMORY PARALLEL REQUESTED
+    SINGLE PROCESS WITH   2 THREADS REQUESTED
+    TOTAL OF     2 CORES REQUESTED
+  INPUT FILE NAME              = \\tsclient\data\liangye\study loves me\data\non-linear problem\Periodic Forced Response Solver\two-solid system\FEM\FromAnsys\block case_files\dp0\APDL\ANSYS\workbench_main.inp
+  OUTPUT FILE NAME             = \\tsclient\data\liangye\study loves me\data\non-linear problem\Periodic Forced Response Solver\two-solid system\FEM\FromAnsys\block case_files\dp0\APDL\ANSYS\workbench_main.out
+  MEMORY REQUESTED (MB)        = 2048        
+  START-UP FILE MODE           = READ  
+  STOP FILE MODE               = READ  
+  DATABASE SIZE REQUESTED (MB) = 1024        
+
+ RELEASE= 2025 R2              BUILD= 25.2      UP20250519   VERSION=WINDOWS x64 
+ CURRENT JOBNAME=file  17:35:27  NOV 26, 2025 CP=      0.078
+
+
+ RUN SETUP PROCEDURE FROM FILE= C:\Program Files\ANSYS Inc\v252\ANSYS\apdl\start.ans
+
+ /INPUT FILE= C:\Program Files\ANSYS Inc\v252\ANSYS\apdl\start.ans  LINE=       0
+
+ /INPUT FILE= write_verify_update.inp  LINE=       0
+
+ *GET  ANSINTER_  FROM  ACTI  ITEM=INT        VALUE=  0.00000000    
+
+ *IF  ANSINTER_  ( =   0.00000     )  EQ  
+      0  ( =   0.00000     )  THEN    
+
+ /OUTPUT FILE= verify_update.out
+
+ *ENDIF
+
+ *GET  ANSINTER_  FROM  ACTI  ITEM=INT        VALUE=  0.00000000    
+
+ *IF  ANSINTER_  ( =   0.00000     )  EQ  
+      0  ( =   0.00000     )  THEN    
+
+ EXIT MAPDL WITHOUT SAVING DATABASE
+
+
+ NUMBER OF WARNING MESSAGES ENCOUNTERED=          0
+ NUMBER OF ERROR   MESSAGES ENCOUNTERED=          0
+
++--------------------- M A P D L   S T A T I S T I C S ------------------------+
+
+Release: 2025 R2            Build: 25.2       Update: UP20250519   Platform: WINDOWS x64 
+Date Run: 11/26/2025   Time: 17:35     Process ID: 2820
+Operating System: Windows 11  (Build: 26100)
+
+Processor Model: Intel Xeon Processor (Cascadelake)
+
+Compiler: Intel(R) Fortran Compiler Classic Version 2021.9  (Build: 20230302)
+          Intel(R) C/C++ Compiler Classic Version 2021.9  (Build: 20230302)
+          Intel(R) oneAPI Math Kernel Library Version 2024.2.3-Product Build 20250403
+
+Number of machines requested            :    1
+Total number of cores available         :    6
+Number of physical cores available      :    6
+Number of processes requested           :    1
+Number of threads per process requested :    2
+Total number of cores requested         :    2 (Shared Memory Parallel)                    
+
+GPU Acceleration: Not Requested
+
+Job Name: file
+Input File: workbench_main.inp
+Working Directory: \\tsclient\data\liangye\study loves me\data\non-linear problem\Periodic Forced Response Solver\two-solid system\FEM\FromAnsys\block case_files\dp0\APDL\ANSYS
+
+Total CPU time for main thread                    :        0.6 seconds
+Total CPU time summed for all threads             :        0.4 seconds
+
+Elapsed time spent obtaining a license            :        0.4 seconds
+Elapsed time spent pre-processing model (/PREP7)  :        0.0 seconds
+Elapsed time spent solution - preprocessing       :        0.0 seconds
+Elapsed time spent computing solution             :        0.0 seconds
+Elapsed time spent solution - postprocessing      :        0.0 seconds
+Elapsed time spent post-processing model (/POST1) :        0.0 seconds
+ 
+
+Sum of disk space used on all processes           :        0.0 MB
+
+Sum of memory used on all processes               :        6.0 MB
+Sum of memory allocated on all processes          :     2048.0 MB
+Physical memory available                         :          8 GB
+Total amount of I/O written to disk               :        0.0 GB
+Total amount of I/O read from disk                :        0.0 GB
+
++------------------ E N D   M A P D L   S T A T I S T I C S -------------------+
+
+
+ *-----------------------------------------------------------------------------*
+ |                                                                             |
+ |                               RUN COMPLETED                                 |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Ansys MAPDL 2025 R2         Build 25.2         UP20250519    WINDOWS x64   |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Database Requested(-db)  1024 MB     Scratch Memory Requested       768 MB |
+ |  Maximum Database Used       1 MB     Maximum Scratch Memory Used      5 MB |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |        CP Time      (sec) =          0.359       Time  =  17:35:46          |
+ |        Elapsed Time (sec) =         23.000       Date  =  11/26/2025        |
+ |                                                                             |
+ *-----------------------------------------------------------------------------*

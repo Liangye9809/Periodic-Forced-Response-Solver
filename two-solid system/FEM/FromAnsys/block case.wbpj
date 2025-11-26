@@ -2,10 +2,10 @@
 <Storage>
   <Project Version="25.2.1.0">
     <base-designpoint-name valType="String">0</base-designpoint-name>
-    <timestamp-max valType="Int64">2952</timestamp-max>
+    <timestamp-max valType="Int64">3192</timestamp-max>
     <framework-build-version valType="String">25.2.170.0</framework-build-version>
     <external-version-string valType="String">2025 R2</external-version-string>
-    <last-saved-utc valType="String">11/25/2025 18:10:45</last-saved-utc>
+    <last-saved-utc valType="String">11/26/2025 12:48:46</last-saved-utc>
     <managed-categories valType="String">[report, misc, progress]</managed-categories>
     <expression-scope-container valType="String">Parameters</expression-scope-container>
     <project-type valType="String">WB2</project-type>
@@ -18,7 +18,6 @@
 "ece5b63a-4bdb-4b31-8ebc-9665733473ba": "/FileContainer/FileReference:F4",
 "1f8ab50e-bc04-4486-bd3b-5d8710f8b41a": "/FileContainer/FileReference:F6",
 "3dc92367-f0d8-4d1f-8f63-3a3c2f8be8e7": "/FileContainer/FileReference:F3",
-"398f9d28-c04c-4432-aa42-16cb5ef3878f": "/FileContainer/FileReference:F5",
 "ed86c014-3837-47e0-b9bd-8093a4e4a65b": "/FileTypesContainer/FileType:GeometryFileType",
 "36fcab83-d413-472f-8746-5b5ad37692bd": "/FileTypesContainer/FileType:EngineeringData",
 "58da9aed-8ba3-42d7-bb99-f69c8e1b8b8f": "/FileTypesContainer/FileType:AnsysResultFileType",
@@ -49,7 +48,8 @@
 "3be3acd5-7701-424b-9776-9025775d77a7": "/Schematic/ComponentTemplate:SimulationSetupCellTemplate_StructuralModalANSYS",
 "87cf82dc-baa1-4908-978c-b0b521b7060f": "/Schematic/ComponentTemplate:SimulationSolutionCellTemplate_StructuralModalANSYS",
 "3df2fdcd-3377-4e98-8993-8ee742fef03f": "/Schematic/ComponentTemplate:SimulationResultsCellTemplate_StructuralModalANSYS",
-"0abe41e9-f43e-40e1-b873-fde1d0c56133": "/Schematic/ComponentTemplate:ANSYSSetupCellTemplate"
+"0abe41e9-f43e-40e1-b873-fde1d0c56133": "/Schematic/ComponentTemplate:ANSYSSetupCellTemplate",
+"82b9724f-0b1f-456a-9e0c-88fadffe24ea": "/FileContainer/FileReference:F15"
 }</ReferenceList>
       </ProjectReferenceList>
       <DesignPointReferenceListCollection>
@@ -174,7 +174,7 @@
       <storage-scheme-id valType="String">version-1-format</storage-scheme-id>
       <deleted-sources valType="String">[]</deleted-sources>
       <last-updated valType="Int64">0</last-updated>
-      <last-modified-by-usage valType="String">{"Extrinsic": 2952, "Input": 1495, "Output": 1495}</last-modified-by-usage>
+      <last-modified-by-usage valType="String">{"Extrinsic": 3104, "Input": 1495, "Output": 1495}</last-modified-by-usage>
       <outputs-generated-by-type valType="String">{}</outputs-generated-by-type>
       <contains-significant-data valType="Boolean">false</contains-significant-data>
       <Object Name="/FileContainer/FileReference:F4" Version="1.0">
@@ -192,9 +192,9 @@
         <object-name valType="String">F3</object-name>
         <member-data valType="String">{"DisplayText": "SYS.engd", "FileType": $$36fcab83-d413-472f-8746-5b5ad37692bd, "DependentFiles": [], "ContainerAssociations": ["Model"], "SkipForDesignPointDuplication": False, "IsDeletable": True, "ExternalSource": None, "LastDownloadFromRepository": -1, "Location": r"$(ProjectName)_files\dp0\global\MECH\SYS.engd", "ReferenceCount": 1}</member-data>
       </Object>
-      <Object Name="/FileContainer/FileReference:F5" Version="1.0">
+      <Object Name="/FileContainer/FileReference:F15" Version="1.0">
         <class-type valType="String">FileReference</class-type>
-        <object-name valType="String">F5</object-name>
+        <object-name valType="String">F15</object-name>
         <member-data valType="String">{"DisplayText": "file.rst", "FileType": $$58da9aed-8ba3-42d7-bb99-f69c8e1b8b8f, "DependentFiles": [], "ContainerAssociations": ["Solution"], "SkipForDesignPointDuplication": False, "IsDeletable": True, "ExternalSource": None, "LastDownloadFromRepository": -1, "Location": r"$(ProjectName)_files\dp0\SYS\MECH\file.rst", "ReferenceCount": 1}</member-data>
       </Object>
       <Object Name="/FileContainer/FileReference:F6" Version="1.0">
@@ -210,12 +210,32 @@
       <Object Name="/FileContainer/FileReference:F8" Version="1.0">
         <class-type valType="String">FileReference</class-type>
         <object-name valType="String">F8</object-name>
-        <member-data valType="String">{"DisplayText": "act.dat", "FileType": $$a04b64b0-bd92-4ff3-bb5b-23d15450749c, "DependentFiles": [], "ContainerAssociations": [], "SkipForDesignPointDuplication": False, "IsDeletable": True, "ExternalSource": None, "LastDownloadFromRepository": -1, "Location": r"$(ProjectName)_files\dp0\act.dat", "ReferenceCount": 1}</member-data>
+        <member-data valType="String">{"DisplayText": "act.dat", "FileType": $$a04b64b0-bd92-4ff3-bb5b-23d15450749c, "DependentFiles": [], "ContainerAssociations": [], "SkipForDesignPointDuplication": False, "IsDeletable": True, "ExternalSource": None, "LastDownloadFromRepository": -1, "Location": r"$(ProjectName)_files\dp0\act.dat", "ReferenceCount": 2}</member-data>
       </Object>
       <Object Name="/FileContainer/FileReference:F9" Version="1.0">
         <class-type valType="String">FileReference</class-type>
         <object-name valType="String">F9</object-name>
         <member-data valType="String">{"DisplayText": "EngineeringData.xml", "FileType": $$36fcab83-d413-472f-8746-5b5ad37692bd, "DependentFiles": [], "ContainerAssociations": ["Engineering Data"], "SkipForDesignPointDuplication": False, "IsDeletable": True, "ExternalSource": None, "LastDownloadFromRepository": -1, "Location": r"$(ProjectName)_files\dp0\SYS\ENGD\EngineeringData.xml", "ReferenceCount": 1}</member-data>
+      </Object>
+      <Object Name="/FileContainer/FileReference:F11" Version="1.0">
+        <class-type valType="String">FileReference</class-type>
+        <object-name valType="String">F11</object-name>
+        <member-data valType="String">{"DisplayText": "file0.rst", "FileType": $$58da9aed-8ba3-42d7-bb99-f69c8e1b8b8f, "DependentFiles": [], "ContainerAssociations": ["Solution"], "SkipForDesignPointDuplication": False, "IsDeletable": True, "ExternalSource": None, "LastDownloadFromRepository": -1, "Location": r"$(ProjectName)_files\dp0\SYS\MECH\file0.rst", "ReferenceCount": 2}</member-data>
+      </Object>
+      <Object Name="/FileContainer/FileReference:F12" Version="1.0">
+        <class-type valType="String">FileReference</class-type>
+        <object-name valType="String">F12</object-name>
+        <member-data valType="String">{"DisplayText": "file3.rst", "FileType": $$58da9aed-8ba3-42d7-bb99-f69c8e1b8b8f, "DependentFiles": [], "ContainerAssociations": ["Solution"], "SkipForDesignPointDuplication": False, "IsDeletable": True, "ExternalSource": None, "LastDownloadFromRepository": -1, "Location": r"$(ProjectName)_files\dp0\SYS\MECH\file3.rst", "ReferenceCount": 2}</member-data>
+      </Object>
+      <Object Name="/FileContainer/FileReference:F13" Version="1.0">
+        <class-type valType="String">FileReference</class-type>
+        <object-name valType="String">F13</object-name>
+        <member-data valType="String">{"DisplayText": "file1.rst", "FileType": $$58da9aed-8ba3-42d7-bb99-f69c8e1b8b8f, "DependentFiles": [], "ContainerAssociations": ["Solution"], "SkipForDesignPointDuplication": False, "IsDeletable": True, "ExternalSource": None, "LastDownloadFromRepository": -1, "Location": r"$(ProjectName)_files\dp0\SYS\MECH\file1.rst", "ReferenceCount": 2}</member-data>
+      </Object>
+      <Object Name="/FileContainer/FileReference:F14" Version="1.0">
+        <class-type valType="String">FileReference</class-type>
+        <object-name valType="String">F14</object-name>
+        <member-data valType="String">{"DisplayText": "file2.rst", "FileType": $$58da9aed-8ba3-42d7-bb99-f69c8e1b8b8f, "DependentFiles": [], "ContainerAssociations": ["Solution"], "SkipForDesignPointDuplication": False, "IsDeletable": True, "ExternalSource": None, "LastDownloadFromRepository": -1, "Location": r"$(ProjectName)_files\dp0\SYS\MECH\file2.rst", "ReferenceCount": 2}</member-data>
       </Object>
     </Container>
     <Container Name="Messages" Version="1.0">
@@ -223,9 +243,19 @@
       <storage-scheme-id valType="String">version-1-format</storage-scheme-id>
       <deleted-sources valType="String">[]</deleted-sources>
       <last-updated valType="Int64">0</last-updated>
-      <last-modified-by-usage valType="String">{"Extrinsic": 1496, "Input": 1496, "Output": 1496}</last-modified-by-usage>
+      <last-modified-by-usage valType="String">{"Extrinsic": 3187, "Input": 1496, "Output": 1496}</last-modified-by-usage>
       <outputs-generated-by-type valType="String">{}</outputs-generated-by-type>
       <contains-significant-data valType="Boolean">false</contains-significant-data>
+      <Object Name="/Messages/StoredMessage:Message" Version="1.0">
+        <class-type valType="String">StoredMessage</class-type>
+        <object-name valType="String">Message</object-name>
+        <member-data valType="String">{"DisplayText": "Message", "MessageType": "Information", "MessageCategory": "None", "Summary": "The Analysis component in Mechanical APDL requires user input before it can be updated. For instructions on how to address the cell in its current state, click the blue triangle in the lower right corner of the cell in the Project Schematic.", "Details": None, "Association": "", "DateTimeStamp": 11/26/2025 13:14:33, "Visibility": "Information", "MessageSourceContainer": None, "MessageSourceEntity": None, "AdditionalMessageData": None, "DesignPoint": "0"}</member-data>
+      </Object>
+      <Object Name="/Messages/StoredMessage:Message 1" Version="1.0">
+        <class-type valType="String">StoredMessage</class-type>
+        <object-name valType="String">Message 1</object-name>
+        <member-data valType="String">{"DisplayText": "Message", "MessageType": "Information", "MessageCategory": "None", "Summary": "The Analysis component in Mechanical APDL requires user input before it can be updated. For instructions on how to address the cell in its current state, click the blue triangle in the lower right corner of the cell in the Project Schematic.", "Details": None, "Association": "", "DateTimeStamp": 11/26/2025 13:24:16, "Visibility": "Information", "MessageSourceContainer": None, "MessageSourceEntity": None, "AdditionalMessageData": None, "DesignPoint": "0"}</member-data>
+      </Object>
     </Container>
     <Container Name="Parameters" Version="1.0">
       <container-type valType="String">Ansys.ParameterManager.ParameterManagerAddin:parameters</container-type>
@@ -234,13 +264,13 @@
       <maxUpdateOrder valType="Double">1</maxUpdateOrder>
       <deleted-sources valType="String">[]</deleted-sources>
       <last-updated valType="Int64">0</last-updated>
-      <last-modified-by-usage valType="String">{"Extrinsic": 2943, "Input": 2922, "Output": 1499}</last-modified-by-usage>
+      <last-modified-by-usage valType="String">{"Extrinsic": 3191, "Input": 2922, "Output": 1499}</last-modified-by-usage>
       <outputs-generated-by-type valType="String">{}</outputs-generated-by-type>
       <contains-significant-data valType="Boolean">false</contains-significant-data>
       <Object Name="/Parameters/DesignPoint:0" Version="1.0">
         <class-type valType="String">DesignPoint</class-type>
         <object-name valType="String">0</object-name>
-        <member-data valType="String">{"DisplayText": "DP 0", "JustDuplicated": False, "PartiallyRetainedData": [], "ValidRetainedData": [], "ErrorsOnLastUpdate": {}, "LastUpdateInformation": {"DidUpdate": "True", "DidPreRsmUpdate": "False", "UpdatedComponents": "Solution in SYS"}, "Parameters": {}, "ParameterErrors": {}, "CurrentValues": {}, "ParameterStatus": {}, "Note": None, "IsUpToDate": False, "Exported": True, "Retained": True, "CurrentStateExported": False, "IsDataModelValid": True, "HasRetainedData": True, "HasBeenSolved": True, "UpdateOrder": 1}</member-data>
+        <member-data valType="String">{"DisplayText": "DP 0", "JustDuplicated": False, "PartiallyRetainedData": [], "ValidRetainedData": [], "ErrorsOnLastUpdate": {}, "LastUpdateInformation": {"DidUpdate": "True", "DidPreRsmUpdate": "False", "UpdatedComponents": "Setup 1 in APDL"}, "Parameters": {}, "ParameterErrors": {}, "CurrentValues": {}, "ParameterStatus": {}, "Note": None, "IsUpToDate": False, "Exported": True, "Retained": True, "CurrentStateExported": False, "IsDataModelValid": True, "HasRetainedData": True, "HasBeenSolved": True, "UpdateOrder": 1}</member-data>
         <properties-setByUserFlag-data valType="String">["IsDataModelValid"]</properties-setByUserFlag-data>
       </Object>
       <Object Name="/Parameters/DesignPointReportSetting:Design Points Report Setting" Version="1.0">
@@ -256,9 +286,9 @@
       <storage-scheme-id valType="String">version-1-format</storage-scheme-id>
       <deleted-sources valType="String">[]</deleted-sources>
       <last-updated valType="Int64">0</last-updated>
-      <last-modified-by-usage valType="String">{"Extrinsic": 2944, "Input": 2939, "Output": 1502}</last-modified-by-usage>
+      <last-modified-by-usage valType="String">{"Extrinsic": 3115, "Input": 2974, "Output": 1502}</last-modified-by-usage>
       <outputs-generated-by-type valType="String">{}</outputs-generated-by-type>
-      <contains-significant-data valType="Boolean">false</contains-significant-data>
+      <contains-significant-data valType="Boolean">true</contains-significant-data>
       <Object Name="/Schematic/System:SYS" Version="1.0">
         <class-type valType="String">System</class-type>
         <object-name valType="String">SYS</object-name>
@@ -402,7 +432,7 @@
       <Object Name="/Units/UnitSystem:UnitSys" Version="1.0">
         <class-type valType="String">UnitSystem</class-type>
         <object-name valType="String">UnitSys</object-name>
-        <member-data valType="String">{"DisplayText": "Metric (kg,m,s,°C,A,N,V)", "ChangedQuantityUnits": {"Temperature": "C", "Energy Source Coefficient": "W m^-3 C^-1", "Heat Transfer Coefficient": "W m^-2 C^-1", "InvTemp1": "C^-1", "InvTemp2": "C^-2", "InvTemp3": "C^-3", "InvTemp4": "C^-4", "Molar Entropy": "J mol^-1 C^-1", "Normalized Value": "m m^-1", "Seebeck Coefficient": "V C^-1", "Specific Entropy": "J kg^-1 C^-1", "Specific Heat Capacity": "J kg^-1 C^-1", "Temperature Gradient": "C m^-1", "Thermal Conductivity": "W m^-1 C^-1", "Thermal Expansivity": "C^-1", "Stress Per Temperature": "Pa C^-1", "Temperature Difference": "C", "Density Derivative wrt Temperature": "kg m^-3 C^-1", "Pressure Derivative wrt Temperature": "Pa C^-1", "Thermal Capacitance": "J C^-1", "Thermal Conductance": "W C^-1", "Thermal Contact Resistance": "W^-1 m^2 C", "Piezoelectric Strain Coefficient": "A s N^-1", "Piezoelectric Stress Coefficient": "A s m^-2", "Thermal Compliance": "W C"}, "UnitSystemName": "MKS_STANDARD", "BaseUnitSystemName": "SI", "IsProjectUnitSystem": True, "IsDefault": False}</member-data>
+        <member-data valType="String">{"DisplayText": "Metric (kg,m,s,°C,A,N,V)", "ChangedQuantityUnits": {}, "UnitSystemName": "MKS_STANDARD", "BaseUnitSystemName": "SI", "IsProjectUnitSystem": True, "IsDefault": False}</member-data>
       </Object>
     </Container>
     <Container Name="HpsContainer" Version="1.0">

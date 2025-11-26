@@ -1,0 +1,26 @@
+# encoding: utf-8
+# 2025 R2
+SetScriptVersion(Version="25.2.170")
+system1 = GetSystem(Name="APDL")
+setupComponent1 = system1.GetComponent(Name="Setup")
+setupComponent1.Refresh()
+setup1 = system1.GetContainer(ComponentName="Setup")
+setup1.Edit(
+    Interactive=True,
+    LoadInputFiles=True)
+setup1.Exit()
+system2 = GetSystem(Name="SYS")
+model1 = system2.GetContainer(ComponentName="Model")
+model1.Edit()
+setupComponent1.Refresh()
+setup1.Edit(
+    Interactive=True,
+    LoadInputFiles=True)
+setup1.Exit()
+setupComponent1.Update(AllDependencies=True)
+setupComponent1.Refresh()
+setup1.Edit(
+    Interactive=True,
+    LoadInputFiles=True)
+model1.Exit()
+setup1.Exit()

@@ -4,7 +4,7 @@
    <JOBNAME>file</JOBNAME>
    <DESCRIPTION> This file includes maxdef node num,maxdef elem num and num of elem types for workbench use. </DESCRIPTION>
 </HEADER>
-<MAXNODEID>61</MAXNODEID>
-<MAXELEMID>24</MAXELEMID>
+<MAXNODEID>57</MAXNODEID>
+<MAXELEMID>141</MAXELEMID>
 <MAXELEMTYPE>1</MAXELEMTYPE>
 </INFOTOWB>

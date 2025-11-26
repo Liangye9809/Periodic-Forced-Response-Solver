@@ -1,0 +1,204 @@
+/BATCH  
+/COM,ANSYS RELEASE 2025 R2           BUILD 25.2      UP20250519       18:26:22
+/input,menust,tmp,''
+/GRA,POWER
+/GST,ON
+/PLO,INFO,3
+/GRO,CURL,ON
+/CPLANE,1   
+/inp, 'C:/Users/UPM/AppData/Local/Temp/WB_UPM_6520_2/wbnew_files/dp0/APDL/ANSYS/workbench_main.inp' 
+/REPLOT,RESIZE  
+WPSTYLE,,,,,,,,0
+/POST1  
+SET,LIST
+EPLOT   
+EPLOT   
+NPLOT   
+/VIEW,1,1,1,1   
+/ANG,1  
+/REP,FAST   
+/DIST, 1 ,0.924021,1
+/REP,FAST   
+/DIST, 1 ,0.924021,1
+/REP,FAST   
+/DIST, 1 ,0.924021,1
+/REP,FAST   
+/DIST, 1 ,0.924021,1
+/REP,FAST   
+/DIST, 1 ,0.924021,1
+/REP,FAST   
+/DIST, 1 ,0.924021,1
+/REP,FAST   
+/DIST, 1 ,0.924021,1
+/REP,FAST   
+/DIST, 1 ,1.082226,1
+/REP,FAST   
+/VIEW,1,1,1,1   
+/ANG,1  
+/REP,FAST   
+/VIEW,1,1,2,3   
+/ANG,1  
+/REP,FAST   
+/VIEW,1,1,1,1   
+/ANG,1  
+/REP,FAST   
+/VIEW,1,1,2,3   
+/ANG,1  
+/REP,FAST   
+/VIEW,1,,,1 
+/ANG,1  
+/REP,FAST   
+/VIEW,1,1   
+/ANG,1  
+/REP,FAST   
+/VIEW,1,,1  
+/ANG,1  
+/REP,FAST   
+/VIEW,1,1,1,1   
+/ANG,1  
+/REP,FAST   
+EPLOT   
+SET,LAST
+SET,LIST
+!   
+!*  
+!*  
+!*  
+FINISH  
+/AUX2   
+FILE,'file','full','..\..\SYS\MECH\'
+HBMAT,'K','sti',' ',ASCII,STIFF,YES 
+FINISH  
+!*  
+!   
+!*  
+FINISH  
+/AUX2   
+FILE,'file','full','..\..\SYS\MECH\'
+HBMAT,'M','mas',' ',ASCII,MASS,YES  
+FINISH  
+!*  
+!   
+!*  
+FINISH  
+/AUX2   
+FILE,'file','full','..\..\SYS\MECH\'
+HBMAT,'C','dam',' ',ASCII,DAMP,YES  
+FINISH  
+!*  
+!   
+/POST1  
+SET,LIST
+FINISH  
+! /EXIT,NOSAV   
+/BATCH  
+/COM,ANSYS RELEASE 2025 R2           BUILD 25.2      UP20250519       13:14:07
+/BATCH  
+/COM,ANSYS RELEASE 2025 R2           BUILD 25.2      UP20250519       13:15:09
+/input,menust,tmp,''
+/GRA,POWER
+/GST,ON
+/PLO,INFO,3
+/GRO,CURL,ON
+!   
+/CPLANE,1   
+/REPLOT,RESIZE  
+/inp, '//tsclient/data/liangye/study loves me/data/non-linear problem/Periodic Forced Response Solver/two-solid system/FEM/FromAnsys/block case_files/dp0/APDL/ANSYS/workbench_main.inp'
+WPSTYLE,,,,,,,,0
+/SOLU   
+FINISH  
+/POST1  
+SET,LIST
+!   
+!*  
+!*  
+!*  
+FINISH  
+/AUX2   
+FILE,'file0','full','..\..\SYS\MECH\'   
+HBMAT,'K_lumpm_file0','sti',' ',ASCII,STIFF,YES 
+FINISH  
+!*  
+!   
+!*  
+FINISH  
+/AUX2   
+FILE,'file1','full','..\..\SYS\MECH\'   
+HBMAT,'K_lumpm_file1','sti',' ',ASCII,STIFF,YES 
+FINISH  
+!*  
+FINISH  
+! /EXIT,NOSAV   
+/BATCH  
+/COM,ANSYS RELEASE 2025 R2           BUILD 25.2      UP20250519       13:23:50
+/BATCH  
+/COM,ANSYS RELEASE 2025 R2           BUILD 25.2      UP20250519       13:24:35
+/input,menust,tmp,''
+/GRA,POWER
+/GST,ON
+/PLO,INFO,3
+/GRO,CURL,ON
+/CPLANE,1   
+/REPLOT,RESIZE  
+/inp, '//tsclient/data/liangye/study loves me/data/non-linear problem/Periodic Forced Response Solver/two-solid system/FEM/FromAnsys/block case_files/dp0/APDL/ANSYS/workbench_main.inp'
+WPSTYLE,,,,,,,,0
+/POST1  
+/SHOW,WIN32C
+INRES,ALL   
+FILE,'file','rst','.'   
+SET,LAST
+SET,FIRST   
+/PLOPTS,INFO,3  
+/CONTOUR,ALL,18 
+/PNUM,MAT,1 
+/NUMBER,1   
+/REPLOT,RESIZE  
+/DIST, 1 ,1.082226,1
+/REP,FAST   
+/DIST, 1 ,1.082226,1
+/REP,FAST   
+/DIST, 1 ,1.082226,1
+/REP,FAST   
+/VIEW,1,1,1,1   
+/ANG,1  
+/REP,FAST   
+/DIST, 1 ,1.082226,1
+/REP,FAST   
+/DIST, 1 ,1.082226,1
+/REP,FAST   
+/DIST, 1 ,1.082226,1
+/REP,FAST   
+/DIST, 1 ,1.082226,1
+/REP,FAST   
+/DIST, 1 ,1.082226,1
+/REP,FAST   
+/DIST, 1 ,1.082226,1
+/REP,FAST   
+/DIST, 1 ,1.082226,1
+/REP,FAST   
+/DIST, 1 ,1.082226,1
+/REP,FAST   
+! /UIS,ABORT,1  
+/SHOW,WIN32 
+/REPLOT,RESIZE  
+SET,LIST
+!   
+!*  
+!*  
+!*  
+FINISH  
+/AUX2   
+FILE,'file','full','..\..\SYS\MECH\'
+HBMAT,'K_lumpm','sti',' ',ASCII,STIFF,YES   
+FINISH  
+!*  
+!   
+!*  
+FINISH  
+/AUX2   
+FILE,'file','full','..\..\SYS\MECH\'
+HBMAT,'M_lumpm','sti',' ',ASCII,MASS,YES
+FINISH  
+!*  
+FINISH  
+! /EXIT,NOSAV   

@@ -22,3 +22,24 @@
  *** ERROR ***                           CP =       9.125   TIME= 18:31:35
  The selected matrix to be dumped (damping) does not exist on the chosen 
  .FULL file (..\..\SYS\MECH\file.full).                                  
+/COM,ANSYS RELEASE 2025 R2           BUILD 25.2      UP20250519       13:13:59
+/COM,ANSYS RELEASE 2025 R2           BUILD 25.2      UP20250519       13:15:05
+
+ *** WARNING ***                         CP =       2.953   TIME= 13:15:52
+ This function requires that files currently open be closed.             
+ Executing the function will exit the general postprocessor.             
+
+ *** ERROR ***                           CP =       7.344   TIME= 13:17:38
+ The HBMAT command does not support distributed FULL files.              
+
+ *** ERROR ***                           CP =       7.750   TIME= 13:18:05
+ The HBMAT command does not support distributed FULL files.              
+/COM,ANSYS RELEASE 2025 R2           BUILD 25.2      UP20250519       13:23:45
+/COM,ANSYS RELEASE 2025 R2           BUILD 25.2      UP20250519       13:24:32
+
+ *** WARNING ***                         CP =       5.094   TIME= 13:25:56
+ This function requires that files currently open be closed.             
+ Executing the function will exit the general postprocessor.             
+/COM,ANSYS RELEASE 2025 R2           BUILD 25.2      UP20250519       16:55:04
+/COM,ANSYS RELEASE 2025 R2           BUILD 25.2      UP20250519       17:26:15
+/COM,ANSYS RELEASE 2025 R2           BUILD 25.2      UP20250519       17:35:25

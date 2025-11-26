@@ -4,8 +4,15 @@ dp0/APDL/ANSYS/file.log
 dp0/APDL/ANSYS/file.err
 dp0/APDL/ANSYS/M_HW.mas
 dp0/APDL/ANSYS/file.rst
+dp0/APDL/ANSYS/file0.rst
+dp0/APDL/ANSYS/file3.rst
+dp0/APDL/ANSYS/file1.rst
 dp0/APDL/ANSYS/write_verify_update.inp
+dp0/APDL/ANSYS/file2.rst
 dp0/APDL/ANSYS/K_HW.sti
+dp0/APDL/ANSYS/workbench_main.out
+dp0/APDL/ANSYS/M_lumpm.mas
+dp0/APDL/ANSYS/K_lumpm.sti
 dp0/APDL/ANSYS/workbench_main.inp
 dp0/SYS/ENGD/material.engd
 dp0/SYS/ENGD/EngineeringData.xml
@@ -32,6 +39,7 @@ dp0/SYS/MECH/file.DSP
 dp0/act.dat
 dp0/designPoint.wbdp
 session_files/journal1.wbjn
+session_files/journal2.wbjn
 dpall/
 dp0/
 session_files/
