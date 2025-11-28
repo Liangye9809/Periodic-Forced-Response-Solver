@@ -110,7 +110,7 @@
   DATABASE SIZE REQUESTED (MB) = 1024        
 
  RELEASE= 2025 R2              BUILD= 25.2      UP20250519   VERSION=WINDOWS x64 
- CURRENT JOBNAME=file  17:35:27  NOV 26, 2025 CP=      0.078
+ CURRENT JOBNAME=file  13:23:49  NOV 26, 2025 CP=      0.172
 
 
  RUN SETUP PROCEDURE FROM FILE= C:\Program Files\ANSYS Inc\v252\ANSYS\apdl\start.ans
@@ -142,7 +142,7 @@
 +--------------------- M A P D L   S T A T I S T I C S ------------------------+
 
 Release: 2025 R2            Build: 25.2       Update: UP20250519   Platform: WINDOWS x64 
-Date Run: 11/26/2025   Time: 17:35     Process ID: 2820
+Date Run: 11/26/2025   Time: 13:24     Process ID: 6784
 Operating System: Windows 11  (Build: 26100)
 
 Processor Model: Intel Xeon Processor (Cascadelake)
@@ -164,10 +164,10 @@ Job Name: file
 Input File: workbench_main.inp
 Working Directory: \\tsclient\data\liangye\study loves me\data\non-linear problem\Periodic Forced Response Solver\two-solid system\FEM\FromAnsys\block case_files\dp0\APDL\ANSYS
 
-Total CPU time for main thread                    :        0.6 seconds
-Total CPU time summed for all threads             :        0.4 seconds
+Total CPU time for main thread                    :        1.0 seconds
+Total CPU time summed for all threads             :        0.8 seconds
 
-Elapsed time spent obtaining a license            :        0.4 seconds
+Elapsed time spent obtaining a license            :        0.6 seconds
 Elapsed time spent pre-processing model (/PREP7)  :        0.0 seconds
 Elapsed time spent solution - preprocessing       :        0.0 seconds
 Elapsed time spent computing solution             :        0.0 seconds
@@ -201,7 +201,7 @@ Total amount of I/O read from disk                :        0.0 GB
  |                                                                             |
  |-----------------------------------------------------------------------------|
  |                                                                             |
- |        CP Time      (sec) =          0.359       Time  =  17:35:46          |
- |        Elapsed Time (sec) =         23.000       Date  =  11/26/2025        |
+ |        CP Time      (sec) =          0.750       Time  =  13:24:09          |
+ |        Elapsed Time (sec) =         27.000       Date  =  11/26/2025        |
  |                                                                             |
  *-----------------------------------------------------------------------------*

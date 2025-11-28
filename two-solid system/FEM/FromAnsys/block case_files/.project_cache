@@ -39,13 +39,10 @@ dp0/SYS/MECH/file.DSP
 dp0/act.dat
 dp0/designPoint.wbdp
 session_files/journal1.wbjn
+session_files/journal3_crashed.wbjn
 session_files/journal2.wbjn
-dpall/
 dp0/
 session_files/
-dpall/global/
-dpall/global/ACT/
-dpall/global/ACT/extensions/
 dp0/global/
 dp0/APDL/
 dp0/SYS/
