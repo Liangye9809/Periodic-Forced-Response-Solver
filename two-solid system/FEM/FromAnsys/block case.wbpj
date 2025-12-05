@@ -2,10 +2,10 @@
 <Storage>
   <Project Version="25.2.1.0">
     <base-designpoint-name valType="String">0</base-designpoint-name>
-    <timestamp-max valType="Int64">3192</timestamp-max>
+    <timestamp-max valType="Int64">3247</timestamp-max>
     <framework-build-version valType="String">25.2.170.0</framework-build-version>
     <external-version-string valType="String">2025 R2</external-version-string>
-    <last-saved-utc valType="String">11/26/2025 12:48:46</last-saved-utc>
+    <last-saved-utc valType="String">12/02/2025 16:30:33</last-saved-utc>
     <managed-categories valType="String">[report, misc, progress]</managed-categories>
     <expression-scope-container valType="String">Parameters</expression-scope-container>
     <project-type valType="String">WB2</project-type>
@@ -49,7 +49,11 @@
 "87cf82dc-baa1-4908-978c-b0b521b7060f": "/Schematic/ComponentTemplate:SimulationSolutionCellTemplate_StructuralModalANSYS",
 "3df2fdcd-3377-4e98-8993-8ee742fef03f": "/Schematic/ComponentTemplate:SimulationResultsCellTemplate_StructuralModalANSYS",
 "0abe41e9-f43e-40e1-b873-fde1d0c56133": "/Schematic/ComponentTemplate:ANSYSSetupCellTemplate",
-"82b9724f-0b1f-456a-9e0c-88fadffe24ea": "/FileContainer/FileReference:F15"
+"86ce8080-4bbb-404f-9d82-abf93ad78503": "/FileContainer/FileReference:F15",
+"1d3d5ee4-870c-4469-9fec-5772695c85f8": "/FileContainer/FileReference:F11",
+"6b5feca5-75f0-4db6-a567-9d6d018e8330": "/FileContainer/FileReference:F12",
+"c7531d31-9217-4216-83e8-49ce8602009f": "/FileContainer/FileReference:F13",
+"e4a946c3-f32d-46fa-b61e-62992f52edf2": "/FileContainer/FileReference:F14"
 }</ReferenceList>
       </ProjectReferenceList>
       <DesignPointReferenceListCollection>
@@ -174,7 +178,7 @@
       <storage-scheme-id valType="String">version-1-format</storage-scheme-id>
       <deleted-sources valType="String">[]</deleted-sources>
       <last-updated valType="Int64">0</last-updated>
-      <last-modified-by-usage valType="String">{"Extrinsic": 3104, "Input": 1495, "Output": 1495}</last-modified-by-usage>
+      <last-modified-by-usage valType="String">{"Extrinsic": 3241, "Input": 1495, "Output": 1495}</last-modified-by-usage>
       <outputs-generated-by-type valType="String">{}</outputs-generated-by-type>
       <contains-significant-data valType="Boolean">false</contains-significant-data>
       <Object Name="/FileContainer/FileReference:F4" Version="1.0">
@@ -210,7 +214,7 @@
       <Object Name="/FileContainer/FileReference:F8" Version="1.0">
         <class-type valType="String">FileReference</class-type>
         <object-name valType="String">F8</object-name>
-        <member-data valType="String">{"DisplayText": "act.dat", "FileType": $$a04b64b0-bd92-4ff3-bb5b-23d15450749c, "DependentFiles": [], "ContainerAssociations": [], "SkipForDesignPointDuplication": False, "IsDeletable": True, "ExternalSource": None, "LastDownloadFromRepository": -1, "Location": r"$(ProjectName)_files\dp0\act.dat", "ReferenceCount": 2}</member-data>
+        <member-data valType="String">{"DisplayText": "act.dat", "FileType": $$a04b64b0-bd92-4ff3-bb5b-23d15450749c, "DependentFiles": [], "ContainerAssociations": [], "SkipForDesignPointDuplication": False, "IsDeletable": True, "ExternalSource": None, "LastDownloadFromRepository": -1, "Location": r"$(ProjectName)_files\dp0\act.dat", "ReferenceCount": 4}</member-data>
       </Object>
       <Object Name="/FileContainer/FileReference:F9" Version="1.0">
         <class-type valType="String">FileReference</class-type>
@@ -220,22 +224,22 @@
       <Object Name="/FileContainer/FileReference:F11" Version="1.0">
         <class-type valType="String">FileReference</class-type>
         <object-name valType="String">F11</object-name>
-        <member-data valType="String">{"DisplayText": "file0.rst", "FileType": $$58da9aed-8ba3-42d7-bb99-f69c8e1b8b8f, "DependentFiles": [], "ContainerAssociations": ["Solution"], "SkipForDesignPointDuplication": False, "IsDeletable": True, "ExternalSource": None, "LastDownloadFromRepository": -1, "Location": r"$(ProjectName)_files\dp0\SYS\MECH\file0.rst", "ReferenceCount": 2}</member-data>
+        <member-data valType="String">{"DisplayText": "file0.rst", "FileType": $$58da9aed-8ba3-42d7-bb99-f69c8e1b8b8f, "DependentFiles": [], "ContainerAssociations": ["Solution"], "SkipForDesignPointDuplication": False, "IsDeletable": True, "ExternalSource": None, "LastDownloadFromRepository": -1, "Location": r"$(ProjectName)_files\dp0\SYS\MECH\file0.rst", "ReferenceCount": 3}</member-data>
       </Object>
       <Object Name="/FileContainer/FileReference:F12" Version="1.0">
         <class-type valType="String">FileReference</class-type>
         <object-name valType="String">F12</object-name>
-        <member-data valType="String">{"DisplayText": "file3.rst", "FileType": $$58da9aed-8ba3-42d7-bb99-f69c8e1b8b8f, "DependentFiles": [], "ContainerAssociations": ["Solution"], "SkipForDesignPointDuplication": False, "IsDeletable": True, "ExternalSource": None, "LastDownloadFromRepository": -1, "Location": r"$(ProjectName)_files\dp0\SYS\MECH\file3.rst", "ReferenceCount": 2}</member-data>
+        <member-data valType="String">{"DisplayText": "file3.rst", "FileType": $$58da9aed-8ba3-42d7-bb99-f69c8e1b8b8f, "DependentFiles": [], "ContainerAssociations": ["Solution"], "SkipForDesignPointDuplication": False, "IsDeletable": True, "ExternalSource": None, "LastDownloadFromRepository": -1, "Location": r"$(ProjectName)_files\dp0\SYS\MECH\file3.rst", "ReferenceCount": 3}</member-data>
       </Object>
       <Object Name="/FileContainer/FileReference:F13" Version="1.0">
         <class-type valType="String">FileReference</class-type>
         <object-name valType="String">F13</object-name>
-        <member-data valType="String">{"DisplayText": "file1.rst", "FileType": $$58da9aed-8ba3-42d7-bb99-f69c8e1b8b8f, "DependentFiles": [], "ContainerAssociations": ["Solution"], "SkipForDesignPointDuplication": False, "IsDeletable": True, "ExternalSource": None, "LastDownloadFromRepository": -1, "Location": r"$(ProjectName)_files\dp0\SYS\MECH\file1.rst", "ReferenceCount": 2}</member-data>
+        <member-data valType="String">{"DisplayText": "file1.rst", "FileType": $$58da9aed-8ba3-42d7-bb99-f69c8e1b8b8f, "DependentFiles": [], "ContainerAssociations": ["Solution"], "SkipForDesignPointDuplication": False, "IsDeletable": True, "ExternalSource": None, "LastDownloadFromRepository": -1, "Location": r"$(ProjectName)_files\dp0\SYS\MECH\file1.rst", "ReferenceCount": 3}</member-data>
       </Object>
       <Object Name="/FileContainer/FileReference:F14" Version="1.0">
         <class-type valType="String">FileReference</class-type>
         <object-name valType="String">F14</object-name>
-        <member-data valType="String">{"DisplayText": "file2.rst", "FileType": $$58da9aed-8ba3-42d7-bb99-f69c8e1b8b8f, "DependentFiles": [], "ContainerAssociations": ["Solution"], "SkipForDesignPointDuplication": False, "IsDeletable": True, "ExternalSource": None, "LastDownloadFromRepository": -1, "Location": r"$(ProjectName)_files\dp0\SYS\MECH\file2.rst", "ReferenceCount": 2}</member-data>
+        <member-data valType="String">{"DisplayText": "file2.rst", "FileType": $$58da9aed-8ba3-42d7-bb99-f69c8e1b8b8f, "DependentFiles": [], "ContainerAssociations": ["Solution"], "SkipForDesignPointDuplication": False, "IsDeletable": True, "ExternalSource": None, "LastDownloadFromRepository": -1, "Location": r"$(ProjectName)_files\dp0\SYS\MECH\file2.rst", "ReferenceCount": 3}</member-data>
       </Object>
     </Container>
     <Container Name="Messages" Version="1.0">
@@ -286,7 +290,7 @@
       <storage-scheme-id valType="String">version-1-format</storage-scheme-id>
       <deleted-sources valType="String">[]</deleted-sources>
       <last-updated valType="Int64">0</last-updated>
-      <last-modified-by-usage valType="String">{"Extrinsic": 3115, "Input": 2974, "Output": 1502}</last-modified-by-usage>
+      <last-modified-by-usage valType="String">{"Extrinsic": 3115, "Input": 3214, "Output": 1502}</last-modified-by-usage>
       <outputs-generated-by-type valType="String">{}</outputs-generated-by-type>
       <contains-significant-data valType="Boolean">true</contains-significant-data>
       <Object Name="/Schematic/System:SYS" Version="1.0">

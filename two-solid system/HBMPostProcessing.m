@@ -13,9 +13,9 @@
 % end
 % OMEGA = sqrt(omega02) .* omega_cont';
 % Adof = [OMEGA, Adof];
-% figure
-% plot(Adof(:,1), Adof(:,3)), hold on;
-% filename = 'data/NewMesh/Lower_Adof_CP' + string(Nx) + '_PreDisAll_PreloadFixed.mat';
+% % figure
+% % plot(Adof(:,1), Adof(:,3)), hold on;
+% filename = 'data/NewMesh/Pe100each_Adof_CP' + string(Nx) + '_PreDisAll_PreloadFixed.mat';
 % save(filename, "Adof");
 
 % Ndof = 1;
@@ -81,7 +81,7 @@ para.HBM = params.func.HBM;
 para.Pe = FEM.Pe;
 para.Pc = FEM.Pc;
 
-% save('data/NewMesh/Data_PeFixed_Omega_'+ string(omega_plot) + '_Nx_' + string(Nx) + '.mat','para');
+save('data/NewMesh/Pe100eachData_PeFixed_Omega_'+ string(omega_plot) + '_Nx_' + string(Nx) + '.mat','para');
 %% H validation
 % figure;
 % c = jet(15);

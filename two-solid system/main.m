@@ -1,5 +1,5 @@
 %% clear workspace and close all
-for Nx = 20:4:20
+for Nx = 36:4:36
 clearvars -except Nx
 % clear
 % close all

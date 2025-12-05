@@ -1,14 +1,14 @@
 clear
 %Build mass matrix (rotor without cyclic matrices)
-Mij=load('Singular_Mesh.mas');
-index=Mij(:,1)~=Mij(:,2);
-ii=[Mij(:,1);Mij(index,2)]; %symmetric part
-jj=[Mij(:,2);Mij(index,1)];
-ss=[Mij(:,3);Mij(index,3)];
-clear Mij;
+Mij1=load('sinlgeTex/Mesh_Tetra_Single_Linear.mas');
+index=Mij1(:,1)~=Mij1(:,2);
+ii=[Mij1(:,1);Mij1(index,2)]; %symmetric part
+jj=[Mij1(:,2);Mij1(index,1)];
+ss=[Mij1(:,3);Mij1(index,3)];
+clear Mij1;
 M=sparse(ii,jj,ss);
 %Build stiffness matrix (rotor without cyclic matrices)
-Kij=load('Mesh_singular.sti');
+Kij=load('Mesh_singleBlade2.sti');
 index=Kij(:,1)~=Kij(:,2);
 ii=[Kij(:,1);Kij(index,2)];
 jj=[Kij(:,2);Kij(index,1)];
@@ -18,7 +18,31 @@ K=sparse(ii,jj,ss);
 clear ii jj ss;
 [Phi, D] = eigs(K, M, 40, 'smallestabs');
 e = diag(D);
+%% Linear
+clear
+Mij = load('singleTex/Mesh_Tetra_Single_Linear.mas');
+M = sparse(Mij(:, 1), Mij(:, 2), Mij(:, 3));
+M = M + M' - sparse(1:length(M), 1:length(M), spdiags(M, 0));
+eM = eig(M);
 
+Kij = load('singleTex/Mesh_Tetra_Single_Linear.sti');
+K = sparse(Kij(:, 1), Kij(:, 2), Kij(:, 3));
+K = K + K' - sparse(1:length(K), 1:length(K), spdiags(K, 0));
+eK = eig(K);
+
+%% Quadratic
+clear
+Mij = load('singleTex/Mesh_Tetra_Single_Qua.mas');
+M = sparse(Mij(:, 1), Mij(:, 2), Mij(:, 3));
+M = M + M' - sparse(1:length(M), 1:length(M), spdiags(M, 0));
+eM = eig(M);
+
+Kij = load('singleTex/Mesh_Tetra_Single_Qua.sti');
+K = sparse(Kij(:, 1), Kij(:, 2), Kij(:, 3));
+K = K + K' - sparse(1:length(K), 1:length(K), spdiags(K, 0));
+eK = eig(K);
+
+e = eig(K, M);
 %%
 a = [1,2,3,4,5]';
 b = [2,4]';

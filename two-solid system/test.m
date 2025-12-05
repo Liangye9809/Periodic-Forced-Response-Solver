@@ -207,19 +207,19 @@ for i = 1:5
 end
 
 %% plot a1 resonance curve 
-for CBmode = 1:5
-    figure
+for CBmode = 1:1
+    figure(1)
     dof_plot = CBmode;
     for i = 4:4:36
-        names = 'data/NewMesh/Lower_Adof_CP' + string(i) + '_PreDisAll_PreloadFixed.mat';
+        names = 'data/NewMesh/Pe100each_Adof_CP' + string(i) + '_PreDisAll_PreloadFixed.mat';
         load(names);
-        plot(Adof(:, 1), Adof(:, dof_plot + 2)), hold on; 
+        plot(Adof(:, 1), Adof(:, dof_plot + 2),'--'), hold on; 
     end
     grid on;
     xlabel('Omega');
     namey = '|dof' + string(dof_plot) + '|';
     ylabel(namey);
-    legend('CP4', 'CP8', 'CP12', 'CP16', 'CP20', 'CP24', 'CP28', 'CP32', 'CP36');
+    % legend('CP4', 'CP8', 'CP12', 'CP16', 'CP20', 'CP24', 'CP28', 'CP32', 'CP36');
     xlim([4050,4400]);
     % plot([4218,4218], [0, 300], 'k--','DisplayName','Omega4218');
 end
@@ -455,7 +455,7 @@ end
 omega_plot = 4210;
 
 % F vs t
-for Nx = 4:4:36
+for Nx = 36:4:36
 
     switch Nx
         case 4
@@ -478,7 +478,7 @@ for Nx = 4:4:36
             omega_plot = 4170;
     end
     
-    paraname = 'data/NewMesh/Data_PeFixed_Omega_'+ string(omega_plot) + '_Nx_' + string(Nx) + '.mat';
+    paraname = 'data/NewMesh/Pe100eachData_PeFixed_Omega_'+ string(omega_plot) + '_Nx_' + string(Nx) + '.mat';
     load(paraname);
     
     a = floor(sqrt(Nx));
@@ -506,4 +506,32 @@ for Nx = 4:4:36
         plot(para.xtpxp(:, 3 * i - 1), para.Ft(:, 3 * i - 1), 'r-'), hold on;
         title(i);
     end
+end
+
+%% plot a1 resonance curve comparison
+
+c = jet(9);
+% CP = [4:4:36];
+% for i = 1:5
+%     plot(CP, frqs(i, :), 'Color', c(i,:), 'Marker', 'o','MarkerFaceColor', c(i,:), 'LineStyle', '-'), hold on;
+% end
+
+for CBmode = 1:1
+    figure
+    dof_plot = CBmode;
+    for i = 4:4:36
+        names = 'data/NewMesh/Lower_Adof_CP' + string(i) + '_PreDisAll_PreloadFixed.mat';
+        load(names);
+        plot(Adof(:, 1), Adof(:, dof_plot + 2),'Color', c(i/4,:),'LineStyle','-'), hold on; 
+        names = 'data/NewMesh/Pe100each_Adof_CP' + string(i) + '_PreDisAll_PreloadFixed.mat';
+        load(names);
+        plot(Adof(:, 1), Adof(:, dof_plot + 2),'Color', c(i/4,:),'LineStyle','--'), hold on; 
+    end
+    grid on;
+    xlabel('Omega');
+    namey = '|dof' + string(dof_plot) + '|';
+    ylabel(namey);
+    legend('CP4','CP4', 'CP8', 'CP8', 'CP12','CP12', 'CP16','CP16', 'CP20','CP20', 'CP24','CP24', 'CP28','CP28', 'CP32','CP32', 'CP36', 'CP36');
+    xlim([4050,4400]);
+    % plot([4218,4218], [0, 300], 'k--','DisplayName','Omega4218');
 end

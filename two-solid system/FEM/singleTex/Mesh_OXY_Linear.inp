@@ -1,0 +1,31 @@
+*NODE, NSET=NALL
+    1, 0.0000000000e+00, 0.0000000000e+00, 0.0000000000e+00
+    2, 1.0000000000e+00, 0.0000000000e+00, 0.0000000000e+00
+    3, 2.0000000000e-01, 2.0000000000e-01, 2.0000000000e-01
+    4, 0.0000000000e+00, 1.0000000000e+00, 0.0000000000e+00
+*ELEMENT, TYPE=B31, ELSET=B31
+    1, 1, 2, 
+    2, 3, 2, 
+    3, 3, 1, 
+    4, 1, 4, 
+    5, 3, 4, 
+    6, 4, 2, 
+*ELEMENT, TYPE=CPS3, ELSET=CPS3
+    7, 1, 2, 3, 
+    8, 3, 4, 1, 
+    9, 2, 4, 3, 
+    10, 1, 4, 2, 
+*ELEMENT, TYPE=C3D4, ELSET=C3D4
+    11, 3, 1, 4, 2, 
+*ELSET, ELSET=Edge_4
+    4, 
+*ELSET, ELSET=Edge_5
+    3, 
+*ELSET, ELSET=Edge_6
+    5, 
+*ELSET, ELSET=Edge_7
+    1, 
+*ELSET, ELSET=Edge_8
+    6, 
+*ELSET, ELSET=Edge_9
+    2, 

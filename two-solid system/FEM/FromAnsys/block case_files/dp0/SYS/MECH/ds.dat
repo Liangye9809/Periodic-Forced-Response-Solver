@@ -13,7 +13,7 @@
 /COM,
 ! ****** End   Custom Load Command Snippet ******
 *DIM,_wb_ProjectScratch_dir,string,248
-_wb_ProjectScratch_dir(1) = '\\tsclient\data\liangye\study loves me\data\non-linear problem\Periodic Forced Response Solver\two-solid system\FEM\FromAnsys\_ProjectScratch\Scr4A05\'
+_wb_ProjectScratch_dir(1) = '\\tsclient\data\liangye\study loves me\data\non-linear problem\Periodic Forced Response Solver\two-solid system\FEM\FromAnsys\_ProjectScratch\Scr8D6A\'
 *DIM,_wb_SolverFiles_dir,string,248
 _wb_SolverFiles_dir(1) = '\\tsclient\data\liangye\study loves me\data\non-linear problem\Periodic Forced Response Solver\two-solid system\FEM\FromAnsys\block case_files\dp0\SYS\MECH\'
 *DIM,_wb_userfiles_dir,string,248
@@ -190,6 +190,9 @@ outres,erase
 outres,all,none
 outres,nsol,all
 mxpand                    ! default expand in case of complex solution
+dmpopt,esav,no
+dmpopt,emat,no
+dmpopt,full,no
 ! ****** Begin Command Snippet ******
 !   Commands inserted into this file will be executed just prior to the ANSYS SOLVE command.
 !   These commands may supersede command settings set by Workbench.
@@ -197,8 +200,9 @@ mxpand                    ! default expand in case of complex solution
 !   Active UNIT system in Workbench when this object was created:  Metric (m, kg, N, s, V, A)
 !   NOTE:  Any data that requires units (such as mass) is assumed to be in the consistent solver unit system.
 !                See Solving Units in the help system for more information.
-LUMPM, ON
+! LUMPM, ON
 
+! ET, 1, SOLID168
 ! ****** End   Command Snippet ******
 ! *********** WB SOLVE COMMAND ***********
 ! check interactive state
@@ -267,11 +271,11 @@ _tmdirection(6) = 'Z'
 
 
 
-*SMAT, Ksparse, D, IMPORT, FULL, file.full, STIFF
-*PRINT, Ksparse, K.sti
-
-*SMAT, Msparse, D, IMPORT, FULL, file.full, MASS
-*PRINT, Msparse, M.mass
+! *SMAT, Ksparse, D, IMPORT, FULL, file.full, STIFF
+! *PRINT, Ksparse, K.sti
+! 
+! *SMAT, Msparse, D, IMPORT, FULL, file.full, MASS
+! *PRINT, Msparse, M.mass
 ! ****** End   Command Snippet ******
 xmlo,ENCODING,ISO-8859-1
 xmlo,parm
