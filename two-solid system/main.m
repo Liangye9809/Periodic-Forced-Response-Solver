@@ -1,6 +1,11 @@
 %% clear workspace and close all
-for Nx = 36:4:36
+% for maini = 2:5
+% clearvars -except maini
+% Nx = 4^(maini - 1);
+
+for Nx = 4:4:36
 clearvars -except Nx
+
 % clear
 % close all
 clc
@@ -19,7 +24,8 @@ clc
 
 
     
-dataname = 'CP' + string(Nx) + '.mat';
+% dataname = 'Mesh32x32_CP' + string(Nx) + '.mat';
+dataname = 'Mesh10x13_CP' + string(Nx) + '.mat';
 
 tep = pwd;
 cd FEM/
@@ -90,33 +96,34 @@ Nondimensionalization
 %% continuation calculation with HBM
 
 % tic;
-omega_plot = 4210;
-switch Nx
-    case 4
-        omega_plot = 4210;
-    case 8
-        omega_plot = 4214.8;
-    case 12
-        omega_plot = 4216.2;
-    case 16
-        omega_plot = 4185;
-    case 20 
-        omega_plot = 4167.52;
-    case 24
-        omega_plot = 4175.41;
-    case 28
-        omega_plot = 4163.58;
-    case 32
-        omega_plot = 4170;
-    case 36
-        omega_plot = 4170;
-end
+% omega_plot = 4210;
+% switch Nx
+%     case 4
+%         omega_plot = 4210;
+%     case 8
+%         omega_plot = 4214.8;
+%     case 12
+%         omega_plot = 4216.2;
+%     case 16
+%         omega_plot = 4185;
+%     case 20 
+%         omega_plot = 4167.52;
+%     case 24
+%         omega_plot = 4175.41;
+%     case 28
+%         omega_plot = 4163.58;
+%     case 32
+%         omega_plot = 4170;
+%     case 36
+%         omega_plot = 4170;
+% end
 
-omega_0 = 4050 / sqrt(omega02);
+% omega_0 = 4050 / sqrt(omega02);
+omega_0 = 3850 / sqrt(omega02);
 % omega_end = 5200 / sqrt(omega02);
-% omega_end = 4400 / sqrt(omega02);
+omega_end = 4400 / sqrt(omega02);
 % omega_end = 4218 / sqrt(omega02);
-omega_end = omega_plot / sqrt(omega02);
+% omega_end = omega_plot / sqrt(omega02);
 
 
 ContinuationCalculation

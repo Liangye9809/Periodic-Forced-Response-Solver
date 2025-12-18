@@ -1,1 +1,14 @@
-*.frd
+/two-solid system/FEM/*.frd
+/two-solid system/FEM/*.mas
+/two-solid system/FEM/*.sti
+/two-solid system/FEM/*.12d
+/two-solid system/FEM/*.cvg
+/two-solid system/FEM/*.dat
+/two-solid system/FEM/*.dof
+
+
+/two-solid system/FEM/Mesh32x32_CP1.mat
+/two-solid system/FEM/Mesh32x32_CP4.mat
+/two-solid system/FEM/Mesh32x32_CP16.mat
+/two-solid system/FEM/Mesh32x32_CP64.mat
+/two-solid system/FEM/Mesh32x32_CP256.mat

@@ -8,8 +8,13 @@
 % load('CP4.mat');
 % cd(tep)
 
+% FEM.Fe = zeros(size(FEM.Mee, 1), 1);
+% Fe_idx = [1661, 1667, 31355, 31367] - 1;
+% FEM.Fe(Fe_idx) = 1;
+% FEM.Fc = zeros(size(FEM.Mcc, 1), 1);
+
 FEM.Fe = zeros(size(FEM.Mee, 1), 1);
-Fe_idx = [1661, 1667, 31355, 31367] - 1;
+Fe_idx = FEM.idx_Fe - 1; % change y direction to x direction
 FEM.Fe(Fe_idx) = 1;
 FEM.Fc = zeros(size(FEM.Mcc, 1), 1);
 
@@ -57,7 +62,11 @@ xi = 1e-6;
 % FEM.Pe = FEM.Kec * Xcn0;
 % FEM.Pc = FEM.Kcc * Xcn0;
 
-FEM.Pe = zeros(size(FEM.Kcc, 1), 1);
+FEM.Pe = zeros(size(FEM.Kec, 1), 1);
+% F_each = 100; % for 32x32 contact mesh, 9 points each side, total 900 N each side
+F_each = 112.5; % for 10x13 contact mesh, 9 points each side, total 900 N each side
+FEM.Pe(FEM.idx_Pe1) = F_each;
+FEM.Pe(FEM.idx_Pe2) = - F_each;
 FEM.Pc = zeros(size(FEM.Kcc, 1), 1);
 %% Newton Method parameters
 
@@ -67,11 +76,11 @@ maxiter = 100;
 
 %% Coulomb friction
 
-kn = 1e9; % ./ (Nx/4); % .* 1e5;
+kn = 1e9 ./ (Nx/4); % .* 1e5;
 % kn = 3.3e7 ./ (Nx/4); % .* 1e5;
 xn0 = 0;
 mu = [0.1; 0.1]; % .* 1e5;
-kt = [1e6; 1e6]; % ./ (Nx/4); % .* 1e5;
+kt = [1e6; 1e6] ./ (Nx/4); % .* 1e5;
 
 
 %% preload initial condition for Newton method

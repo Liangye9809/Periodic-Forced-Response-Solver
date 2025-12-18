@@ -535,3 +535,20 @@ for CBmode = 1:1
     xlim([4050,4400]);
     % plot([4218,4218], [0, 300], 'k--','DisplayName','Omega4218');
 end
+
+%%
+clear
+close all
+OmegaFS = zeros(5, 1);
+for resti = 1:5
+    Nx = 4^(i - 1);
+    filename = 'data/NewMesh/Pe112.5each_Adof_CP' + string(Nx) + '_PreloadFixed_8points.mat';
+    load(filename);
+    OmegaFS(resti) = Adof(1, 1) / Adof(1, 2);
+    figure(1)
+    plot(Adof(:,1), Adof(:,3)), hold on;
+    % plot([OmegaFS(resti), OmegaFS(resti)], [0, 80], 'k--');
+end
+legend('Nx1','Nx4','Nx16','Nx64','Nx256')
+figure(2)
+plot([1, 4, 16, 64, 256]', OmegaFS);

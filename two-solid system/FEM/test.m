@@ -1,7 +1,7 @@
-input_file = 'BladeMesh_2.inp';
-output_file = 'BladeMesh_2_shifted.inp';
+input_file = 'MeshWithPreload_32x32_1.inp';
+output_file = 'MeshWithPreload_32x32_1_shifted.inp';
 first_section_header = '*NODE, NSET=NALL';
-offset = 2e6;
+offset = 1e6;
 RenumberMesh(input_file, output_file, first_section_header, offset);
 %%
 line = '10, 0.00215423, 0.1123, 0.0001';
@@ -137,26 +137,29 @@ for i = 4:4:36
     Pe_dof2 = [121; 120; 29; 236; 119; 117; 118; 28] + 0.3 + 2e6;
     FEM.idx_Pe1 = find(ismember(dof, Pe_dof1));
     FEM.idx_Pe2 = find(ismember(dof, Pe_dof2));
+
+    Fe_dof = [1000572.2, 1000574.2, 2000596.2, 2000592.2]';
+    FEM.idx_Fe = find(ismember(dof, Fe_dof));
     % save CP36 FEM
-    save('CP' + string(i) + '.mat', 'FEM');
+    save('Mesh10x13_CP' + string(i) + '.mat', 'FEM');
 end
 %%
-M_file_1 = 'test_box/analysis_1.mas';
-M_file_2 = 'test_box/analysis_2.mas';
-K_file_1 = 'test_box/analysis_1.sti';
-K_file_2 = 'test_box/analysis_2.sti';
-dof_file_1 = 'test_box/analysis_1.dof';
-dof_file_2 = 'test_box/analysis_2.dof';
-mesh_file_1 = 'test_box/Mesh_1_shifted.inp';
-mesh_file_2 = 'test_box/Mesh_2_shifted.inp';
+M_file_1 = 'StructralMesh_8X8_1_shifted.mas';
+M_file_2 = 'StructralMesh_8X8_2_shifted.mas';
+K_file_1 = 'StructralMesh_8X8_1_shifted.sti';
+K_file_2 = 'StructralMesh_8X8_2_shifted.sti';
+dof_file_1 = 'StructralMesh_8X8_1_shifted.dof';
+dof_file_2 = 'StructralMesh_8X8_2_shifted.dof';
+mesh_file_1 = 'StructralMesh_8X8_1_shifted.inp';
+mesh_file_2 = 'StructralMesh_8X8_2_shifted.inp';
 node_header_1 = '*NODE';
 node_header_2 = '*NODE';
-Nc1 = [18, 11, 16] + 1e6;
+Nc1 = [57, 9248, 9249] + 1e6;
        % 20, 7, 26;
        % 10, 26, 1;
        % 26, 14, 18] + 1e6;
 % in balde 2
-Nc2 = [18, 16, 15] + 2e6;
+Nc2 = [57, 7881, 7906] + 2e6;
        % 19, 8, 25;
        % 12, 25, 2;
        % 25, 16, 17] + 2e6;
@@ -168,7 +171,7 @@ Nc2 = [18, 16, 15] + 2e6;
                    Nc1, Nc2);
 [Phi, D] = eigs(FEM.Kee, FEM.Mee, 40, 'smallestabs');
 e = diag(D);
-save test_box/CP1 FEM
+save('StructuralCP' + string(1) + '.mat', 'FEM');
 %%
 I = eye(6);
 P = [I, I; I, -I];
@@ -272,9 +275,106 @@ Nc2 = [43, 33, 40;
 [Phi, D] = eigs(FEM.Kee, FEM.Mee, 40, 'smallestabs');
 e = diag(D);
 save two_blades_old/mesh_files/CP4 FEM
+
+%% mesh 32x32 contact with preload mesh 2x2(9 nodes)
+clear
+M_file_1 = 'MeshWithPreload_32x32_1_shifted.mas';
+M_file_2 = 'MeshWithPreload_32x32_2_shifted.mas';
+K_file_1 = 'MeshWithPreload_32x32_1_shifted.sti';
+K_file_2 = 'MeshWithPreload_32x32_2_shifted.sti';
+dof_file_1 = 'MeshWithPreload_32x32_1_shifted.dof';
+dof_file_2 = 'MeshWithPreload_32x32_2_shifted.dof';
+mesh_file_1 = 'MeshWithPreload_32x32_1_shifted.inp';
+mesh_file_2 = 'MeshWithPreload_32x32_2_shifted.inp';
+node_header_1 = '*NODE';
+node_header_2 = '*NODE';
+
+% % 1 contact
+% Nc1 = [618, 9458, 9552] + 1e6;
+% Nc2 = [618, 9465, 9469] + 2e6;
+
+% 4 contact
+% Nc1 = [858, 10194, 10288;
+%        874, 10242, 10336;
+%        362, 8674, 8768;
+%        378, 8722, 8816] + 1e6;
+% 
+% Nc2 = [874, 10249, 10253;
+%        858, 10201, 10205;
+%        378, 8729, 8733;
+%        362, 8681,8685] + 2e6;
+
+% 16 contact
+% Nc1 = [978, 10562, 10656;
+%        986, 10586, 10680;
+%        1002, 10634, 10728;
+%        730, 9802, 9896;
+%        738, 9826, 9920;
+%        746, 9850, 9944;
+%        754, 9874, 9968;
+%        482, 9042, 9136;
+%        490, 9066, 9160;
+%        498, 9090, 9184;
+%        506, 9114, 9208;
+%        234, 8282, 8376;
+%        424, 8306, 8400;
+%        250, 8330, 8424;
+%        258, 8354, 8448] + 1e6;
+% 
+% Nc2 = [] + 2e6;
+
+% calculate contact pairs
+load B1M.mat
+load B2M.mat
+Nc1 = [];
+Nc2 = [];
+NcTemp = zeros(1, 3);
+for i = 1:5
+    n = 2^i;
+    m = 2^(i-1);
+    
+    for j = (64 / n + 1):(64 / m):64
+        for k = (64 / n + 1):(64 / m):64
+            NcTemp(1) = B1M(j, k);
+            NcTemp(2) = B1M(j, k + 1);
+            NcTemp(3) = B1M(j - 1, k);
+            Nc1 = [Nc1; NcTemp];
+
+            NcTemp(1) = B2M(j, k);
+            NcTemp(2) = B2M(j, k + 1);
+            NcTemp(3) = B2M(j - 1, k);
+            Nc2 = [Nc2; NcTemp];
+        end
+    end
+end
+
+Nc1 = Nc1 + 1e6;
+Nc2 = Nc2 + 2e6;
+for i = 1:5
+    S1 = (4^(i - 1) - 1) / 3 + 1;
+    S1 = max(1, S1);
+    S2 = (4^i - 1) / 3;
+    [FEM.Mee, FEM.Mec, FEM.Mcc, FEM.Kee, FEM.Kec, FEM.Kcc, dof] = ReorderMK(M_file_1, M_file_2, ...
+                       K_file_1, K_file_2, ...
+                       dof_file_1, dof_file_2, ...
+                       mesh_file_1, mesh_file_2, ...
+                       node_header_1, node_header_2, ...
+                       Nc1(S1:S2,:), Nc2(S1:S2,:));
+    
+    Pe_dof1 = [1; 2; 3; 4; 5; 6; 7; 8; 9] + 0.3 + 1e6;
+    Pe_dof2 = [1; 2; 3; 4; 5; 6; 7; 8; 9] + 0.3 + 2e6;
+    FEM.idx_Pe1 = find(ismember(dof, Pe_dof1));
+    FEM.idx_Pe2 = find(ismember(dof, Pe_dof2));
+    
+    Fe_dof = [1001432.2, 1001462.2, 2001719.2, 2001765.2]';
+    FEM.idx_Fe = find(ismember(dof, Fe_dof));
+    
+    % [Phi, D] = eigs(FEM.Kee, FEM.Mee, 20, 'smallestabs');
+    % e = diag(D);
+    % save full_stuck_modes_CP36 e
+    
+    % save Mesh32x32_CP4 FEM
+    save('Mesh32x32_CP' + string(4^(i-1)) + '.mat', 'FEM');
+end
+
 %%
-input_file = 'test_box/Mesh_1.inp';
-output_file = 'test_box/Mesh_1_shifted.inp';
-first_section_header = '*NODE, NSET=NALL';
-offset = 1e6;
-RenumberMesh(input_file, output_file, first_section_header, offset);
