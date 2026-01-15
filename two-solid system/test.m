@@ -541,8 +541,8 @@ clear
 close all
 OmegaFS = zeros(5, 1);
 for resti = 1:5
-    Nx = 4^(i - 1);
-    filename = 'data/NewMesh/Pe112.5each_Adof_CP' + string(Nx) + '_PreloadFixed_8points.mat';
+    Nx = 4^(resti - 1);
+    filename = 'data/Mesh32x32/Pe100each_Adof_CP' + string(Nx) + '_PreloadFixed_9points.mat';
     load(filename);
     OmegaFS(resti) = Adof(1, 1) / Adof(1, 2);
     figure(1)
@@ -551,4 +551,42 @@ for resti = 1:5
 end
 legend('Nx1','Nx4','Nx16','Nx64','Nx256')
 figure(2)
-plot([1, 4, 16, 64, 256]', OmegaFS);
+plot([1, 4, 16, 64, 256]', OmegaFS, 'o-');
+
+
+%%
+clear
+close all
+for iH = 1:4
+    H = 2 * iH - 1;
+    % figure(iH)
+    for iN = 1:3
+        figure(iN)
+        N = 2 ^ (iN + 5);
+        filename = 'data/Mesh32x32/Pe100each_Adof_CP64_PreloadFixed_9points_H' + string(H) + '_N' + string(N) + '.mat';
+        load(filename);
+        figure(iN)
+        plot(Adof(:,1), Adof(:,3)), hold on;
+        % legend('N64','N128','N256');
+        % grid on;
+        % titlename = 'H' + string(H);
+        % title(titlename);
+        % xlabel('Omega');
+        % ylabel('|dof_1|');
+    end
+    for iN = 1:3
+        N = 2 ^ (iN + 5);
+        figure(iN)
+        legend('H1','H3','H5','H7');
+        grid on;
+        titlename = 'N' + string(N);
+        title(titlename);
+        xlabel('Omega');
+        ylabel('|dof_1|');
+        xlim([4170,4239]);
+        ylim([60,70]);
+    end
+end
+
+
+

@@ -46,9 +46,9 @@ H_F_ext = [0, 0, 1]; % fourier coefficient of f(t)
 
 %% HBM parameters
 
-H = 1; % number of harmonics assumption
-N = 2^6; % number of time points per force cycle
-% Nx = 4; % number of contact points, means having 4 * 3 = 12 dofs
+% H = 7; % number of harmonics assumption
+% N = 2^6; % number of time points per force cycle
+% Nx = 64; % number of contact points, means having 4 * 3 = 12 dofs
 Na = 5; % number of CB modes
 xi = 1e-6; 
 
@@ -63,8 +63,8 @@ xi = 1e-6;
 % FEM.Pc = FEM.Kcc * Xcn0;
 
 FEM.Pe = zeros(size(FEM.Kec, 1), 1);
-% F_each = 100; % for 32x32 contact mesh, 9 points each side, total 900 N each side
-F_each = 112.5; % for 10x13 contact mesh, 8 points each side, total 900 N each side
+F_each = 100; % for 32x32 contact mesh, 9 points each side, total 900 N each side
+% F_each = 112.5; % for 10x13 contact mesh, 8 points each side, total 900 N each side
 FEM.Pe(FEM.idx_Pe1) = F_each;
 FEM.Pe(FEM.idx_Pe2) = - F_each;
 FEM.Pc = zeros(size(FEM.Kcc, 1), 1);

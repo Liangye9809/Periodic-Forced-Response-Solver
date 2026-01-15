@@ -1,14 +1,15 @@
 %% clear workspace and close all
-% for maini = 2:5
-% clearvars -except maini
-% Nx = 4^(maini - 1);
-
-for Nx = 4:4:36
-clearvars -except Nx
+for H = 3:2:7
+    for mainj = 7:8
+clearvars -except mainj H
+N = 2^mainj;
+Nx = 64;
+% for Nx = 4:4:36
+% clearvars -except Nx
 
 % clear
 % close all
-clc
+% clc
 %**************************************************************************************************
 % This file using continuation method to solve the equation under Harmonic Balance Method assumption :
 % 
@@ -24,8 +25,8 @@ clc
 
 
     
-% dataname = 'Mesh32x32_CP' + string(Nx) + '.mat';
-dataname = 'Mesh10x13_CP' + string(Nx) + '.mat';
+dataname = 'Mesh32x32_CP' + string(Nx) + '.mat';
+% dataname = 'Mesh10x13_CP' + string(Nx) + '.mat';
 
 tep = pwd;
 cd FEM/
@@ -95,7 +96,7 @@ CriagBamptonReduction
 Nondimensionalization
 %% continuation calculation with HBM
 
-% tic;
+tic;
 % omega_plot = 4210;
 % switch Nx
 %     case 4
@@ -127,8 +128,10 @@ omega_end = 4400 / sqrt(omega02);
 
 
 ContinuationCalculation
+CaseTime = toc;
+CaseInfo = 'Mesh32x32_Pe100each_Adof_CP' + string(Nx) + '_PreloadFixed_9points_H' + string(H) + '_N' + string(N);
+disp([CaseInfo, CaseTime]);
 
-% toc;
 
 %%
 
@@ -136,5 +139,5 @@ HBMPostProcessing;
 
 
 end
-
+end
 
