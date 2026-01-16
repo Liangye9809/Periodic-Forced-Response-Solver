@@ -1,6 +1,6 @@
 %% clear workspace and close all
-for H = 3:2:7
-    for mainj = 7:8
+for H = 3:2:3
+    for mainj = 8:8
 clearvars -except mainj H
 N = 2^mainj;
 Nx = 64;
@@ -97,7 +97,7 @@ Nondimensionalization
 %% continuation calculation with HBM
 
 tic;
-% omega_plot = 4210;
+omega_plot = 4193;
 % switch Nx
 %     case 4
 %         omega_plot = 4210;
@@ -119,18 +119,15 @@ tic;
 %         omega_plot = 4170;
 % end
 
-% omega_0 = 4050 / sqrt(omega02);
 omega_0 = 3850 / sqrt(omega02);
-% omega_end = 5200 / sqrt(omega02);
-omega_end = 4400 / sqrt(omega02);
-% omega_end = 4218 / sqrt(omega02);
-% omega_end = omega_plot / sqrt(omega02);
+% omega_end = 4400 / sqrt(omega02);
+omega_end = omega_plot / sqrt(omega02);
 
 
 ContinuationCalculation
 CaseTime = toc;
-CaseInfo = 'Mesh32x32_Pe100each_Adof_CP' + string(Nx) + '_PreloadFixed_9points_H' + string(H) + '_N' + string(N);
-disp([CaseInfo, CaseTime]);
+% CaseInfo = 'Mesh32x32_Pe100each_Adof_CP' + string(Nx) + '_PreloadFixed_9points_H' + string(H) + '_N' + string(N);
+% disp([CaseInfo, CaseTime]);
 
 
 %%
