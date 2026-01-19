@@ -1,13 +1,17 @@
 clear
 clc
 %% for single dof of variable
-eps = zeros(7, 4);
-h = 1e-6;
-order = 2;
+eps = zeros(11, 10);
+h = 10^(-8);
+order = 1;
+h_con = zeros(11, 10);
 for iH = 1:11
-    for iN = 1:4
-        N = 2 ^ (iN + 4);
+    for iN = 1:12
+        % N = 2 ^ (iN + 4);
+        N = 32;
         H = iH;
+        ih = iN + 0;
+        h = 10^(-ih);
         dt = 2 * pi / N;
         t = 0:dt:(2 * pi - dt);
         xt = exp(sin(t))';
@@ -26,5 +30,6 @@ for iH = 1:11
         JNL_A = HBMJACOB_analytical(dG, H);
 
         eps(iH, iN) = norm(JNL_A - JNL_N) / norm(JNL_A);
+        h_con(iH, iN) = h;
     end
 end
