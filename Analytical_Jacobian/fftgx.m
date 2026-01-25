@@ -2,7 +2,7 @@
 % x = [a¹0,a¹1,b¹1,a¹2,b¹2,...,a¹H,b¹H,  a²0,a²1,b²1,a²2,b²2,...,a²H,b²H,...]'
 
 %% original structure
-function F = fftgx(x, E, EH) % x(t) = E*X
+function [F, xt] = fftgx(x, E, EH) % x(t) = E*X
     
     
     n = size(E, 2); % 2H+1
@@ -16,7 +16,7 @@ function F = fftgx(x, E, EH) % x(t) = E*X
     xt = E * X; 
     % [Ft, w] = g_mex(xt + xp', pfunc.fc); % call mex function
     % [Ft, w] = g(xt + xp', pfunc.fc); % call mex function inside g
-    Ft = xt .^ 2;
+    Ft = g(xt);
     
     hndn = EH * Ft;
     F = hndn(:);
