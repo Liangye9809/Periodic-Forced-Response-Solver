@@ -1,9 +1,9 @@
 %% clear workspace and close all
-for H = 3:2:3
+for H = 11:2:11
     for mainj = 8:8
 clearvars -except mainj H
 N = 2^mainj;
-Nx = 64;
+Nx = 1;
 % for Nx = 4:4:36
 % clearvars -except Nx
 
@@ -97,7 +97,7 @@ Nondimensionalization
 %% continuation calculation with HBM
 
 tic;
-omega_plot = 4193;
+omega_plot = 4160;
 % switch Nx
 %     case 4
 %         omega_plot = 4210;

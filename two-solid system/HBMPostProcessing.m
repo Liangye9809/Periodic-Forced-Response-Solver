@@ -81,8 +81,10 @@ para.fc = params.func.fc;
 para.HBM = params.func.HBM;
 para.Pe = FEM.Pe;
 para.Pc = FEM.Pc;
+para.params = params;
+para.X = X;
 
-save('data/Mesh32x32/Pe100eachData_PeFixed_Omega_'+ string(omega_plot) + '_Nx_64_H3_N256.mat','para');
+save('data/Mesh32x32/Pe100eachData_PeFixed_Omega_'+ string(omega_plot) + '_Nx_' + string(Nx) + '_H' + string(H) + '_N' + string(N) + '.mat','para');
 %% H validation
 % figure;
 % c = jet(15);
