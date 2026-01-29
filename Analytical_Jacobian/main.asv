@@ -83,39 +83,101 @@ end
 clear
 clc
 load('Pe100eachData_PeFixed_Omega_4160_Nx_1_H11_N256.mat');
-
+% load('Pe100eachData_PeFixed_Omega_4100_Nx_1_H11_N256.mat');
 eps = [];
 h = 10^(-8);
 order = 1;
 h_con = [];
 N = para.HBM.N;
 xt = para.xt(:, 6:end);
+
 kn = para.params.func.fc.kn;
 xn0 = para.params.func.fc.xn0;
 mu = para.params.func.fc.mu;
 kt = para.params.func.fc.kt;
 w_in = para.params.func.fc.w;
-% plot(t,xt);
-% plot(t,dgt);
+
+% figure;
+% for i = 1:3
+%     subplot(3, 3, i);
+%     plot(para.t, xt(:, i)), grid on;
+%     xlabel('Time');
+%     yname = 'x_' + string(i);
+%     ylabel(yname);
+% end
+% 
+% for i = 1:3
+%     subplot(3, 3, i + 3);
+%     plot(para.t, para.Ft(:, i)), grid on;
+%     xlabel('Time');
+%     yname = 'F_' + string(i);
+%     ylabel(yname);
+% end
+% 
+% for i = 1:3
+%     subplot(3, 3, i + 6);
+%     plot(xt(:, i), para.Ft(:, i)), grid on;
+%     xname = 'x_' + string(i);
+%     xlabel(xname);
+%     yname = 'F_' + string(i);
+%     ylabel(yname);
+% end
+
 for iH = 1:20
     for iN = 1:12
         
         H = iH;
         ih = iN + 0;
         h = 10^(-ih);
-
+        
         % Numerical Jacobian
         [E, EH] = HBM.fft_matrices(N, H);
+        para.params.func.HBM.E = E;
+        para.params.func.HBM.EH = EH;
         X = EH * xt;
+        xtp = E * X;
         X = X(:);
         % [F, xtF] = fftgx(X, E, EH); % for testing
         JNL_N = finite_diff_jac(@(x) fftgx_f(x, para.params.func), X, h, order);
         
         % Analytiacl Jacobian
         
-        JNL_A = HBMJACOB_analytical_gf(xt, kn, xn0, mu, kt, w_in, H);
+        [JNL_A, Mft, Gp, dgt] = HBMJACOB_analytical_gf(xt, kn, xn0, mu, kt, w_in, H, para.xp);
+        
+        % figure;
+        % 
+        % MftT = [];
+        % MftT(:,1) = Mft(3,1,:);
+        % subplot(2,2,1)
+        % plot(para.t', MftT,'r.'), grid on;
+        % xlabel('Time');
+        % ylabel('stick condition of x_2');
+        % 
+        % subplot(2,2,3)
+        % MftT(:,1) = Mft(4,1,:);
+        % plot(para.t', MftT,'b.'), grid on;
+        % xlabel('Time');
+        % ylabel('slip condition of x_2');
+        % 
+        % subplot(2,2,2)
+        % dgtT(:,1) = dgt(2,2,:);
+        % plot(para.t, dgtT, 'r.'), grid on;
+        % xlabel('Time');
+        % ylabel('dgt22');
+        % 
+        % subplot(2,2,4)
+        % dgtT(:,1) = dgt(2,3,:);
+        % plot(para.t, dgtT, 'b.'), grid on;
+        % xlabel('Time');
+        % ylabel('dgt23');
 
         eps(iH, iN) = norm(JNL_A - JNL_N) / norm(JNL_A);
         h_con(iH, iN) = h;
+
+        eps11 = norm(JNL_A(1:(2*H+1), 1:(2*H+1)) - JNL_N(1:(2*H+1), 1:(2*H+1))) / norm(JNL_A(1:(2*H+1), 1:(2*H+1)));
+        eps22 = norm(JNL_A((1 + (2*H+1)): 2 * (2*H+1), (1 + (2*H+1)): 2 * (2*H+1)) - JNL_N((1 + (2*H+1)): 2 * (2*H+1), (1 + (2*H+1)): 2 * (2*H+1))) / norm(JNL_A((1 + (2*H+1)): 2 * (2*H+1), (1 + (2*H+1)): 2 * (2*H+1)));
+        eps23 = norm(JNL_A((1 + (2*H+1)): 2 * (2*H+1), (1 + 2 * (2*H+1)): 3 * (2*H+1)) - JNL_N((1 + (2*H+1)): 2 * (2*H+1), (1 + 2 * (2*H+1)): 3 * (2*H+1))) / norm(JNL_A((1 + (2*H+1)): 2 * (2*H+1), (1 + 2 * (2*H+1)): 3 * (2*H+1)));
+        eps33 = norm(JNL_A((1 + 2 * (2*H+1)): 3 * (2*H+1), (1 + 2 * (2*H+1)): 3 * (2*H+1)) - JNL_N((1 + 2 * (2*H+1)): 3 * (2*H+1), (1 + 2 * (2*H+1)): 3 * (2*H+1))) / norm(JNL_A((1 + 2 * (2*H+1)): 3 * (2*H+1), (1 + 2 * (2*H+1)): 3 * (2*H+1)));
+        epsij()
     end
 end

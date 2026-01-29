@@ -97,7 +97,7 @@ Nondimensionalization
 %% continuation calculation with HBM
 
 tic;
-omega_plot = 4160;
+omega_plot = 4100;
 % switch Nx
 %     case 4
 %         omega_plot = 4210;

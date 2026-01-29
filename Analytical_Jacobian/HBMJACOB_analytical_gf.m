@@ -1,8 +1,8 @@
-function JNL = HBMJACOB_analytical_gf(xt, kn, xn0, mu, kt, w_in, H)
+function [JNL, Mft, Gp, dgt] = HBMJACOB_analytical_gf(xt, kn, xn0, mu, kt, w_in, H, xp)
 
     [N, M] = size(xt); % N is number of time steps, M is number of dofs - 3Nc
     Nc = M / 3;
-    x = xt';
+    x = xt' + xp;
     F = zeros(size(x));
     
     Mft = zeros(5, Nc, N);
@@ -14,12 +14,31 @@ function JNL = HBMJACOB_analytical_gf(xt, kn, xn0, mu, kt, w_in, H)
         end
     end
 
+    
+    %% for test 
+    % 
+    % F = F' - P.gxp';
     % F = F';
-    dGmn = buildGp(Mft, kn, mu, kt, H);
+    % 
+    % % xt comparison
+    % for i = 1:3
+    %     figure;
+    %     plot(P.t, xt(:, i), 'b-'), hold on;
+    %     plot(P.t, P.xt(:, i + 5), 'r--'), hold on;
+    % end
+    % % Ft comparison
+    % for i = 1:3
+    %     figure;
+    %     plot(P.t, F(:, i), 'b-'), hold on;
+    %     plot(P.t, P.Ft(:, i), 'r--'), hold on;
+    % end
+    
+    %%
+    [Gp, dgt] = buildGp(Mft, kn, mu, kt, H);
 
     JNL = zeros(3*Nc * (2*H+1), 3*Nc * (2*H+1));
 
-    skip = [1 2; 2 1; 3 1; 3 2];
+    skip = [1 2; 2 1; 3 1; 3 2]; % the part always zeros 
     for k = 1:Nc
 
         for i = 1:3
@@ -31,7 +50,7 @@ function JNL = HBMJACOB_analytical_gf(xt, kn, xn0, mu, kt, w_in, H)
                 inda2 = (3 * (k - 1) + i) * (2 * H + 1);
                 indb1 = (3 * (k - 1) + j - 1) * (2 * H + 1) + 1;
                 indb2 = (3 * (k - 1) + j) * (2 * H + 1);
-                dGtemp(:, 1) = dGmn(3 * (k - 1) + i, 3 * (k - 1) + j, :);
+                dGtemp(:, 1) = Gp(3 * (k - 1) + i, 3 * (k - 1) + j, :);
                 JNL(inda1:inda2, indb1:indb2) = HBMJACOB_analytical(dGtemp, H);
             end
         end
@@ -40,18 +59,18 @@ function JNL = HBMJACOB_analytical_gf(xt, kn, xn0, mu, kt, w_in, H)
 
 end
 
-function Gp = buildGp(Mft, kn, mu, kt, H)
+function [Gp, dgt] = buildGp(Mft, kn, mu, kt, H)
 
     [~, Nc, N] = size(Mft);
-    dg = zeros(3*Nc, 3, N);
+    dgt = zeros(3*Nc, 3, N);
     [E, EH] = HBM.fft_matrices(N, 2*H);
     for i = 1:N
         for j = 1:Nc
-            dg(3 * j - 2, :, i) = Mft(5, j, i) * Mft(1, j, i) * [kt(1, j), 0, 0]...
+            dgt(3 * j - 2, :, i) = Mft(5, j, i) * Mft(1, j, i) * [kt(1, j), 0, 0]...
                                 + Mft(5, j, i) * Mft(2, j, i) * [0, 0, mu(1, j) * kn(j)];
-            dg(3 * j - 1, :, i) = Mft(5, j, i) * Mft(3, j, i) * [kt(2, j), 0, 0]...
+            dgt(3 * j - 1, :, i) = Mft(5, j, i) * Mft(3, j, i) * [0, kt(2, j), 0]...
                                 + Mft(5, j, i) * Mft(4, j, i) * [0, 0, mu(2, j) * kn(j)];
-            dg(3 * j, :, i) = Mft(5, j, i) * [0, 0, kn(j)];
+            dgt(3 * j, :, i) = Mft(5, j, i) * [0, 0, kn(j)];
         end
     end
         
@@ -61,23 +80,23 @@ function Gp = buildGp(Mft, kn, mu, kt, H)
 
     for j = 1:Nc
         % g11
-        dgj(:, 1) = dg(3 * j - 2, 1, :);
+        dgj(:, 1) = dgt(3 * j - 2, 1, :);
         Gpj(:, 1) = EH * dgj;
         Gp(3 * j - 2, 3 * j - 2, :) = Gpj;
         % g13
-        dgj(:, 1) = dg(3 * j - 2, 3, :);
+        dgj(:, 1) = dgt(3 * j - 2, 3, :);
         Gpj(:, 1) = EH * dgj;
         Gp(3 * j - 2, 3 * j, :) = Gpj;
         % g22
-        dgj(:, 1) = dg(3 * j - 1, 2, :);
+        dgj(:, 1) = dgt(3 * j - 1, 2, :);
         Gpj(:, 1) = EH * dgj;
         Gp(3 * j - 1, 3 * j - 1, :) = Gpj;
         % g23
-        dgj(:, 1) = dg(3 * j - 1, 2, :);
+        dgj(:, 1) = dgt(3 * j - 1, 3, :);
         Gpj(:, 1) = EH * dgj;
         Gp(3 * j - 1, 3 * j, :) = Gpj;
         % g33
-        dgj(:, 1) = dg(3 * j, 3, :);
+        dgj(:, 1) = dgt(3 * j, 3, :);
         Gpj(:, 1) = EH * dgj;
         Gp(3 * j, 3 * j, :) = Gpj;
     end
