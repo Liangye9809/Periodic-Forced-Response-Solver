@@ -192,9 +192,10 @@ order = 1;
 h_con = zeros(11, 10);
 N = 256;
 H = 1;
-A = 0.5;
+A = 2;
 dt = 2 * pi / N;
 t = 0:dt:(2 * pi - dt);
+t = t';
 xt = A * fxt(t);
 xn = ones(N, 1);
 x = [xt(:, 3), xn];
@@ -205,9 +206,9 @@ legend("x1", "xn");
 title('displacement');
 
 kt = 1;
-kn = 1;
+kn = 2;
 mu = 0.5;
-w = -1.0;
+w = 0;
 xn0 = 0; % normal pre-displacement
 
 nloop = 2;
@@ -219,49 +220,62 @@ X = X(:);
 
 eps = norm(JNL_A - JNL_N) / norm(JNL_A);
 
+T = t; xplot = x;
+for i = 1:nloop - 1
+    Tend = T(end);
+    T = [T; t + Tend];
+
+    xplot = [xplot; x];
+end
+
 figure; % friction forces
-plot(t, Ft_A(:, 1)), hold on;
-plot(t, mu * Ft_A(:,2), 'k-'), hold on;
-plot(t, - mu * Ft_A(:,2), 'k-'), hold on;
+plot(T, Ft_A(:, 1)), hold on;
+plot(T, mu * Ft_A(:,2), 'k-'), hold on;
+plot(T, - mu * Ft_A(:,2), 'k-'), hold on;
 legend("T", "mu*Fn", "-mu*Fn");
 ylim(1.2 * [min(-mu * Ft_A(:,2)), max(mu * Ft_A(:,2))]);
 title('friction forces');
 grid on;
 
 figure; % hysteresis cycle
-plot(x(:, 1), Ft_A(:, 1));
+plot(xplot(:, 1), Ft_A(:, 1));
 title('hysteresis cycle');
 grid on;
 
 figure; % dgt comparison
 subplot(2,2,1)
 dgtT(:, 1) = dgt_A(1,1,:);
-plot(t, dgtT, 'b-'), hold on;
+plot(T, dgtT, 'b-'), hold on;
 dgtT(:, 1) = dgt_N(1,1,:);
-plot(t, dgtT, 'r--'), hold on;
+plot(T, dgtT, 'r--'), hold on;
 legend('dgt11_A', 'dgt11_N');
 grid on;
 
 subplot(2,2,2)
 dgtT(:, 1) = dgt_A(1,2,:);
-plot(t, dgtT, 'b-'), hold on;
+plot(T, dgtT, 'b-'), hold on;
 dgtT(:, 1) = dgt_N(1,2,:);
-plot(t, dgtT, 'r--'), hold on;
+plot(T, dgtT, 'r--'), hold on;
 legend('dgt12_A', 'dgt12_N');
 grid on;
 
 subplot(2,2,3)
 dgtT(:, 1) = dgt_A(2,1,:);
-plot(t, dgtT, 'b-'), hold on;
+plot(T, dgtT, 'b-'), hold on;
 dgtT(:, 1) = dgt_N(2,1,:);
-plot(t, dgtT, 'r--'), hold on;
+plot(T, dgtT, 'r--'), hold on;
 legend('dgt21_A', 'dgt21_N');
 grid on;
 
 subplot(2,2,4)
 dgtT(:, 1) = dgt_A(2,2,:);
-plot(t, dgtT, 'b-'), hold on;
+plot(T, dgtT, 'b-'), hold on;
 dgtT(:, 1) = dgt_N(2,2,:);
-plot(t, dgtT, 'r--'), hold on;
+plot(T, dgtT, 'r--'), hold on;
 legend('dgt22_A', 'dgt22_N');
 grid on;
+
+figure; % w
+plot(T, wt_A, 'b-'), hold on;
+plot(T, wt_N, 'r--'), grid on;
+legend('wt_A', 'wt_N');
