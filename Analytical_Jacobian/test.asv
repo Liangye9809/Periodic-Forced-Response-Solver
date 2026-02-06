@@ -8,28 +8,20 @@ for i = 1:3
     end
 end
 %% plot 2D tangential relative displacement
-
+for Uy0 = 0.1:0.2:1
+Uy0 = 1;
+Ux0 = 2.5 * Uy0;
 T = 1;
 N = 256;
 phy = pi / 2;
 dt = T / N;
 t = 0:dt:10*pi;
-
+Ux = Ux0 * sin(2*pi*t);
+Uy = Uy0 * sin(2*pi*t + phy);
 figure;
-plot(sin(t),cos(t), 'k-'), hold on;
-grid on;
-for Uy0 = 0.1:0.2:1
-% Uy0 = 1;
-    Ux0 = 2.5 * Uy0;
-    
-    Ux = Ux0 * sin(2*pi*t);
-    Uy = Uy0 * sin(2*pi*t + phy);
-    % figure;
-    plot(Ux, Uy), hold on;
-
-% drawnow;
-% pause(0.05);
-end
+plot(Ux, Uy), hold on;
 xlim([-3,3]);
 ylim([-3,3]);
 pbaspect([1 1 1]);
+% drawnow;
+% pause(0.05);

@@ -181,3 +181,87 @@ for iH = 1:20
         
     end
 end
+
+%% Coulomb friction of dummy fucntion 2 dofs
+clear
+clc
+close all
+eps = zeros(11, 10);
+h = 10^(-8);
+order = 1;
+h_con = zeros(11, 10);
+N = 256;
+H = 1;
+A = 0.5;
+dt = 2 * pi / N;
+t = 0:dt:(2 * pi - dt);
+xt = A * fxt(t);
+xn = ones(N, 1);
+x = [xt(:, 3), xn];
+
+figure; % displacement
+plot(t, x), grid on;
+legend("x1", "xn");
+title('displacement');
+
+kt = 1;
+kn = 1;
+mu = 0.5;
+w = -1.0;
+xn0 = 0; % normal pre-displacement
+
+nloop = 2;
+[JNL_A, Mft_A, Gp, dgt_A, Ft_A, wt_A] = HBMJACOB_analytical_gf_2dofs(x, kn, xn0, mu, kt, w, H, nloop);
+[E, EH] = fft_matrices(N, H);
+X = EH * x;
+X = X(:);
+[JNL_N, Mft_N, dgt_N, Ft_N, wt_N, Ffft] = HBMJACOB_numerical_gf_2dofs(X, kn, xn0, mu, kt, w, H, N, nloop, h, order);
+
+eps = norm(JNL_A - JNL_N) / norm(JNL_A);
+
+figure; % friction forces
+plot(t, Ft_A(:, 1)), hold on;
+plot(t, mu * Ft_A(:,2), 'k-'), hold on;
+plot(t, - mu * Ft_A(:,2), 'k-'), hold on;
+legend("T", "mu*Fn", "-mu*Fn");
+ylim(1.2 * [min(-mu * Ft_A(:,2)), max(mu * Ft_A(:,2))]);
+title('friction forces');
+grid on;
+
+figure; % hysteresis cycle
+plot(x(:, 1), Ft_A(:, 1));
+title('hysteresis cycle');
+grid on;
+
+figure; % dgt comparison
+subplot(2,2,1)
+dgtT(:, 1) = dgt_A(1,1,:);
+plot(t, dgtT, 'b-'), hold on;
+dgtT(:, 1) = dgt_N(1,1,:);
+plot(t, dgtT, 'r--'), hold on;
+legend('dgt11_A', 'dgt11_N');
+grid on;
+
+subplot(2,2,2)
+dgtT(:, 1) = dgt_A(1,2,:);
+plot(t, dgtT, 'b-'), hold on;
+dgtT(:, 1) = dgt_N(1,2,:);
+plot(t, dgtT, 'r--'), hold on;
+legend('dgt12_A', 'dgt12_N');
+grid on;
+
+subplot(2,2,3)
+dgtT(:, 1) = dgt_A(2,1,:);
+plot(t, dgtT, 'b-'), hold on;
+dgtT(:, 1) = dgt_N(2,1,:);
+plot(t, dgtT, 'r--'), hold on;
+legend('dgt21_A', 'dgt21_N');
+grid on;
+
+subplot(2,2,4)
+dgtT(:, 1) = dgt_A(2,2,:);
+plot(t, dgtT, 'b-'), hold on;
+dgtT(:, 1) = dgt_N(2,2,:);
+plot(t, dgtT, 'r--'), hold on;
+legend('dgt22_A', 'dgt22_N');
+grid on;
