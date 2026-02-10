@@ -191,7 +191,7 @@ h = 10^(-8);
 order = 1;
 h_con = zeros(11, 10);
 N = 256;
-H = 1;
+H = 5;
 A = 2;
 dt = 2 * pi / N;
 t = 0:dt:(2 * pi - dt);
@@ -279,3 +279,25 @@ figure; % w
 plot(T, wt_A, 'b-'), hold on;
 plot(T, wt_N, 'r--'), grid on;
 legend('wt_A', 'wt_N');
+
+figure; % plot imagesc
+subplot(2,2,1);
+imagesc(JNL_N(1:2*H+1, 1:2*H+1));
+subplot(2,2,2);
+imagesc(JNL_N(1:2*H+1, 1+2*H+1:end));
+subplot(2,2,4);
+imagesc(JNL_N(1+2*H+1:end, 1+2*H+1:end));
+
+figure; % plot differnce
+subplot(2,2,1);
+Dff11 = JNL_N(1:2*H+1, 1:2*H+1) - JNL_A(1:2*H+1, 1:2*H+1);
+imagesc(Dff11);
+
+subplot(2,2,2);
+Dff12 = JNL_N(1:2*H+1, 1+2*H+1:end) - JNL_A(1:2*H+1, 1+2*H+1:end);
+imagesc(Dff12);
+
+subplot(2,2,4);
+Dff22 = JNL_N(1+2*H+1:end, 1+2*H+1:end) - JNL_A(1+2*H+1:end, 1+2*H+1:end);
+imagesc(Dff22);
+
