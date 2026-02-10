@@ -190,15 +190,17 @@ eps = zeros(11, 10);
 h = 10^(-8);
 order = 1;
 h_con = zeros(11, 10);
-N = 256;
-H = 5;
+N = 1024;
+H = 200;
 A = 2;
 dt = 2 * pi / N;
 % t = 0:dt:(2 * pi - dt);
 t = (0:(N-1)) * 2 * pi / N;
 t = t';
 xt = A * fxt(t);
-xn = ones(N, 1);
+% xn = ones(N, 1);
+xn = xt(:, 2) - 0.5;
+% xn = xt(:, 2) - 1.25;
 x = [xt(:, 3), xn];
 
 figure; % displacement
@@ -231,16 +233,17 @@ for i = 1:nloop - 1
 end
 
 figure; % friction forces
-plot(T, Ft_A(:, 1)), hold on;
-plot(T, mu * Ft_A(:,2), 'k-'), hold on;
-plot(T, - mu * Ft_A(:,2), 'k-'), hold on;
+plot(T, Ft_A(:, 1), 'LineWidth', 2), hold on;
+plot(T, mu * Ft_A(:,2), 'k-', 'LineWidth', 2), hold on;
+plot(T, - mu * Ft_A(:,2), 'k-', 'LineWidth', 2), hold on;
 legend("T", "mu*Fn", "-mu*Fn");
 ylim(1.2 * [min(-mu * Ft_A(:,2)), max(mu * Ft_A(:,2))]);
+xlim(T([end-N+1,end]));
 title('friction forces');
 grid on;
 
 figure; % hysteresis cycle
-plot(xplot(:, 1), Ft_A(:, 1));
+plot(xplot(:, 1), Ft_A(:, 1), 'LineWidth', 2);
 title('hysteresis cycle');
 grid on;
 
@@ -278,70 +281,110 @@ grid on;
 % grid on;
 
 figure; % w
-plot(T, wt_A, 'b-'), hold on;
-plot(T, wt_N, 'r--'), grid on;
+plot(T, wt_A, 'b-', 'LineWidth', 2), hold on;
+plot(T, wt_N, 'r--', 'LineWidth', 2), grid on;
 w_end = wt_A([N:N:end]);
-plot(T([N:N:end]), w_end, 'ko'), hold on;
+plot(T([N:N:end]), w_end, 'ko', 'LineWidth', 2), hold on;
 legend('wt_A', 'wt_N');
 
 figure; % difference of w
 w_diff = w_end(2:end) - w_end(1:end-1);
 N_w = size(w_diff, 1);
-plot([1:N_w], w_diff, 'bo-'), grid on;
+plot([1:N_w], w_diff, 'bo-', 'LineWidth', 2), grid on;
 title('w difference');
 
-figure; % plot imagesc
-subplot(2,2,1);
-imagesc(JNL_N(1:2*H+1, 1:2*H+1));
-subplot(2,2,2);
-imagesc(JNL_N(1:2*H+1, 1+2*H+1:end));
-subplot(2,2,4);
-imagesc(JNL_N(1+2*H+1:end, 1+2*H+1:end));
+% figure; % plot imagesc
+% subplot(2,2,1);
+% imagesc(JNL_N(1:2*H+1, 1:2*H+1));
+% subplot(2,2,2);
+% imagesc(JNL_N(1:2*H+1, 1+2*H+1:end));
+% subplot(2,2,4);
+% imagesc(JNL_N(1+2*H+1:end, 1+2*H+1:end));
+% 
+% figure; % plot differnce
+% subplot(2,2,1);
+% Dff11 = JNL_N(1:2*H+1, 1:2*H+1) - JNL_A(1:2*H+1, 1:2*H+1);
+% imagesc(Dff11);
+% 
+% subplot(2,2,2);
+% Dff12 = JNL_N(1:2*H+1, 1+2*H+1:end) - JNL_A(1:2*H+1, 1+2*H+1:end);
+% imagesc(Dff12);
+% 
+% subplot(2,2,4);
+% Dff22 = JNL_N(1+2*H+1:end, 1+2*H+1:end) - JNL_A(1+2*H+1:end, 1+2*H+1:end);
+% imagesc(Dff22);
 
-figure; % plot differnce
-subplot(2,2,1);
-Dff11 = JNL_N(1:2*H+1, 1:2*H+1) - JNL_A(1:2*H+1, 1:2*H+1);
-imagesc(Dff11);
 
-subplot(2,2,2);
-Dff12 = JNL_N(1:2*H+1, 1+2*H+1:end) - JNL_A(1:2*H+1, 1+2*H+1:end);
-imagesc(Dff12);
+figure;
 
-subplot(2,2,4);
-Dff22 = JNL_N(1+2*H+1:end, 1+2*H+1:end) - JNL_A(1+2*H+1:end, 1+2*H+1:end);
-imagesc(Dff22);
+wp = xplot(:, 1) + mu * kn / kt * max(xplot(:, 2), 0);
+wm = xplot(:, 1) - mu * kn / kt * max(xplot(:, 2), 0);
+plot(T, wp, 'k--', 'LineWidth', 2), hold on;
+plot(T, wm, 'r--', 'LineWidth', 2), hold on;
+plot(T, wt_A, 'b-', 'LineWidth', 2), hold on;
+grid on;
+% legend('w+', 'w-', 'wt');
 
+plot(t, x, 'LineWidth', 2), hold on;
+legend('w+', 'w-', 'wt', "x1", "xn");
+title('kn = 2, kt = 1, mu = 0.5, xt = 2*sin(sint), xn = 1 / (1 + (cos(t))^2) - 1.25');
+
+figure;
+
+wp = xt(:,3) + mu * kn / kt * max(xn, 0);
+wm = xt(:,3) - mu * kn / kt * max(xn, 0);
+plot(t, wp, 'k--', 'LineWidth', 2), hold on;
+plot(t, wm, 'k--', 'LineWidth', 2), hold on;
+plot(t, wt_A(end-N+1:end), 'b-', 'LineWidth', 2), hold on;
+grid on;
+legend('w+', 'w-', 'wt');
 %%
-figure;
-
-wp = xplot(:,1) + mu * kn / kt * 1;
-wm = xplot(:,1) - mu * kn / kt * 1;
-plot(T, wp, 'k-'), hold on;
-plot(T, wm, 'k-'), hold on;
-plot(T, wt_A, 'b-'), hold on;
-
-figure;
-
-wp = xt(:,3) + mu * kn / kt * 1;
-wm = xt(:,3) - mu * kn / kt * 1;
-plot(t, wp, 'k-'), hold on;
-plot(t, wm, 'k-'), hold on;
-plot(t, wt_A(1025:end), 'b-'), hold on;
-
-[E, EH] = fft_matrices(N, H);
-
-load("Jacibien.mat")
+close all
+load("pictures/constant Normal kn=2, kt=1, xt=sin(sint)), xn=1/Jacibien.mat");
+% load("pictures/variable Normal kn=2, kt=1, xt=sin(sint)), xn=1over(1 + (cos(t))^2)-0.5/jacobien.mat");
+% load("pictures/gap and variable Normal kn=2, kt=1, xt=sin(sint)), xn=1over(1 + (cos(t))^2)-1.25/jacobien.mat");
+[E, EH] = fft_matrices(1024, 200);
+t = (0:(1024-1)) * 2 * pi / 1024;
 
 dTdxt_Fou_NUM = JNL_N(1:401, 1:401);
 dTdxt_Fou_AN = JNL_A(1:401, 1:401);
 
+% dTdxt_Fou_NUM = JNL_N(1:401, 402:end);
+% dTdxt_Fou_AN = JNL_A(1:401, 402:end);
+
 dTdxt_time_NUM = E * dTdxt_Fou_NUM;
 dTdxt_time_AN = E * dTdxt_Fou_AN;
 
-figure;
-plot(t, dTdxt_time_NUM(:, 7))
-hold on
-plot(t, dTdxt_time_AN(:, 7))
+for i = 5:5
+    fig = figure;
+    fig.WindowState = 'maximized';
+    pause(0.5)
+    subplot(2,1,1)
+    plot(t, dTdxt_time_NUM(:, i), 'LineWidth', 2), hold on
+    grid on
+    plot(t, dTdxt_time_AN(:, i), 'LineWidth', 2)
+    legend('dTdxt Nu', 'dTdxt An');
+    if i == 1
+        titlename = 'cos0';
+    elseif mod(i, 2) == 0
+        titlename = 'cos' + string(floor(i/2));
+    else
+        titlename = 'sin' + string(floor(i/2));
+    end
+    title(titlename);
 
-figure;
-plot(t, dTdxt_time_NUM(:, 7) - dTdxt_time_AN(:, 7))
+    subplot(2,1,2)
+    plot(t, dTdxt_time_NUM(:, i) - dTdxt_time_AN(:, i), 'LineWidth', 2), hold on
+    legend('difference');
+    grid on
+
+    drawnow
+    
+    filename = 'comparison of ' + string(titlename) +' dT over dXt in time domain';
+    savefig(fig, filename)
+
+    filename = filename + '.bmp';
+    saveas(gcf, filename)
+
+    close(fig);
+end
