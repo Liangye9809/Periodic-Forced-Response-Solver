@@ -190,11 +190,12 @@ eps = zeros(11, 10);
 h = 10^(-8);
 order = 1;
 h_con = zeros(11, 10);
-N = 256;
-H = 5;
+N = 1024;
+H = 200;
 A = 2;
 dt = 2 * pi / N;
-t = 0:dt:(2 * pi - dt);
+% t = 0:dt:(2 * pi - dt);
+t = (0:(N-1)) * 2 * pi / N;
 t = t';
 xt = A * fxt(t);
 xn = ones(N, 1);
@@ -211,8 +212,8 @@ mu = 0.5;
 w = 0;
 xn0 = 0; % normal pre-displacement
 
-nloop = 2;
-[JNL_A, Mft_A, Gp, dgt_A, Ft_A, wt_A] = HBMJACOB_analytical_gf_2dofs(x, kn, xn0, mu, kt, w, H, nloop);
+nloop = 5;
+[JNL_A, Mft_A, Gp, dgt_A, Ft_A, wt_A] = HBMJACOB_analytical_gf_2dofs(x, kn, xn0, mu, kt, w, H, N, nloop);
 [E, EH] = fft_matrices(N, H);
 X = EH * x;
 X = X(:);
@@ -220,13 +221,15 @@ X = X(:);
 
 eps = norm(JNL_A - JNL_N) / norm(JNL_A);
 
-T = t; xplot = x;
-for i = 1:nloop - 1
-    Tend = T(end);
-    T = [T; t + Tend];
-
-    xplot = [xplot; x];
-end
+T = [t; t + 2*pi];
+xplot = [x; x];
+% T = t; xplot = x;
+% for i = 1:nloop - 1
+%     Tend = T(end);
+%     T = [T; t + Tend];
+% 
+%     xplot = [xplot; x];
+% end
 
 figure; % friction forces
 plot(T, Ft_A(:, 1)), hold on;
@@ -242,44 +245,49 @@ plot(xplot(:, 1), Ft_A(:, 1));
 title('hysteresis cycle');
 grid on;
 
-figure; % dgt comparison
-subplot(2,2,1)
-dgtT(:, 1) = dgt_A(1,1,:);
-plot(T, dgtT, 'b-'), hold on;
-dgtT(:, 1) = dgt_N(1,1,:);
-plot(T, dgtT, 'r--'), hold on;
-legend('dgt11_A', 'dgt11_N');
-grid on;
-
-subplot(2,2,2)
-dgtT(:, 1) = dgt_A(1,2,:);
-plot(T, dgtT, 'b-'), hold on;
-dgtT(:, 1) = dgt_N(1,2,:);
-plot(T, dgtT, 'r--'), hold on;
-legend('dgt12_A', 'dgt12_N');
-grid on;
-
-subplot(2,2,3)
-dgtT(:, 1) = dgt_A(2,1,:);
-plot(T, dgtT, 'b-'), hold on;
-dgtT(:, 1) = dgt_N(2,1,:);
-plot(T, dgtT, 'r--'), hold on;
-legend('dgt21_A', 'dgt21_N');
-grid on;
-
-subplot(2,2,4)
-dgtT(:, 1) = dgt_A(2,2,:);
-plot(T, dgtT, 'b-'), hold on;
-dgtT(:, 1) = dgt_N(2,2,:);
-plot(T, dgtT, 'r--'), hold on;
-legend('dgt22_A', 'dgt22_N');
-grid on;
+% figure; % dgt comparison
+% subplot(2,2,1)
+% dgtT(:, 1) = dgt_A(1,1,:);
+% plot(T, dgtT, 'b-'), hold on;
+% dgtT(:, 1) = dgt_N(1,1,:);
+% plot(T, dgtT, 'r--'), hold on;
+% legend('dgt11_A', 'dgt11_N');
+% grid on;
+% 
+% subplot(2,2,2)
+% dgtT(:, 1) = dgt_A(1,2,:);
+% plot(T, dgtT, 'b-'), hold on;
+% dgtT(:, 1) = dgt_N(1,2,:);
+% plot(T, dgtT, 'r--'), hold on;
+% legend('dgt12_A', 'dgt12_N');
+% grid on;
+% 
+% subplot(2,2,3)
+% dgtT(:, 1) = dgt_A(2,1,:);
+% plot(T, dgtT, 'b-'), hold on;
+% dgtT(:, 1) = dgt_N(2,1,:);
+% plot(T, dgtT, 'r--'), hold on;
+% legend('dgt21_A', 'dgt21_N');
+% grid on;
+% 
+% subplot(2,2,4)
+% dgtT(:, 1) = dgt_A(2,2,:);
+% plot(T, dgtT, 'b-'), hold on;
+% dgtT(:, 1) = dgt_N(2,2,:);
+% plot(T, dgtT, 'r--'), hold on;
+% legend('dgt22_A', 'dgt22_N');
+% grid on;
 
 figure; % w
 plot(T, wt_A, 'b-'), hold on;
 plot(T, wt_N, 'r--'), grid on;
+w_end = wt_A([N:N:end]);
+plot(T([N:N:end]), w_end, 'ko'), hold on;
 legend('wt_A', 'wt_N');
 
+figure; % difference of w
+for i = 1:nloop - 1
+    
 figure; % plot imagesc
 subplot(2,2,1);
 imagesc(JNL_N(1:2*H+1, 1:2*H+1));
@@ -296,6 +304,42 @@ imagesc(Dff11);
 subplot(2,2,2);
 Dff12 = JNL_N(1:2*H+1, 1+2*H+1:end) - JNL_A(1:2*H+1, 1+2*H+1:end);
 imagesc(Dff12);
-subplot(2,2,4);
-imagesc(JNL_N(1+2*H+1:end, 1+2*H+1:end) - JNL_A(1+2*H+1:end, 1+2*H+1:end));
 
+subplot(2,2,4);
+Dff22 = JNL_N(1+2*H+1:end, 1+2*H+1:end) - JNL_A(1+2*H+1:end, 1+2*H+1:end);
+imagesc(Dff22);
+
+%%
+figure;
+
+wp = xplot(:,1) + mu * kn / kt * 1;
+wm = xplot(:,1) - mu * kn / kt * 1;
+plot(T, wp, 'k-'), hold on;
+plot(T, wm, 'k-'), hold on;
+plot(T, wt_A, 'b-'), hold on;
+
+figure;
+
+wp = xt(:,3) + mu * kn / kt * 1;
+wm = xt(:,3) - mu * kn / kt * 1;
+plot(t, wp, 'k-'), hold on;
+plot(t, wm, 'k-'), hold on;
+plot(t, wt_A(1025:end), 'b-'), hold on;
+
+[E, EH] = fft_matrices(N, H);
+
+load("Jacibien.mat")
+
+dTdxt_Fou_NUM = JNL_N(1:401, 1:401);
+dTdxt_Fou_AN = JNL_A(1:401, 1:401);
+
+dTdxt_time_NUM = E * dTdxt_Fou_NUM;
+dTdxt_time_AN = E * dTdxt_Fou_AN;
+
+figure;
+plot(t, dTdxt_time_NUM(:, 7))
+hold on
+plot(t, dTdxt_time_AN(:, 7))
+
+figure;
+plot(t, dTdxt_time_NUM(:, 7) - dTdxt_time_AN(:, 7))

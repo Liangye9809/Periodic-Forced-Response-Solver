@@ -1,6 +1,7 @@
 function [JNL, Mft, dgt, Ft, wt, Ffft] = HBMJACOB_numerical_gf_2dofs(x, kn, xn0, mu, kt, w_in, H, N, nloop, h, order)
     
     JNL = finite_diff_jac(@(x) fftF(x, kn, xn0, mu, kt, w_in, H, N, nloop), x, h, order);
+    
     [Ffft, wt, Mft] = fftF(x, kn, xn0, mu, kt, w_in, H, N, nloop);
 
     [E, EH] = fft_matrices(N, H);

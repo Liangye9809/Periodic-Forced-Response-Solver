@@ -1,10 +1,10 @@
-function [JNL, Mft, Gp, dgt, F, wt] = HBMJACOB_analytical_gf_2dofs(xt, kn, xn0, mu, kt, w_in, H, nloop)
+function [JNL, Mft, Gp, dgt, F, wt] = HBMJACOB_analytical_gf_2dofs(xt, kn, xn0, mu, kt, w_in, H, N, nloop)
 
     [F, wt, Mft] = gf_2dofs(xt, kn, xn0, mu, kt, w_in, nloop);
 
     
     %%
-    [Gp, dgt] = buildGp(Mft, kn, mu, kt, H);
+    [Gp, dgt] = buildGp(Mft(:,:,end-N+1:end), kn, mu, kt, H);
 
     JNL = zeros(2 * (2*H+1), 2 * (2*H+1));
 
