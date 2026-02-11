@@ -199,8 +199,9 @@ t = (0:(N-1)) * 2 * pi / N;
 t = t';
 xt = A * fxt(t);
 % xn = ones(N, 1);
-xn = xt(:, 2) - 0.5;
+% xn = xt(:, 2) - 0.5;
 % xn = xt(:, 2) - 1.25;
+xn = xt(:, 1) - 1.25;
 x = [xt(:, 3), xn];
 
 figure; % displacement
@@ -208,7 +209,7 @@ plot(t, x), grid on;
 legend("x1", "xn");
 title('displacement');
 
-kt = 1;
+kt = 2;
 kn = 2;
 mu = 0.5;
 w = 0;
@@ -327,7 +328,7 @@ grid on;
 
 plot(t, x, 'LineWidth', 2), hold on;
 legend('w+', 'w-', 'wt', "x1", "xn");
-title('kn = 2, kt = 1, mu = 0.5, xt = 2*sin(sint), xn = 1 / (1 + (cos(t))^2) - 1.25');
+% title('kn = 2, kt = 1, mu = 0.5, xt = 2*sin(sint), xn = 1 / (1 + (cos(t))^2) - 0.5');
 
 figure;
 
@@ -338,9 +339,29 @@ plot(t, wm, 'k--', 'LineWidth', 2), hold on;
 plot(t, wt_A(end-N+1:end), 'b-', 'LineWidth', 2), hold on;
 grid on;
 legend('w+', 'w-', 'wt');
+
+tiledlayout(2,1,'TileSpacing','compact','Padding','compact')
+
+nexttile
+wp = xplot(:, 1) + mu * kn / kt * max(xplot(:, 2), 0);
+wm = xplot(:, 1) - mu * kn / kt * max(xplot(:, 2), 0);
+plot(T, wp, 'k--', 'LineWidth', 2), hold on;
+plot(T, wm, 'r--', 'LineWidth', 2), hold on;
+plot(T, wt_A, 'b-', 'LineWidth', 2), hold on;
+grid on;
+xlim(T([end-2*N+1,end]));
+
+nexttile
+plot(T, Ft_A(:, 1), 'LineWidth', 2), hold on;
+plot(T, mu * Ft_A(:,2), 'k-', 'LineWidth', 2), hold on;
+plot(T, - mu * Ft_A(:,2), 'k-', 'LineWidth', 2), hold on;
+legend("T", "mu*Fn", "-mu*Fn");
+ylim(1.2 * [min(-mu * Ft_A(:,2)), max(mu * Ft_A(:,2))]);
+xlim(T([end-2*N+1,end]));
+grid on;
 %%
-close all
-load("pictures/constant Normal kn=2, kt=1, xt=sin(sint)), xn=1/Jacibien.mat");
+% close all
+% load("pictures/constant Normal kn=2, kt=1, xt=sin(sint)), xn=1/Jacibien.mat");
 % load("pictures/variable Normal kn=2, kt=1, xt=sin(sint)), xn=1over(1 + (cos(t))^2)-0.5/jacobien.mat");
 % load("pictures/gap and variable Normal kn=2, kt=1, xt=sin(sint)), xn=1over(1 + (cos(t))^2)-1.25/jacobien.mat");
 [E, EH] = fft_matrices(1024, 200);
@@ -355,7 +376,7 @@ dTdxt_Fou_AN = JNL_A(1:401, 1:401);
 dTdxt_time_NUM = E * dTdxt_Fou_NUM;
 dTdxt_time_AN = E * dTdxt_Fou_AN;
 
-for i = 5:5
+for i = 1:5
     fig = figure;
     fig.WindowState = 'maximized';
     pause(0.5)
@@ -378,13 +399,13 @@ for i = 5:5
     legend('difference');
     grid on
 
-    drawnow
+    % drawnow
     
-    filename = 'comparison of ' + string(titlename) +' dT over dXt in time domain';
-    savefig(fig, filename)
-
-    filename = filename + '.bmp';
-    saveas(gcf, filename)
-
-    close(fig);
+    % filename = 'comparison of ' + string(titlename) +' dT over dXt in time domain';
+    % savefig(fig, filename)
+    % 
+    % filename = filename + '.bmp';
+    % saveas(gcf, filename)
+    % 
+    % close(fig);
 end
