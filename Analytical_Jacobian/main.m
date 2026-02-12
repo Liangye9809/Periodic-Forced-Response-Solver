@@ -198,10 +198,10 @@ dt = 2 * pi / N;
 t = (0:(N-1)) * 2 * pi / N;
 t = t';
 xt = A * fxt(t);
-% xn = ones(N, 1);
+xn = ones(N, 1);
 % xn = xt(:, 2) - 0.5;
 % xn = xt(:, 2) - 1.25;
-xn = xt(:, 1) - 1.25;
+% xn = xt(:, 1) - 1.25;
 x = [xt(:, 3), xn];
 
 figure; % displacement
@@ -359,11 +359,14 @@ legend("T", "mu*Fn", "-mu*Fn");
 ylim(1.2 * [min(-mu * Ft_A(:,2)), max(mu * Ft_A(:,2))]);
 xlim(T([end-2*N+1,end]));
 grid on;
+
+figure;
+plot(xplot(:, 1), wt_A)
 %%
 % close all
-% load("pictures/constant Normal kn=2, kt=1, xt=sin(sint)), xn=1/Jacibien.mat");
-% load("pictures/variable Normal kn=2, kt=1, xt=sin(sint)), xn=1over(1 + (cos(t))^2)-0.5/jacobien.mat");
-% load("pictures/gap and variable Normal kn=2, kt=1, xt=sin(sint)), xn=1over(1 + (cos(t))^2)-1.25/jacobien.mat");
+% load("results plots of 3 different cases - constant, variable normal forces and gap/constant Normal kn=2, kt=1, xt=sin(sint)), xn=1/Jacibien.mat");
+% load("results plots of 3 different cases - constant, variable normal forces and gap/variable Normal kn=2, kt=1, xt=sin(sint)), xn=1over(1 + (cos(t))^2)-0.5/jacobien.mat");
+% load("results plots of 3 different cases - constant, variable normal forces and gap/gap and variable Normal kn=2, kt=1, xt=sin(sint)), xn=1over(1 + (cos(t))^2)-1.25/jacobien.mat");
 [E, EH] = fft_matrices(1024, 200);
 t = (0:(1024-1)) * 2 * pi / 1024;
 
@@ -376,7 +379,7 @@ dTdxt_Fou_AN = JNL_A(1:401, 1:401);
 dTdxt_time_NUM = E * dTdxt_Fou_NUM;
 dTdxt_time_AN = E * dTdxt_Fou_AN;
 
-for i = 1:5
+for i = 1:10
     fig = figure;
     fig.WindowState = 'maximized';
     pause(0.5)
@@ -409,3 +412,5 @@ for i = 1:5
     % 
     % close(fig);
 end
+
+%%
