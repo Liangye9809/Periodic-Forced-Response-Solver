@@ -190,8 +190,8 @@ eps = zeros(11, 10);
 h = 10^(-8);
 order = 1;
 h_con = zeros(11, 10);
-N = 1024;
-H = 200;
+N = 256;
+H = 5;
 A = 2;
 dt = 2 * pi / N;
 % t = 0:dt:(2 * pi - dt);
@@ -204,18 +204,19 @@ xn = ones(N, 1);
 % xn = xt(:, 1) - 1.25;
 x = [xt(:, 3), xn];
 
-figure; % displacement
-plot(t, x), grid on;
-legend("x1", "xn");
-title('displacement');
+% figure; % displacement
+% plot(t, x), grid on;
+% legend("x1", "xn");
+% title('displacement');
 
-kt = 2;
+kt = 1;
 kn = 2;
 mu = 0.5;
 w = 0;
 xn0 = 0; % normal pre-displacement
 
-nloop = 5;
+nloop = 2;
+for i = 
 [JNL_A, Mft_A, Gp, dgt_A, Ft_A, wt_A] = HBMJACOB_analytical_gf_2dofs(x, kn, xn0, mu, kt, w, H, N, nloop);
 [E, EH] = fft_matrices(N, H);
 X = EH * x;
@@ -224,7 +225,7 @@ X = X(:);
 
 eps = norm(JNL_A - JNL_N) / norm(JNL_A);
 
-
+%%
 T = t; xplot = x;
 for i = 1:nloop - 1
     Tend = T(end);
@@ -364,22 +365,22 @@ figure;
 plot(xplot(:, 1), wt_A)
 %%
 % close all
-% load("results plots of 3 different cases - constant, variable normal forces and gap/constant Normal kn=2, kt=1, xt=sin(sint)), xn=1/Jacibien.mat");
+load("results plots of 3 different cases - constant, variable normal forces and gap/constant Normal kn=2, kt=1, xt=sin(sint)), xn=1/Jacibien.mat");
 % load("results plots of 3 different cases - constant, variable normal forces and gap/variable Normal kn=2, kt=1, xt=sin(sint)), xn=1over(1 + (cos(t))^2)-0.5/jacobien.mat");
 % load("results plots of 3 different cases - constant, variable normal forces and gap/gap and variable Normal kn=2, kt=1, xt=sin(sint)), xn=1over(1 + (cos(t))^2)-1.25/jacobien.mat");
 [E, EH] = fft_matrices(1024, 200);
 t = (0:(1024-1)) * 2 * pi / 1024;
 
-dTdxt_Fou_NUM = JNL_N(1:401, 1:401);
-dTdxt_Fou_AN = JNL_A(1:401, 1:401);
+% dTdxt_Fou_NUM = JNL_N(1:401, 1:401);
+% dTdxt_Fou_AN = JNL_A(1:401, 1:401);
 
-% dTdxt_Fou_NUM = JNL_N(1:401, 402:end);
-% dTdxt_Fou_AN = JNL_A(1:401, 402:end);
+dTdxt_Fou_NUM = JNL_N(1:401, 402:end);
+dTdxt_Fou_AN = JNL_A(1:401, 402:end);
 
 dTdxt_time_NUM = E * dTdxt_Fou_NUM;
 dTdxt_time_AN = E * dTdxt_Fou_AN;
 
-for i = 1:10
+for i = 1:1
     fig = figure;
     fig.WindowState = 'maximized';
     pause(0.5)
@@ -414,32 +415,3 @@ for i = 1:10
 end
 
 %%
-Mf = [0 0 1 1 1 0 -1 -1 0 1 1 0]';
-N = length(Mf);
-record = zeros(size(Mf));
-p = 0;
-for i = 1:N
-
-    if Mf(1) ~=0 && 
-        for j = N:1
-            if Mf(j) == 0
-                p = mod(j + 1);
-                keep = 1;
-                continue;
-            end
-        end
-    end
-
-    if Mf(i) ~= 0 && keep == 0
-        p = i;
-        keep = 1;
-    end
-
-    if Mf(i) == 0 && keep == 1
-        keep = 0;
-    end
-
-    record(i)
-
-
-end

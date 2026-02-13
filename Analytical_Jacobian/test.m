@@ -34,35 +34,41 @@ xlim([-3,3]);
 ylim([-3,3]);
 pbaspect([1 1 1]);
 
-%% find transition time, from slip or saperation to stick
-Mf = [1 0 1 1 1 0 -1 -1 0 1  1  1]';
-ll = [1 2 3 4 5 6  7  8 9 10 11 12];
-N = length(Mf);
-record = zeros(size(Mf));
+%% find transition time, from slip or separation to stick
+% a = [1 1 0 0 0 0 0 0 1 1 1 1 1 1 0 -1 -1 0 1  1  1]'; % 0 is slip or separation. 1 is stick
+a(:, 1) = Mft_A(1,1,:);
+b(:, 1) = Mft_A(2,1,:);
+c(:, 1) = Mft_A(3,1,:);
+ll = 1:size(a,1);
+N = length(a);
+record = zeros(size(a));
 p = 0;
 keep = 0;
 for i = 1:N
 
-    if i == 1 && Mf(1) ~=0 
+    if i == 1 && a(1) ~=0 
         for j = 1:N
             k = N - j + 1;
-            if Mf(k) == 0
+            if a(k) == 0
                 p = mod(k, N) + 1;
                 keep = 1;
                 break;
             end
         end
-    elseif Mf(i) ~= 0 && keep == 0
+    elseif a(i) ~= 0 && keep == 0
         p = i;
         keep = 1;
     end
 
-    if Mf(i) == 0 && keep == 1
+    if a(i) == 0 && keep == 1
         keep = 0;
+        p = 0;
     end
 
     record(i) = p;
 
 
 end
-record
+c_xn = a .* b(mod(record-2, N));
+
+conditi = [a, c_xn];

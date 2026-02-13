@@ -186,10 +186,10 @@ end
 clear
 clc
 close all
-eps = zeros(11, 10);
+eps = [];
 h = 10^(-8);
 order = 1;
-h_con = zeros(11, 10);
+h_con = [];
 N = 1024;
 H = 200;
 A = 2;
@@ -198,33 +198,41 @@ dt = 2 * pi / N;
 t = (0:(N-1)) * 2 * pi / N;
 t = t';
 xt = A * fxt(t);
-xn = ones(N, 1);
-% xn = xt(:, 2) - 0.5;
+% xn = ones(N, 1);
+xn = xt(:, 2) - 0.5;
 % xn = xt(:, 2) - 1.25;
 % xn = xt(:, 1) - 1.25;
 x = [xt(:, 3), xn];
 
-figure; % displacement
-plot(t, x), grid on;
-legend("x1", "xn");
-title('displacement');
+% figure; % displacement
+% plot(t, x), grid on;
+% legend("x1", "xn");
+% title('displacement');
 
-kt = 2;
+kt = 1;
 kn = 2;
 mu = 0.5;
 w = 0;
 xn0 = 0; % normal pre-displacement
 
-nloop = 5;
-[JNL_A, Mft_A, Gp, dgt_A, Ft_A, wt_A] = HBMJACOB_analytical_gf_2dofs(x, kn, xn0, mu, kt, w, H, N, nloop);
-[E, EH] = fft_matrices(N, H);
-X = EH * x;
-X = X(:);
-[JNL_N, Mft_N, dgt_N, Ft_N, wt_N, Ffft] = HBMJACOB_numerical_gf_2dofs(X, kn, xn0, mu, kt, w, H, N, nloop, h, order);
+nloop = 2;
+% for ih = 1:12
+%     h = 10^(-ih);
+%     for iH = 1:20
+%         H = iH;
 
+        [JNL_A, Mft_A, Gp, dgt_A, Ft_A, wt_A] = HBMJACOB_analytical_gf_2dofs(x, kn, xn0, mu, kt, w, H, N, nloop);
+        [E, EH] = fft_matrices(N, H);
+        X = EH * x;
+        X = X(:);
+        [JNL_N, Mft_N, dgt_N, Ft_N, wt_N, Ffft] = HBMJACOB_numerical_gf_2dofs(X, kn, xn0, mu, kt, w, H, N, nloop, h, order);
+        
+        % eps(iH, ih) = norm(JNL_A - JNL_N) / norm(JNL_A);
+%     end
+%     h_con(1, ih) = h;
+% end
 eps = norm(JNL_A - JNL_N) / norm(JNL_A);
-
-
+%%
 T = t; xplot = x;
 for i = 1:nloop - 1
     Tend = T(end);
@@ -367,19 +375,19 @@ plot(xplot(:, 1), wt_A)
 % load("results plots of 3 different cases - constant, variable normal forces and gap/constant Normal kn=2, kt=1, xt=sin(sint)), xn=1/Jacibien.mat");
 % load("results plots of 3 different cases - constant, variable normal forces and gap/variable Normal kn=2, kt=1, xt=sin(sint)), xn=1over(1 + (cos(t))^2)-0.5/jacobien.mat");
 % load("results plots of 3 different cases - constant, variable normal forces and gap/gap and variable Normal kn=2, kt=1, xt=sin(sint)), xn=1over(1 + (cos(t))^2)-1.25/jacobien.mat");
-[E, EH] = fft_matrices(1024, 200);
-t = (0:(1024-1)) * 2 * pi / 1024;
+[E, EH] = fft_matrices(N, H);
+t = (0:(N-1)) * 2 * pi / N;
 
-dTdxt_Fou_NUM = JNL_N(1:401, 1:401);
-dTdxt_Fou_AN = JNL_A(1:401, 1:401);
+% dTdxt_Fou_NUM = JNL_N(1:2*H+1, 1:2*H+1);
+% dTdxt_Fou_AN = JNL_A(1:2*H+1, 1:2*H+1);
 
-% dTdxt_Fou_NUM = JNL_N(1:401, 402:end);
-% dTdxt_Fou_AN = JNL_A(1:401, 402:end);
+dTdxt_Fou_NUM = JNL_N(1:2*H+1, 2*H+2:end);
+dTdxt_Fou_AN = JNL_A(1:2*H+1, 2*H+2:end);
 
 dTdxt_time_NUM = E * dTdxt_Fou_NUM;
 dTdxt_time_AN = E * dTdxt_Fou_AN;
 
-for i = 1:10
+for i = 1:11
     fig = figure;
     fig.WindowState = 'maximized';
     pause(0.5)
