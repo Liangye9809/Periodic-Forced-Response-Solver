@@ -9,13 +9,14 @@ function [JNL, Mft, dgt, Ft, wt, Ffft] = HBMJACOB_numerical_gf_2dofs(x, kn, xn0,
     X(:, 2) = x(1 + (2 * H + 1):end);
     xt = E * X; 
     dgt = [];
-    for k = 1:nloop
-        for i = 1:N
-            dgt(:, :, (k - 1) * N + i) = finite_diff_jac(@(xt) gf_2dofs_instant(xt, kn, xn0, mu, kt, w_in), xt(i, :), h, order);
-            [Ft((k - 1) * N + i, :), w, ~] = gf_2dofs_instant(xt(i, :), kn, xn0, mu, kt, w_in);
-            w_in = w;
-        end
-    end
+    Ft = [];
+    % for k = 1:nloop
+    %     for i = 1:N
+    %         dgt(:, :, (k - 1) * N + i) = finite_diff_jac(@(xt) gf_2dofs_instant(xt, kn, xn0, mu, kt, w_in), xt(i, :), h, order);
+    %         [Ft((k - 1) * N + i, :), w, ~] = gf_2dofs_instant(xt(i, :), kn, xn0, mu, kt, w_in);
+    %         w_in = w;
+    %     end
+    % end
 
 end
 
