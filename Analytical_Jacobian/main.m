@@ -212,7 +212,7 @@ x = [xt(:, 3), xn];
 kt = 1;
 kn = 2;
 mu = 0.5;
-w = 0;
+w =  0;
 xn0 = 0; % normal pre-displacement
 
 nloop = 2;
@@ -240,6 +240,14 @@ for i = 1:nloop - 1
 
     xplot = [xplot; x];
 end
+
+figure;
+Mftplot(:, 1) = Mft_A(1,1,:);
+Mftplot(:, 2) = Mft_A(2,1,:);
+Mftplot(:, 3) = Mft_A(3,1,:);
+plot(T, Mftplot(:,1), '.');
+xlim(T([end-N+1,end]));
+ylim([-1.2, 1.2]);
 
 figure; % friction forces
 plot(T, Ft_A(:, 1), 'LineWidth', 2), hold on;
@@ -289,18 +297,18 @@ grid on;
 % legend('dgt22_A', 'dgt22_N');
 % grid on;
 
-figure; % w
-plot(T, wt_A, 'b-', 'LineWidth', 2), hold on;
-plot(T, wt_N, 'r--', 'LineWidth', 2), grid on;
-w_end = wt_A([N:N:end]);
-plot(T([N:N:end]), w_end, 'ko', 'LineWidth', 2), hold on;
-legend('wt_A', 'wt_N');
+% figure; % w
+% plot(T, wt_A, 'b-', 'LineWidth', 2), hold on;
+% plot(T, wt_N, 'r--', 'LineWidth', 2), grid on;
+% w_end = wt_A([N:N:end]);
+% plot(T([N:N:end]), w_end, 'ko', 'LineWidth', 2), hold on;
+% legend('wt_A', 'wt_N');
 
-figure; % difference of w
-w_diff = w_end(2:end) - w_end(1:end-1);
-N_w = size(w_diff, 1);
-plot([1:N_w], w_diff, 'bo-', 'LineWidth', 2), grid on;
-title('w difference');
+% figure; % difference of w
+% w_diff = w_end(2:end) - w_end(1:end-1);
+% N_w = size(w_diff, 1);
+% plot([1:N_w], w_diff, 'bo-', 'LineWidth', 2), grid on;
+% title('w difference');
 
 % figure; % plot imagesc
 % subplot(2,2,1);
@@ -348,6 +356,7 @@ plot(t, wt_A(end-N+1:end), 'b-', 'LineWidth', 2), hold on;
 grid on;
 legend('w+', 'w-', 'wt');
 
+figure;
 tiledlayout(2,1,'TileSpacing','compact','Padding','compact')
 
 nexttile
@@ -357,7 +366,8 @@ plot(T, wp, 'k--', 'LineWidth', 2), hold on;
 plot(T, wm, 'r--', 'LineWidth', 2), hold on;
 plot(T, wt_A, 'b-', 'LineWidth', 2), hold on;
 grid on;
-xlim(T([end-2*N+1,end]));
+% xlim(T([end-2*N+1,end]));
+xlim(T([end-N+1,end]));
 
 nexttile
 plot(T, Ft_A(:, 1), 'LineWidth', 2), hold on;
@@ -365,29 +375,32 @@ plot(T, mu * Ft_A(:,2), 'k-', 'LineWidth', 2), hold on;
 plot(T, - mu * Ft_A(:,2), 'k-', 'LineWidth', 2), hold on;
 legend("T", "mu*Fn", "-mu*Fn");
 ylim(1.2 * [min(-mu * Ft_A(:,2)), max(mu * Ft_A(:,2))]);
-xlim(T([end-2*N+1,end]));
+% xlim(T([end-2*N+1,end]));
+xlim(T([end-N+1,end]));
 grid on;
 
-figure;
-plot(xplot(:, 1), wt_A)
+
+
 %%
 % close all
 % load("results plots of 3 different cases - constant, variable normal forces and gap/constant Normal kn=2, kt=1, xt=sin(sint)), xn=1/Jacibien.mat");
 % load("results plots of 3 different cases - constant, variable normal forces and gap/variable Normal kn=2, kt=1, xt=sin(sint)), xn=1over(1 + (cos(t))^2)-0.5/jacobien.mat");
 % load("results plots of 3 different cases - constant, variable normal forces and gap/gap and variable Normal kn=2, kt=1, xt=sin(sint)), xn=1over(1 + (cos(t))^2)-1.25/jacobien.mat");
+% N = 1024;
+% H = 200;
 [E, EH] = fft_matrices(N, H);
 t = (0:(N-1)) * 2 * pi / N;
 
-% dTdxt_Fou_NUM = JNL_N(1:2*H+1, 1:2*H+1);
-% dTdxt_Fou_AN = JNL_A(1:2*H+1, 1:2*H+1);
+dTdxt_Fou_NUM = JNL_N(1:2*H+1, 1:2*H+1);
+dTdxt_Fou_AN = JNL_A(1:2*H+1, 1:2*H+1);
 
-dTdxt_Fou_NUM = JNL_N(1:2*H+1, 2*H+2:end);
-dTdxt_Fou_AN = JNL_A(1:2*H+1, 2*H+2:end);
+% dTdxt_Fou_NUM = JNL_N(1:2*H+1, 2*H+2:end);
+% dTdxt_Fou_AN = JNL_A(1:2*H+1, 2*H+2:end);
 
 dTdxt_time_NUM = E * dTdxt_Fou_NUM;
 dTdxt_time_AN = E * dTdxt_Fou_AN;
 
-for i = 1:11
+for i = 6:6
     fig = figure;
     fig.WindowState = 'maximized';
     pause(0.5)

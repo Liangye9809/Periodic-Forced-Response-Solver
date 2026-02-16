@@ -16,6 +16,37 @@ function [F, w, Mf] = gf_2dofs_instant(x, kn, xn0, mu, kt, w_in, C_)
 end
 
 % C is condition of friction, [stick; slip] 1 is active, 0 is non.
+
+% function [T, w, C] = TangentialForces(xt, wt, kt, mu, FN, C_)
+%     if FN > 0
+%         T = kt * (xt - wt);
+%         if abs(T) < mu * FN
+%             w = wt;
+%             C = [1; 0]; % 100% stick
+%         else
+% 
+%             if abs(T) > mu * FN 
+%                 sg = sign(T);
+%                 T = sg * mu * FN;
+%                 w = xt - sg * mu * FN / kt;
+%                 C = sg * [0; 1]; % 100% slip
+%             else
+%                 sg = sign(T);
+%                 T = sg * mu * FN;
+%                 w = xt - sg * mu * FN / kt;
+%                 C = C_; % slip or stick, equal to previous time instant 
+%             end
+% 
+%         end
+%     else
+%         T = zeros(size(xt));
+%         w = xt;
+%         C = [0; 0]; % gap, no stick nor slip
+%     end
+% end
+
+% C is condition of friction, [stick; slip] 1 is active, 0 is non.
+
 function [T, w, C] = TangentialForces(xt, wt, kt, mu, FN, C_)
     if FN > 0
         T = kt * (xt - wt);
@@ -26,12 +57,12 @@ function [T, w, C] = TangentialForces(xt, wt, kt, mu, FN, C_)
             sg = sign(T);
             T = sg * mu * FN;
             w = xt - sg * mu * FN / kt;
-            if abs(T) > mu * FN 
-                C = sg * [0; 1]; % 100% slip
-            else
-                C = C_; % slip or stick, equal to previous time instant 
-            end
-        
+
+            C = sg * [0; 1]; 
+
+            % C = C_; % slip or stick, equal to previous time instant 
+
+
         end
     else
         T = zeros(size(xt));

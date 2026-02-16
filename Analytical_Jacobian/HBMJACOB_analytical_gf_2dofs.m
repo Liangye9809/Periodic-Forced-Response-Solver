@@ -24,55 +24,58 @@ function [JNL, Mft, Gp, dgt, F, wt] = HBMJACOB_analytical_gf_2dofs(xt, kn, xn0, 
         end
 
         % add missing part
-        [E, EH] = fft_matrices(N, H);
-        a(:, 1) = Mft(1,1,end-N+1:end);
-        b(:, 1) = Mft(2,1,end-N+1:end);
-        c(:, 1) = Mft(3,1,end-N+1:end);
-        record = zeros(size(a));
-        p = 0;
-        keep = 0;
-        for i = 1:N
-        
-            if i == 1 && a(1) ~=0 
-                for j = 1:N
-                    k = N - j + 1;
-                    if a(k) == 0
-                        p = mod(k, N) + 1;
-                        keep = 1;
-                        break;
+
+        if ismember(0,Mft(1,1,end-N+1:end))
+            [E, EH] = fft_matrices(N, H);
+            a(:, 1) = Mft(1,1,end-N+1:end);
+            b(:, 1) = Mft(2,1,end-N+1:end);
+            c(:, 1) = Mft(3,1,end-N+1:end);
+            record = zeros(size(a));
+            p = 0;
+            keep = 0;
+            for i = 1:N
+
+                if i == 1 && a(1) ~=0 
+                    for j = 1:N
+                        k = N - j + 1;
+                        if a(k) == 0
+                            p = mod(k, N) + 1;
+                            keep = 1;
+                            break;
+                        end
                     end
+                elseif a(i) ~= 0 && keep == 0
+                    p = i;
+                    keep = 1;
                 end
-            elseif a(i) ~= 0 && keep == 0
-                p = i;
-                keep = 1;
+
+                if a(i) == 0 && keep == 1
+                    keep = 0;
+                    p = 0;
+                end
+
+                record(i) = p;
+
             end
-        
-            if a(i) == 0 && keep == 1
-                keep = 0;
-                p = 0;
+            c_xn = c .* a .* b(mod(record-2, N));
+
+            dTdXt_time = E * JNL(1:2*H+1, 1:2*H+1);
+            dTdXn_time = E * JNL(1:2*H+1, 2*H+2:end);
+
+            dTdXt_time(:, 1) = dTdXt_time(:, 1) - a .* 0.5 .* kt;
+            dTdXn_time(:, 1) = dTdXn_time(:, 1) + c_xn .* 0.5 .* kn .* mu;
+
+            for i = 1:H
+                dTdXt_time(:, 2 * i) = dTdXt_time(:, 2 * i) - a .* kt .* cos(record ./ N .* 2.*pi .* i);
+                dTdXt_time(:, 2 * i + 1) = dTdXt_time(:, 2 * i + 1) - a .* kt .* sin(record ./ N .* 2.*pi .* i);
+
+                dTdXn_time(:, 2 * i) = dTdXn_time(:, 2 * i) + c_xn .* mu .* kn .* cos(record ./ N .* 2.*pi .* i);
+                dTdXn_time(:, 2 * i + 1) = dTdXn_time(:, 2 * i + 1) + c_xn .* mu .* kn .* sin(record ./ N .* 2.*pi .* i);
             end
-        
-            record(i) = p;
 
+            JNL(1:2*H+1, 1:2*H+1) = EH * dTdXt_time;
+            JNL(1:2*H+1, 2*H+2:end) = EH * dTdXn_time;
         end
-        c_xn = c .* a .* b(mod(record-2, N));
-
-        dTdXt_time = E * JNL(1:2*H+1, 1:2*H+1);
-        dTdXn_time = E * JNL(1:2*H+1, 2*H+2:end);
-
-        dTdXt_time(:, 1) = dTdXt_time(:, 1) - a .* 0.5 .* kt;
-        dTdXn_time(:, 1) = dTdXn_time(:, 1) + c_xn .* 0.5 .* kn .* mu;
-
-        for i = 1:H
-            dTdXt_time(:, 2 * i) = dTdXt_time(:, 2 * i) - a .* kt .* cos(record ./ N .* 2.*pi .* i);
-            dTdXt_time(:, 2 * i + 1) = dTdXt_time(:, 2 * i + 1) - a .* kt .* sin(record ./ N .* 2.*pi .* i);
-
-            dTdXn_time(:, 2 * i) = dTdXn_time(:, 2 * i) + c_xn .* mu .* kn .* cos(record ./ N .* 2.*pi .* i);
-            dTdXn_time(:, 2 * i + 1) = dTdXn_time(:, 2 * i + 1) + c_xn .* mu .* kn .* sin(record ./ N .* 2.*pi .* i);
-        end
-
-        JNL(1:2*H+1, 1:2*H+1) = EH * dTdXt_time;
-        JNL(1:2*H+1, 2*H+2:end) = EH * dTdXn_time;
 
 end
 
