@@ -191,16 +191,14 @@ h = 10^(-8);
 order = 1;
 h_con = [];
 N = 1024;
-H = 200;
+H = 10;
 A = 2;
 dt = 2 * pi / N;
-% t = 0:dt:(2 * pi - dt);
 t = (0:(N-1)) * 2 * pi / N;
 t = t';
 xt = A * fxt(t);
 % xn = ones(N, 1);
-xn = xt(:, 2) - 0.5;
-% xn = xt(:, 2) - 1.25;
+xn = xt(:, 1) - 0.5;
 % xn = xt(:, 1) - 1.25;
 x = [xt(:, 3), xn];
 
@@ -222,11 +220,16 @@ nloop = 2;
 %         H = iH;
 
         [JNL_A, Mft_A, Gp, dgt_A, Ft_A, wt_A] = HBMJACOB_analytical_gf_2dofs(x, kn, xn0, mu, kt, w, H, N, nloop);
+        [JNL_A_2, Mft_A_2, JNLt_A, Ft_A_2, wt_A_2] = HBMJACOB_analytical_gf_2dofs_2(x, kn, xn0, mu, kt, w, H, N, nloop);
+        
+        eps_a = norm(JNL_A - JNL_A_2) / norm(JNL_A_2)
         [E, EH] = fft_matrices(N, H);
         X = EH * x;
         X = X(:);
         [JNL_N, Mft_N, dgt_N, Ft_N, wt_N, Ffft] = HBMJACOB_numerical_gf_2dofs(X, kn, xn0, mu, kt, w, H, N, nloop, h, order);
-        
+        [JNL_N_2, JNLt_N] = HBMJACOB_numerical_gf_2dofs_2(X, kn, xn0, mu, kt, w, H, N, nloop, h, order);
+        eps_n = norm(JNL_N - JNL_N_2) / norm(JNL_N_2)
+
         % eps(iH, ih) = norm(JNL_A - JNL_N) / norm(JNL_A);
 %     end
 %     h_con(1, ih) = h;
@@ -378,33 +381,18 @@ ylim(1.2 * [min(-mu * Ft_A(:,2)), max(mu * Ft_A(:,2))]);
 % xlim(T([end-2*N+1,end]));
 xlim(T([end-N+1,end]));
 grid on;
-
-
-
 %%
-% close all
-% load("results plots of 3 different cases - constant, variable normal forces and gap/constant Normal kn=2, kt=1, xt=sin(sint)), xn=1/Jacibien.mat");
-% load("results plots of 3 different cases - constant, variable normal forces and gap/variable Normal kn=2, kt=1, xt=sin(sint)), xn=1over(1 + (cos(t))^2)-0.5/jacobien.mat");
-% load("results plots of 3 different cases - constant, variable normal forces and gap/gap and variable Normal kn=2, kt=1, xt=sin(sint)), xn=1over(1 + (cos(t))^2)-1.25/jacobien.mat");
-% N = 1024;
-% H = 200;
-[E, EH] = fft_matrices(N, H);
-t = (0:(N-1)) * 2 * pi / N;
+dTdxt_time_NUM = JNLt_N(1:N, 1:2*H+1);
+dTdxn_time_NUM = JNLt_N(1:N, 2*H+2:end);
 
-dTdxt_Fou_NUM = JNL_N(1:2*H+1, 1:2*H+1);
-dTdxt_Fou_AN = JNL_A(1:2*H+1, 1:2*H+1);
+dTdxt_time_AN = JNLt_A(1:N, 1:2*H+1);
+dTdxn_time_AN = JNLt_A(1:N, 2*H+2:end);
 
-% dTdxt_Fou_NUM = JNL_N(1:2*H+1, 2*H+2:end);
-% dTdxt_Fou_AN = JNL_A(1:2*H+1, 2*H+2:end);
-
-dTdxt_time_NUM = E * dTdxt_Fou_NUM;
-dTdxt_time_AN = E * dTdxt_Fou_AN;
-
-for i = 6:6
+for i = 1:20
     fig = figure;
     fig.WindowState = 'maximized';
     pause(0.5)
-    subplot(2,1,1)
+    subplot(2,2,1)
     plot(t, dTdxt_time_NUM(:, i), 'LineWidth', 2), hold on
     grid on
     plot(t, dTdxt_time_AN(:, i), 'LineWidth', 2)
@@ -418,20 +406,32 @@ for i = 6:6
     end
     title(titlename);
 
-    subplot(2,1,2)
+    subplot(2,2,3)
     plot(t, dTdxt_time_NUM(:, i) - dTdxt_time_AN(:, i), 'LineWidth', 2), hold on
     legend('difference');
     grid on
 
-    % drawnow
-    
-    % filename = 'comparison of ' + string(titlename) +' dT over dXt in time domain';
-    % savefig(fig, filename)
-    % 
-    % filename = filename + '.bmp';
-    % saveas(gcf, filename)
-    % 
-    % close(fig);
+    subplot(2,2,2)
+    plot(t, dTdxn_time_NUM(:, i), 'LineWidth', 2), hold on
+    grid on
+    plot(t, dTdxn_time_AN(:, i), 'LineWidth', 2)
+    legend('dTdxn Nu', 'dTdxn An');
+    if i == 1
+        titlename = 'cos0';
+    elseif mod(i, 2) == 0
+        titlename = 'cos' + string(floor(i/2));
+    else
+        titlename = 'sin' + string(floor(i/2));
+    end
+    title(titlename);
+
+    subplot(2,2,4)
+    plot(t, dTdxn_time_NUM(:, i) - dTdxn_time_AN(:, i), 'LineWidth', 2), hold on
+    legend('difference');
+    grid on
+
+
 end
 
-%%
+
+

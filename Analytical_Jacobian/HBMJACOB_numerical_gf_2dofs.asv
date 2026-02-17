@@ -1,0 +1,55 @@
+function [JNL, Mft, dgt, Ft, wt, Ffft] = HBMJACOB_numerical_gf_2dofs(x, kn, xn0, mu, kt, w_in, H, N, nloop, h, order)
+    
+    JNL = finite_diff_jac(@(x) fftF(x, kn, xn0, mu, kt, w_in, H, N, nloop), x, h, order);
+    
+    [Ffft, wt, Mft] = fftF(x, kn, xn0, mu, kt, w_in, H, N, nloop);
+
+    [E, EH] = fft_matrices(N, H);
+    X(:, 1) = x(1:(2 * H + 1));
+    X(:, 2) = x(1 + (2 * H + 1):end);
+    xt = E * X; 
+    dgt = [];
+    Ft = [];
+    % for k = 1:nloop
+    %     for i = 1:N
+    %         dgt(:, :, (k - 1) * N + i) = finite_diff_jac(@(xt) gf_2dofs_instant(xt, kn, xn0, mu, kt, w_in), xt(i, :), h, order);
+    %         [Ft((k - 1) * N + i, :), w, ~] = gf_2dofs_instant(xt(i, :), kn, xn0, mu, kt, w_in);
+    %         w_in = w;
+    %     end
+    % end
+
+end
+
+function [F, wt, Mft] = fftF(x, kn, xn0, mu, kt, w_in, H, N, nloop)
+
+    [E, EH] = fft_matrices(N, H);
+    X(:, 1) = x(1:(2 * H + 1));
+    X(:, 2) = x(1 + (2 * H + 1):end);
+    xt = E * X; 
+
+    [Ft, wt, Mft] = gf_2dofs(xt, kn, xn0, mu, kt, w_in, nloop);
+    
+    Ft_final = Ft(end - N + 1:end, :);
+
+    F = Ft_final(:);
+    % hndn = EH * Ft_final;
+    % F = hndn(:);
+
+end
+
+function [F, wt, Mft] = fftF(x, kn, xn0, mu, kt, w_in, H, N, nloop)
+
+    [E, EH] = fft_matrices(N, H);
+    X(:, 1) = x(1:(2 * H + 1));
+    X(:, 2) = x(1 + (2 * H + 1):end);
+    xt = E * X; 
+
+    [Ft, wt, Mft] = gf_2dofs(xt, kn, xn0, mu, kt, w_in, nloop);
+    
+    Ft_final = Ft(end - N + 1:end, :);
+
+    F = Ft_final(:);
+    % hndn = EH * Ft_final;
+    % F = hndn(:);
+
+end
