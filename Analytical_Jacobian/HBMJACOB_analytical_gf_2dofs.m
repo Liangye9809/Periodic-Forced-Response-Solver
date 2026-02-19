@@ -57,7 +57,10 @@ function [JNL, Mft, Gp, dgt, F, wt] = HBMJACOB_analytical_gf_2dofs(xt, kn, xn0, 
                 record(i) = p;
 
             end
-            c_xn = c .* a .* b(mod(record-2, N));
+            % c_xn = c .* a .* b(mod(record-2, N));
+            c_xn = c .* a .* b(mod(record-2, N) + 1);
+
+            t_s = (record - 1) ./ N .* 2.*pi; % consider [0, N-1], so there is record - 1 
 
             dTdXt_time = E * JNL(1:2*H+1, 1:2*H+1);
             dTdXn_time = E * JNL(1:2*H+1, 2*H+2:end);
@@ -66,11 +69,17 @@ function [JNL, Mft, Gp, dgt, F, wt] = HBMJACOB_analytical_gf_2dofs(xt, kn, xn0, 
             dTdXn_time(:, 1) = dTdXn_time(:, 1) + c_xn .* 0.5 .* kn .* mu;
 
             for i = 1:H
-                dTdXt_time(:, 2 * i) = dTdXt_time(:, 2 * i) - a .* kt .* cos(record ./ N .* 2.*pi .* i);
-                dTdXt_time(:, 2 * i + 1) = dTdXt_time(:, 2 * i + 1) - a .* kt .* sin(record ./ N .* 2.*pi .* i);
+                % dTdXt_time(:, 2 * i) = dTdXt_time(:, 2 * i) - a .* kt .* cos(record ./ N .* 2.*pi .* i);
+                % dTdXt_time(:, 2 * i + 1) = dTdXt_time(:, 2 * i + 1) - a .* kt .* sin(record ./ N .* 2.*pi .* i);
+                % 
+                % dTdXn_time(:, 2 * i) = dTdXn_time(:, 2 * i) + c_xn .* mu .* kn .* cos(record ./ N .* 2.*pi .* i);
+                % dTdXn_time(:, 2 * i + 1) = dTdXn_time(:, 2 * i + 1) + c_xn .* mu .* kn .* sin(record ./ N .* 2.*pi .* i);
 
-                dTdXn_time(:, 2 * i) = dTdXn_time(:, 2 * i) + c_xn .* mu .* kn .* cos(record ./ N .* 2.*pi .* i);
-                dTdXn_time(:, 2 * i + 1) = dTdXn_time(:, 2 * i + 1) + c_xn .* mu .* kn .* sin(record ./ N .* 2.*pi .* i);
+                dTdXt_time(:, 2 * i) = dTdXt_time(:, 2 * i) - a .* kt .* cos(t_s .* i);
+                dTdXt_time(:, 2 * i + 1) = dTdXt_time(:, 2 * i + 1) - a .* kt .* sin(t_s .* i);
+
+                dTdXn_time(:, 2 * i) = dTdXn_time(:, 2 * i) + c_xn .* mu .* kn .* cos(t_s .* i);
+                dTdXn_time(:, 2 * i + 1) = dTdXn_time(:, 2 * i + 1) + c_xn .* mu .* kn .* sin(t_s .* i);
             end
 
             JNL(1:2*H+1, 1:2*H+1) = EH * dTdXt_time;

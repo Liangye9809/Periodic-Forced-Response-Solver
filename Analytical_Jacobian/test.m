@@ -35,14 +35,14 @@ ylim([-3,3]);
 pbaspect([1 1 1]);
 
 %% find transition time, from slip or separation to stick
-% a = [1 1 0 0 0 0 0 0 1 1 1 1 1 1 0 -1 -1 0 1  1  1]'; % 0 is slip or separation. 1 is stick
-a(:, 1) = Mft_A(1,1,:);
-b(:, 1) = Mft_A(2,1,:);
-c(:, 1) = Mft_A(3,1,:);
-ll = 1:size(a,1);
+a = [1 1 0 0 0 0 0 0 1 1 1 1 1 1 0 -1 -1 0 1  1  1]'; % 0 is slip or separation. 1 is stick
+% a(:, 1) = Mft_A(1,1,:);
+% b(:, 1) = Mft_A(2,1,:);
+% c(:, 1) = Mft_A(3,1,:);
+% ll = 1:size(a,1);
 N = length(a);
 record = zeros(size(a));
-p = 0;
+p_plus = 0;
 keep = 0;
 for i = 1:N
 
@@ -50,25 +50,74 @@ for i = 1:N
         for j = 1:N
             k = N - j + 1;
             if a(k) == 0
-                p = mod(k, N) + 1;
+                p_plus = mod(k, N) + 1;
                 keep = 1;
                 break;
             end
         end
     elseif a(i) ~= 0 && keep == 0
-        p = i;
+        p_plus = i;
         keep = 1;
     end
 
     if a(i) == 0 && keep == 1
         keep = 0;
+        p_plus = 0;
+    end
+
+    record(i) = p_plus;
+
+
+end
+% c_xn = a .* b(mod(record-2, N) + 1);
+% 
+% conditi = [a, b, c_xn, record];
+conditi = [a, record];
+
+%% find transition time, from slip or separation to stick, in the middle
+a = [0 1 1 0 0 0 0 0 1 1 1 1 1 1 0 -1 -1 0 1  0  0]'; % 0 is slip or separation. 1 is stick
+% a(:, 1) = Mft_A(1,1,:);
+% b(:, 1) = Mft_A(2,1,:);
+% c(:, 1) = Mft_A(3,1,:);
+ll = 1:size(a,1);
+N = length(a);
+record = zeros(size(a));
+record_plus = zeros(size(a));
+p_plus = 0;
+p_minus = 0;
+p = 0;
+keep = 0;
+for i = 1:N
+
+    if i == 1 && a(1) ~=0 % if begin with stick, means transition time located previously 
+        for j = 1:N % backwards loop to find slip to stick transition
+            k = N - j + 1;
+            if a(k) == 0
+                p_plus = mod(k, N + 1) + 1; % t+ transition instant, stick. add last point to create close the cycle [1, N+1]
+                p_minus = mod(k - 1, N) + 1; % t- transition instant, slip
+                p = 0.5 * (p_plus + p_minus); % middle transition instant.
+                keep = 1;
+                break;
+            end
+        end
+    elseif a(i) ~= 0 && keep == 0
+        p_plus = i; % t+ transition instant.
+        p_minus = i - 1; % t- transition instant.
+        p = 0.5 * (p_plus + p_minus); % middle transition instant.
+        keep = 1;
+    end
+
+    if a(i) == 0 && keep == 1
+        keep = 0;
+        p_plus = 0;
+        p_minus = 0;
         p = 0;
     end
 
+    record_plus(i) = p_plus;
     record(i) = p;
 
 
 end
-c_xn = a .* b(mod(record-2, N));
 
-conditi = [a, c_xn];
+conditi = [a, record, record_plus];

@@ -191,16 +191,14 @@ h = 10^(-8);
 order = 1;
 h_con = [];
 N = 1024;
-H = 10;
-A = 2;
+H = 200;
 dt = 2 * pi / N;
 t = (0:(N-1)) * 2 * pi / N;
 t = t';
-xt = A * fxt(t);
+xn = - 4 * sin(sin(t)) + 1;
 % xn = ones(N, 1);
-xn = xt(:, 1) - 0.5;
-% xn = xt(:, 1) - 1.25;
-x = [xt(:, 3), xn];
+xt = 2 * exp(cos(t)) - 3;
+x = [xt, xn];
 
 % figure; % displacement
 % plot(t, x), grid on;
@@ -234,7 +232,10 @@ nloop = 2;
 %     end
 %     h_con(1, ih) = h;
 % end
-eps = norm(JNL_A - JNL_N) / norm(JNL_A);
+eps_11 = norm(JNL_A - JNL_N) / norm(JNL_A);
+eps_12 = norm(JNL_A - JNL_N_2) / norm(JNL_A);
+eps_21 = norm(JNL_A_2 - JNL_N) / norm(JNL_A_2);
+eps_22 = norm(JNL_A_2 - JNL_N_2) / norm(JNL_A_2);
 %%
 T = t; xplot = x;
 for i = 1:nloop - 1
@@ -245,11 +246,19 @@ for i = 1:nloop - 1
 end
 
 figure;
-Mftplot(:, 1) = Mft_A(1,1,:);
-Mftplot(:, 2) = Mft_A(2,1,:);
-Mftplot(:, 3) = Mft_A(3,1,:);
-plot(T, Mftplot(:,1), '.');
-xlim(T([end-N+1,end]));
+Mftplot(:, 1) = Mft_A(1,1,end-N+1:end);
+Mftplot(:, 2) = Mft_A(2,1,end-N+1:end);
+Mftplot(:, 3) = Mft_A(3,1,end-N+1:end);
+subplot(2,1,1)
+plot(t, Mftplot(:,1), '.'), grid on;
+% xlim(T([end-N+1,end]));
+title('stick condition');
+ylim([-1.2, 1.2]);
+
+subplot(2,1,2)
+plot(t, Mftplot(:,3), '.'), grid on;
+% xlim(T([end-N+1,end]));
+title('contact condition');
 ylim([-1.2, 1.2]);
 
 figure; % friction forces
@@ -351,8 +360,8 @@ legend('w+', 'w-', 'wt', "x1", "xn");
 
 figure;
 
-wp = xt(:,3) + mu * kn / kt * max(xn, 0);
-wm = xt(:,3) - mu * kn / kt * max(xn, 0);
+wp = xt + mu * kn / kt * max(xn, 0);
+wm = xt - mu * kn / kt * max(xn, 0);
 plot(t, wp, 'k--', 'LineWidth', 2), hold on;
 plot(t, wm, 'k--', 'LineWidth', 2), hold on;
 plot(t, wt_A(end-N+1:end), 'b-', 'LineWidth', 2), hold on;
@@ -381,6 +390,35 @@ ylim(1.2 * [min(-mu * Ft_A(:,2)), max(mu * Ft_A(:,2))]);
 % xlim(T([end-2*N+1,end]));
 xlim(T([end-N+1,end]));
 grid on;
+%% print
+figure;
+% subplot(3,1,1)
+wp = xplot(:, 1) + mu * kn / kt * max(xplot(:, 2), 0);
+wm = xplot(:, 1) - mu * kn / kt * max(xplot(:, 2), 0);
+plot(T, wp, 'k--', 'LineWidth', 2), hold on;
+plot(T, wm, 'r--', 'LineWidth', 2), hold on;
+plot(T, wt_A, 'b-', 'LineWidth', 2), hold on;
+grid on;
+plot(t, x, 'LineWidth', 2), hold on;
+legend('w+', 'w-', 'wt', "x1", "xn");
+title('displacement');
+
+figure;
+% subplot(3,1,2)
+plot(xplot(:, 1), Ft_A(:, 1), 'LineWidth', 2);
+title('hysteresis cycle');
+grid on;
+
+figure;
+% subplot(3,1,3)
+plot(T, Ft_A(:, 1), 'LineWidth', 2), hold on;
+plot(T, mu * Ft_A(:,2), 'k-', 'LineWidth', 2), hold on;
+plot(T, - mu * Ft_A(:,2), 'k-', 'LineWidth', 2), hold on;
+legend("T", "mu*Fn", "-mu*Fn");
+ylim(1.2 * [min(-mu * Ft_A(:,2)), max(mu * Ft_A(:,2))]);
+title('friction forces');
+grid on;
+
 %%
 dTdxt_time_NUM = JNLt_N(1:N, 1:2*H+1);
 dTdxn_time_NUM = JNLt_N(1:N, 2*H+2:end);
@@ -388,9 +426,15 @@ dTdxn_time_NUM = JNLt_N(1:N, 2*H+2:end);
 dTdxt_time_AN = JNLt_A(1:N, 1:2*H+1);
 dTdxn_time_AN = JNLt_A(1:N, 2*H+2:end);
 
-for i = 1:20
-    fig = figure;
+% num = 18;
+for i = 18:18
+    fig = figure; %('PaperOrientation','landscape','PaperUnits','centimeters','PaperPosition', 100 * [0 0 29.7 21], 'PaperSize',[29.7 21] * 100);
+    
     fig.WindowState = 'maximized';
+    
+    % set(fig,'PaperUnits','centimeters');
+    % set(fig,'PaperSize',[29.7 21]);
+    % set(fig,'PaperPosition',[0 0 29.7 21]);
     pause(0.5)
     subplot(2,2,1)
     plot(t, dTdxt_time_NUM(:, i), 'LineWidth', 2), hold on
@@ -398,11 +442,11 @@ for i = 1:20
     plot(t, dTdxt_time_AN(:, i), 'LineWidth', 2)
     legend('dTdxt Nu', 'dTdxt An');
     if i == 1
-        titlename = 'cos0';
+        titlename = 'N = ' + string(N) + ', H = ' + string(H) + ', ' +'cos0';
     elseif mod(i, 2) == 0
-        titlename = 'cos' + string(floor(i/2));
+        titlename = 'N = ' + string(N) + ', H = ' + string(H) + ', ' +'cos' + string(floor(i/2));
     else
-        titlename = 'sin' + string(floor(i/2));
+        titlename = 'N = ' + string(N) + ', H = ' + string(H) + ', ' +'sin' + string(floor(i/2));
     end
     title(titlename);
 
@@ -416,13 +460,7 @@ for i = 1:20
     grid on
     plot(t, dTdxn_time_AN(:, i), 'LineWidth', 2)
     legend('dTdxn Nu', 'dTdxn An');
-    if i == 1
-        titlename = 'cos0';
-    elseif mod(i, 2) == 0
-        titlename = 'cos' + string(floor(i/2));
-    else
-        titlename = 'sin' + string(floor(i/2));
-    end
+    
     title(titlename);
 
     subplot(2,2,4)
@@ -430,6 +468,9 @@ for i = 1:20
     legend('difference');
     grid on
 
+    pintname = string(titlename) + '.png';
+    set(gcf,'PaperOrientation','landscape');
+    exportgraphics(gcf, pintname,'ContentType','vector');
 
 end
 

@@ -31,41 +31,59 @@ function [JNL, Mft, JNLt, F, wt] = HBMJACOB_analytical_gf_2dofs_2(xt, kn, xn0, m
 
     if ismember(0, a)
         record = zeros(size(a));
+        record_plus = zeros(size(a));
+        p_plus = 0;
+        p_minus = 0;
         p = 0;
         keep = 0;
         for i = 1:N
-
-            if i == 1 && a(1) ~=0 
-                for j = 1:N
+        
+            if i == 1 && a(1) ~=0 % if begin with stick, means transition time located previously 
+                for j = 1:N % backwards loop to find slip to stick transition
                     k = N - j + 1;
                     if a(k) == 0
-                        p = mod(k, N) + 1;
+                        p_plus = mod(k, N + 1) + 1; % t+ transition instant, stick. add last point to create close the cycle [1, N+1]
+                        p_minus = mod(k - 1, N) + 1; % t- transition instant, slip
+                        p = 0.5 * (p_plus + p_minus); % middle transition instant.
                         keep = 1;
                         break;
                     end
                 end
             elseif a(i) ~= 0 && keep == 0
-                p = i;
+                p_plus = i; % t+ transition instant.
+                p_minus = i - 1; % t- transition instant.
+                p = 0.5 * (p_plus + p_minus); % middle transition instant.
                 keep = 1;
             end
-
+        
             if a(i) == 0 && keep == 1
                 keep = 0;
+                p_plus = 0;
+                p_minus = 0;
                 p = 0;
             end
-
+        
+            % record(i) = p_plus;
             record(i) = p;
-
+            record_plus(i) = p_plus;
+        
         end
-        c_xn = c .* a .* b(mod(record-2, N));
+        c_xn = c .* a .* b(mod(record_plus - 2, N) + 1);
+        t_s = (record - 1) ./ N .* 2.*pi; % consider [0, N-1], so there is record - 1 
         JNLt(1:N, 1) = JNLt(1:N, 1) - a .* 0.5 .* kt;
         JNLt(1:N, 2 * H + 2) = JNLt(1:N, 2 * H + 2) + c_xn .* 0.5 .* kn .* mu;
         for i = 1:H
-            JNLt(1:N, 2 * i) = JNLt(1:N, 2 * i) - a .* kt .* cos(record ./ N .* 2.*pi .* i);
-            JNLt(1:N, 2 * i + 1) = JNLt(1:N, 2 * i + 1) - a .* kt .* sin(record ./ N .* 2.*pi .* i);
+            % JNLt(1:N, 2 * i) = JNLt(1:N, 2 * i) - a .* kt .* cos(record ./ N .* 2.*pi .* i);
+            % JNLt(1:N, 2 * i + 1) = JNLt(1:N, 2 * i + 1) - a .* kt .* sin(record ./ N .* 2.*pi .* i);
+            % 
+            % JNLt(1:N, 2 * H + 1 + 2 * i) = JNLt(1:N, 2 * H + 1 + 2 * i) + c_xn .* mu .* kn .* cos(record ./ N .* 2.*pi .* i);
+            % JNLt(1:N, 2 * H + 1 + 2 * i + 1) = JNLt(1:N, 2 * H + 1 + 2 * i + 1) + c_xn .* mu .* kn .* sin(record ./ N .* 2.*pi .* i);
 
-            JNLt(1:N, 2 * H + 1 + 2 * i) = JNLt(1:N, 2 * H + 1 + 2 * i) + c_xn .* mu .* kn .* cos(record ./ N .* 2.*pi .* i);
-            JNLt(1:N, 2 * H + 1 + 2 * i + 1) = JNLt(1:N, 2 * H + 1 + 2 * i + 1) + c_xn .* mu .* kn .* sin(record ./ N .* 2.*pi .* i);
+            JNLt(1:N, 2 * i) = JNLt(1:N, 2 * i) - a .* kt .* cos(t_s .* i);
+            JNLt(1:N, 2 * i + 1) = JNLt(1:N, 2 * i + 1) - a .* kt .* sin(t_s .* i);
+
+            JNLt(1:N, 2 * H + 1 + 2 * i) = JNLt(1:N, 2 * H + 1 + 2 * i) + c_xn .* mu .* kn .* cos(t_s .* i);
+            JNLt(1:N, 2 * H + 1 + 2 * i + 1) = JNLt(1:N, 2 * H + 1 + 2 * i + 1) + c_xn .* mu .* kn .* sin(t_s .* i);
         end
 
         
