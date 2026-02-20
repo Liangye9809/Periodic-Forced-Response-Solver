@@ -187,19 +187,20 @@ clear
 clc
 close all
 eps = [];
-h = 10^(-8);
+h = 10^(-4);
 order = 1;
 h_con = [];
 N = 1024;
-H = 10;
-A = 2;
+H = 4;
 dt = 2 * pi / N;
 t = (0:(N-1)) * 2 * pi / N;
 t = t';
-xt = A * fxt(t);
 % xn = ones(N, 1);
+% xn = - 4 * sin(sin(t)) + 1;
+% xt = 2 * exp(cos(t)) - 3;
 xn = 2 * exp(cos(t)) - 0.5;
-x = [xt(:, 3), xn];
+xt = 2 * sin(sin(t));
+x = [xt, xn];
 
 % figure; % displacement
 % plot(t, x), grid on;
@@ -213,6 +214,8 @@ w =  0;
 xn0 = 0; % normal pre-displacement
 
 nloop = 2;
+for iN = 4:10
+    N = 2
 % for ih = 1:12
 %     h = 10^(-ih);
 %     for iH = 1:20
@@ -221,18 +224,19 @@ nloop = 2;
         [JNL_A, Mft_A, Gp, dgt_A, Ft_A, wt_A] = HBMJACOB_analytical_gf_2dofs(x, kn, xn0, mu, kt, w, H, N, nloop);
         [JNL_A_2, Mft_A_2, JNLt_A, Ft_A_2, wt_A_2] = HBMJACOB_analytical_gf_2dofs_2(x, kn, xn0, mu, kt, w, H, N, nloop);
         
-        eps_a = norm(JNL_A - JNL_A_2) / norm(JNL_A_2)
+        eps_a = norm(JNL_A - JNL_A_2) / norm(JNL_A_2);
         [E, EH] = fft_matrices(N, H);
         X = EH * x;
         X = X(:);
         [JNL_N, Mft_N, dgt_N, Ft_N, wt_N, Ffft] = HBMJACOB_numerical_gf_2dofs(X, kn, xn0, mu, kt, w, H, N, nloop, h, order);
         [JNL_N_2, JNLt_N] = HBMJACOB_numerical_gf_2dofs_2(X, kn, xn0, mu, kt, w, H, N, nloop, h, order);
-        eps_n = norm(JNL_N - JNL_N_2) / norm(JNL_N_2)
+        eps_n = norm(JNL_N - JNL_N_2) / norm(JNL_N_2);
 
-        % eps(iH, ih) = norm(JNL_A - JNL_N) / norm(JNL_A);
+        eps(iH, ih) = norm(JNL_A_2 - JNL_N_2) / norm(JNL_A_2);
 %     end
 %     h_con(1, ih) = h;
 % end
+end
 eps_11 = norm(JNL_A - JNL_N) / norm(JNL_A);
 eps_12 = norm(JNL_A - JNL_N_2) / norm(JNL_A);
 eps_21 = norm(JNL_A_2 - JNL_N) / norm(JNL_A_2);
@@ -247,11 +251,19 @@ for i = 1:nloop - 1
 end
 
 figure;
-Mftplot(:, 1) = Mft_A(1,1,:);
-Mftplot(:, 2) = Mft_A(2,1,:);
-Mftplot(:, 3) = Mft_A(3,1,:);
-plot(T, Mftplot(:,1), '.');
-xlim(T([end-N+1,end]));
+Mftplot(:, 1) = Mft_A(1,1,end-N+1:end);
+Mftplot(:, 2) = Mft_A(2,1,end-N+1:end);
+Mftplot(:, 3) = Mft_A(3,1,end-N+1:end);
+subplot(2,1,1)
+plot(t, Mftplot(:,1), '.'), grid on;
+% xlim(T([end-N+1,end]));
+title('stick condition');
+ylim([-1.2, 1.2]);
+
+subplot(2,1,2)
+plot(t, Mftplot(:,3), '.'), grid on;
+% xlim(T([end-N+1,end]));
+title('contact condition');
 ylim([-1.2, 1.2]);
 
 figure; % friction forces
@@ -353,8 +365,8 @@ legend('w+', 'w-', 'wt', "x1", "xn");
 
 figure;
 
-wp = xt(:,3) + mu * kn / kt * max(xn, 0);
-wm = xt(:,3) - mu * kn / kt * max(xn, 0);
+wp = xt + mu * kn / kt * max(xn, 0);
+wm = xt - mu * kn / kt * max(xn, 0);
 plot(t, wp, 'k--', 'LineWidth', 2), hold on;
 plot(t, wm, 'k--', 'LineWidth', 2), hold on;
 plot(t, wt_A(end-N+1:end), 'b-', 'LineWidth', 2), hold on;
@@ -420,7 +432,7 @@ dTdxt_time_AN = JNLt_A(1:N, 1:2*H+1);
 dTdxn_time_AN = JNLt_A(1:N, 2*H+2:end);
 
 % num = 18;
-for i = 18:21
+for i = 6:6
     fig = figure; %('PaperOrientation','landscape','PaperUnits','centimeters','PaperPosition', 100 * [0 0 29.7 21], 'PaperSize',[29.7 21] * 100);
     
     fig.WindowState = 'maximized';
@@ -462,12 +474,9 @@ for i = 18:21
     grid on
 
     % pintname = string(titlename) + '.png';
-    % % pintname = 'N = ' + string(N) + ', H = ' + string(H) + ', ' + string(titlename);
     % set(gcf,'PaperOrientation','landscape');
-    % exportgraphics(gcf, pintname);
     % exportgraphics(gcf, pintname,'ContentType','vector');
-    % saveas(gcf, pintname,'pdf');
-    % print(fig,'figure_A4_landscape.pdf','-dpdf','-painters');
+
 end
 
 

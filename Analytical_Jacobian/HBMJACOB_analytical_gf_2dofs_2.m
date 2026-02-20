@@ -64,7 +64,8 @@ function [JNL, Mft, JNLt, F, wt] = HBMJACOB_analytical_gf_2dofs_2(xt, kn, xn0, m
             end
         
             % record(i) = p_plus;
-            record(i) = p;
+            % record(i) = p;
+            record(i) = p_minus;
             record_plus(i) = p_plus;
         
         end
