@@ -190,16 +190,17 @@ eps = [];
 h = 10^(-4);
 order = 1;
 h_con = [];
-N = 1024;
+N = 2^7;
 H = 4;
 dt = 2 * pi / N;
 t = (0:(N-1)) * 2 * pi / N;
 t = t';
 % xn = ones(N, 1);
-% xn = - 4 * sin(sin(t)) + 1;
-% xt = 2 * exp(cos(t)) - 3;
-xn = 2 * exp(cos(t)) - 0.5;
-xt = 2 * sin(sin(t));
+xn = - 4 * sin(sin(t)) + 1; % separation to stick
+xt = 2 * exp(cos(t)) - 3; % separation to stick
+% xn = 2 * exp(cos(t)) - 0.5; % slip to stick
+% xn = 2 * exp(cos(t)) - 0.75; % separation to slip
+% xt = 2 * sin(sin(t)); % slip to stick
 x = [xt, xn];
 
 % figure; % displacement
@@ -214,17 +215,17 @@ w =  0;
 xn0 = 0; % normal pre-displacement
 
 nloop = 2;
-for iN = 3:3
-    N = 2^(iN + 3)
-    dt = 2 * pi / N;
-    t = (0:(N-1)) * 2 * pi / N;
-    t = t';
+% for iN = 7:7
+%     N = 2^(iN)
+%     dt = 2 * pi / N;
+%     t = (0:(N-1)) * 2 * pi / N;
+%     t = t';
     % xn = ones(N, 1);
     % xn = - 4 * sin(sin(t)) + 1;
     % xt = 2 * exp(cos(t)) - 3;
-    xn = 2 * exp(cos(t)) - 0.5;
-    xt = 2 * sin(sin(t));
-    x = [xt, xn];
+    % xn = 2 * exp(cos(t)) - 0.5;
+    % xt = 2 * sin(sin(t));
+    % x = [xt, xn];
 % for ih = 1:12
 %     h = 10^(-ih);
 %     for iH = 1:20
@@ -241,12 +242,12 @@ for iN = 3:3
         [JNL_N_2, JNLt_N] = HBMJACOB_numerical_gf_2dofs_2(X, kn, xn0, mu, kt, w, H, N, nloop, h, order);
         eps_n = norm(JNL_N - JNL_N_2) / norm(JNL_N_2);
 
-        eps(iN) = norm(JNL_A_2 - JNL_N_2) / norm(JNL_A_2);
-        % eps(iH, ih) = norm(JNL_A_2 - JNL_N_2) / norm(JNL_A_2);
+        % eps(iN) = norm(JNL_A_2 - JNL_N_2) / norm(JNL_A_2);
+%         eps(iH, ih) = norm(JNL_A_2 - JNL_N_2) / norm(JNL_A_2);
 %     end
 %     h_con(1, ih) = h;
 % end
-end
+% end
 eps_11 = norm(JNL_A - JNL_N) / norm(JNL_A);
 eps_12 = norm(JNL_A - JNL_N_2) / norm(JNL_A);
 eps_21 = norm(JNL_A_2 - JNL_N) / norm(JNL_A_2);
@@ -442,7 +443,7 @@ dTdxt_time_AN = JNLt_A(1:N, 1:2*H+1);
 dTdxn_time_AN = JNLt_A(1:N, 2*H+2:end);
 
 % num = 18;
-for i = 6:6
+for i = 2:2
     fig = figure; %('PaperOrientation','landscape','PaperUnits','centimeters','PaperPosition', 100 * [0 0 29.7 21], 'PaperSize',[29.7 21] * 100);
     
     fig.WindowState = 'maximized';
@@ -483,9 +484,9 @@ for i = 6:6
     legend('difference');
     grid on
 
-    % pintname = string(titlename) + '.png';
-    % set(gcf,'PaperOrientation','landscape');
-    % exportgraphics(gcf, pintname,'ContentType','vector');
+    pintname = string(titlename) + '.png';
+    set(gcf,'PaperOrientation','landscape');
+    exportgraphics(gcf, pintname,'ContentType','vector');
 
 end
 
