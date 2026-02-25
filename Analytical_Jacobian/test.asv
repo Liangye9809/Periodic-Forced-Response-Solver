@@ -35,11 +35,11 @@ ylim([-3,3]);
 pbaspect([1 1 1]);
 
 %% find transition time, from slip or separation to stick
-% a = [1 1 0 0 0 0 0 0 1 1 1 1 1 1 0 -1 -1 0 1  1  1]'; % 0 is slip or separation. 1 is stick
-a(:, 1) = Mft_A(1,1,:);
-b(:, 1) = Mft_A(2,1,:);
-c(:, 1) = Mft_A(3,1,:);
-ll = 1:size(a,1);
+a = [1 1 0 0 0 0 0 0 1 1 1 1 1 1 0 -1 -1 0 1  1  1]'; % 0 is slip or separation. 1 is stick
+% a(:, 1) = Mft_A(1,1,:);
+% b(:, 1) = Mft_A(2,1,:);
+% c(:, 1) = Mft_A(3,1,:);
+% ll = 1:size(a,1);
 N = length(a);
 record = zeros(size(a));
 p_plus = 0;
@@ -69,21 +69,23 @@ for i = 1:N
 
 
 end
-c_xn = a .* b(mod(record-2, N) + 1);
-
-conditi = [a, b, c_xn, record];
+% c_xn = a .* b(mod(record-2, N) + 1);
+% 
+% conditi = [a, b, c_xn, record];
+conditi = [a, record];
 
 %% find transition time, from slip or separation to stick, in the middle
-a = [1 1 0 0 0 0 0 0 1 1 1 1 1 1 0 -1 -1 0 1  1  1]'; % 0 is slip or separation. 1 is stick
+a = [0 1 1 0 0 0 0 0 1 1 1 1 1 1 0 -1 -1 0 1  0  0]'; % 0 is slip or separation. 1 is stick
 % a(:, 1) = Mft_A(1,1,:);
 % b(:, 1) = Mft_A(2,1,:);
 % c(:, 1) = Mft_A(3,1,:);
 ll = 1:size(a,1);
 N = length(a);
 record = zeros(size(a));
+record_plus = zeros(size(a));
 p_plus = 0;
 p_minus = 0;
-p = 0;
+p = 1;
 keep = 0;
 for i = 1:N
 
@@ -91,8 +93,8 @@ for i = 1:N
         for j = 1:N % backwards loop to find slip to stick transition
             k = N - j + 1;
             if a(k) == 0
-                p_plus = mod(k, N) + 1; % t+ transition instant.
-                p_minus = mod(k - 1, N) + 1; % t- transition instant.
+                p_plus = mod(k, N + 1) + 1; % t+ transition instant, stick. add last point to create close the cycle [1, N+1]
+                p_minus = mod(k - 1, N) + 1; % t- transition instant, slip
                 p = 0.5 * (p_plus + p_minus); % middle transition instant.
                 keep = 1;
                 break;
@@ -107,13 +109,47 @@ for i = 1:N
 
     if a(i) == 0 && keep == 1
         keep = 0;
-        p_plus = 0;
-        p_minus = 0;
-        p = 0;
+        p_plus = 1;
+        p_minus = 1;
+        p = 1;
     end
 
-    % record(i) = p_plus;
+    record_plus(i) = p_plus;
     record(i) = p;
 
 
 end
+
+conditi = [a, record, record_plus];
+
+%% test dXinFourier
+N = 1024;
+H = 200;
+t = (0:(N-1)) * 2 * pi / N;
+t = t';
+% x = t .^ 3;
+% dx = 3 * t .^ 2;
+x = sin(sin(t));
+dx = cos(sin(t)) .* cos(t);
+[E EH] = fft_matrices(N, H);
+X = EH * x;
+dX = dXinFourier(X, H);
+dxR = E * dX;
+
+figure;
+plot(t, dx, 'b-'), hold on;
+plot(t, dxR, 'r--'), hold on;
+grid on;
+function dX = dXinFourier(X, H)
+    dX = zeros(size(X));
+    for i = 1:H
+        dX(2 * i, :) =  i .* X(2 * i + 1, :);
+        dX(2 * i + 1, :) =  -i .* X(2 * i, :);
+    end
+
+end
+%%
+dxt = [1:32]';
+dxn = ones(32, 1);
+dxn(5:12) = 0;
+dxt([dxn])

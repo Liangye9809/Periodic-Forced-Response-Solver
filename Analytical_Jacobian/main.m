@@ -187,17 +187,17 @@ clear
 clc
 close all
 eps = [];
-h = 10^(-4);
+h = 10^(-2);
 order = 1;
 h_con = [];
-N = 2^7;
-H = 4;
+N = 2^15;
+H = 10;
 dt = 2 * pi / N;
 t = (0:(N-1)) * 2 * pi / N;
 t = t';
 % xn = ones(N, 1);
 xn = - 4 * sin(sin(t)) + 1; % separation to stick
-xt = 2 * exp(cos(t)) - 3; % separation to stick
+xt = 2 * exp(cos(t + 1)) - 3; % separation to stick
 % xn = 2 * exp(cos(t)) - 0.5; % slip to stick
 % xn = 2 * exp(cos(t)) - 0.75; % separation to slip
 % xt = 2 * sin(sin(t)); % slip to stick
@@ -230,28 +230,42 @@ nloop = 2;
 %     h = 10^(-ih);
 %     for iH = 1:20
 %         H = iH;
-
-        [JNL_A, Mft_A, Gp, dgt_A, Ft_A, wt_A] = HBMJACOB_analytical_gf_2dofs(x, kn, xn0, mu, kt, w, H, N, nloop);
-        [JNL_A_2, Mft_A_2, JNLt_A, Ft_A_2, wt_A_2] = HBMJACOB_analytical_gf_2dofs_2(x, kn, xn0, mu, kt, w, H, N, nloop);
-        
-        eps_a = norm(JNL_A - JNL_A_2) / norm(JNL_A_2);
         [E, EH] = fft_matrices(N, H);
         X = EH * x;
+        dX = dXinFourier(X, H);
+        dx = E * dX;
         X = X(:);
-        [JNL_N, Mft_N, dgt_N, Ft_N, wt_N, Ffft] = HBMJACOB_numerical_gf_2dofs(X, kn, xn0, mu, kt, w, H, N, nloop, h, order);
-        [JNL_N_2, JNLt_N] = HBMJACOB_numerical_gf_2dofs_2(X, kn, xn0, mu, kt, w, H, N, nloop, h, order);
-        eps_n = norm(JNL_N - JNL_N_2) / norm(JNL_N_2);
+tic;
+        % [JNL_A, Mft_A, Gp, dgt_A, Ft_A, wt_A] = HBMJACOB_analytical_gf_2dofs(x, kn, xn0, mu, kt, w, H, N, nloop);
+        [JNL_A_2, Mft_A_2, JNLt_A, Ft_A_2, wt_A_2] = HBMJACOB_analytical_gf_2dofs_2(x, dx, kn, xn0, mu, kt, w, H, N, nloop);
+        
+toc;
+        % eps_a = norm(JNL_A - JNL_A_2) / norm(JNL_A_2);
 
+tic;
+        % [JNL_N, Mft_N, dgt_N, Ft_N, wt_N, Ffft] = HBMJACOB_numerical_gf_2dofs(X, kn, xn0, mu, kt, w, H, N, nloop, h, order);
+        [JNL_N_2, JNLt_N] = HBMJACOB_numerical_gf_2dofs_2(X, kn, xn0, mu, kt, w, H, N, nloop, h, order);
+        % eps_n = norm(JNL_N - JNL_N_2) / norm(JNL_N_2);
+toc;
         % eps(iN) = norm(JNL_A_2 - JNL_N_2) / norm(JNL_A_2);
 %         eps(iH, ih) = norm(JNL_A_2 - JNL_N_2) / norm(JNL_A_2);
 %     end
 %     h_con(1, ih) = h;
 % end
 % end
-eps_11 = norm(JNL_A - JNL_N) / norm(JNL_A);
-eps_12 = norm(JNL_A - JNL_N_2) / norm(JNL_A);
-eps_21 = norm(JNL_A_2 - JNL_N) / norm(JNL_A_2);
+% eps_11 = norm(JNL_A - JNL_N) / norm(JNL_A);
+% eps_12 = norm(JNL_A - JNL_N_2) / norm(JNL_A);
+% eps_21 = norm(JNL_A_2 - JNL_N) / norm(JNL_A_2);
 eps_22 = norm(JNL_A_2 - JNL_N_2) / norm(JNL_A_2);
+
+function dX = dXinFourier(X, H)
+    dX = zeros(size(X));
+    for i = 1:H
+        dX(2 * i, :) =  i .* X(2 * i + 1, :);
+        dX(2 * i + 1, :) =  -i .* X(2 * i, :);
+    end
+
+end
 %%
 T = t; xplot = x;
 for i = 1:nloop - 1
@@ -262,9 +276,9 @@ for i = 1:nloop - 1
 end
 
 figure;
-Mftplot(:, 1) = Mft_A(1,1,end-N+1:end);
-Mftplot(:, 2) = Mft_A(2,1,end-N+1:end);
-Mftplot(:, 3) = Mft_A(3,1,end-N+1:end);
+Mftplot(:, 1) = Mft_A_2(1,1,end-N+1:end);
+Mftplot(:, 2) = Mft_A_2(2,1,end-N+1:end);
+Mftplot(:, 3) = Mft_A_2(3,1,end-N+1:end);
 subplot(2,1,1)
 plot(t, Mftplot(:,1), '.'), grid on;
 % xlim(T([end-N+1,end]));
@@ -278,17 +292,17 @@ title('contact condition');
 ylim([-1.2, 1.2]);
 
 figure; % friction forces
-plot(T, Ft_A(:, 1), 'LineWidth', 2), hold on;
-plot(T, mu * Ft_A(:,2), 'k-', 'LineWidth', 2), hold on;
-plot(T, - mu * Ft_A(:,2), 'k-', 'LineWidth', 2), hold on;
+plot(T, Ft_A_2(:, 1), 'LineWidth', 2), hold on;
+plot(T, mu * Ft_A_2(:,2), 'k-', 'LineWidth', 2), hold on;
+plot(T, - mu * Ft_A_2(:,2), 'k-', 'LineWidth', 2), hold on;
 legend("T", "mu*Fn", "-mu*Fn");
-ylim(1.2 * [min(-mu * Ft_A(:,2)), max(mu * Ft_A(:,2))]);
+ylim(1.2 * [min(-mu * Ft_A_2(:,2)), max(mu * Ft_A_2(:,2))]);
 xlim(T([end-N+1,end]));
 title('friction forces');
 grid on;
 
 figure; % hysteresis cycle
-plot(xplot(:, 1), Ft_A(:, 1), 'LineWidth', 2);
+plot(xplot(:, 1), Ft_A_2(:, 1), 'LineWidth', 2);
 title('hysteresis cycle');
 grid on;
 
@@ -366,7 +380,7 @@ wp = xplot(:, 1) + mu * kn / kt * max(xplot(:, 2), 0);
 wm = xplot(:, 1) - mu * kn / kt * max(xplot(:, 2), 0);
 plot(T, wp, 'k--', 'LineWidth', 2), hold on;
 plot(T, wm, 'r--', 'LineWidth', 2), hold on;
-plot(T, wt_A, 'b-', 'LineWidth', 2), hold on;
+plot(T, wt_A_2, 'b-', 'LineWidth', 2), hold on;
 grid on;
 % legend('w+', 'w-', 'wt');
 
@@ -380,7 +394,7 @@ wp = xt + mu * kn / kt * max(xn, 0);
 wm = xt - mu * kn / kt * max(xn, 0);
 plot(t, wp, 'k--', 'LineWidth', 2), hold on;
 plot(t, wm, 'k--', 'LineWidth', 2), hold on;
-plot(t, wt_A(end-N+1:end), 'b-', 'LineWidth', 2), hold on;
+plot(t, wt_A_2(end-N+1:end), 'b-', 'LineWidth', 2), hold on;
 grid on;
 legend('w+', 'w-', 'wt');
 
@@ -392,17 +406,17 @@ wp = xplot(:, 1) + mu * kn / kt * max(xplot(:, 2), 0);
 wm = xplot(:, 1) - mu * kn / kt * max(xplot(:, 2), 0);
 plot(T, wp, 'k--', 'LineWidth', 2), hold on;
 plot(T, wm, 'r--', 'LineWidth', 2), hold on;
-plot(T, wt_A, 'b-', 'LineWidth', 2), hold on;
+plot(T, wt_A_2, 'b-', 'LineWidth', 2), hold on;
 grid on;
 % xlim(T([end-2*N+1,end]));
 xlim(T([end-N+1,end]));
 
 nexttile
-plot(T, Ft_A(:, 1), 'LineWidth', 2), hold on;
-plot(T, mu * Ft_A(:,2), 'k-', 'LineWidth', 2), hold on;
-plot(T, - mu * Ft_A(:,2), 'k-', 'LineWidth', 2), hold on;
+plot(T, Ft_A_2(:, 1), 'LineWidth', 2), hold on;
+plot(T, mu * Ft_A_2(:,2), 'k-', 'LineWidth', 2), hold on;
+plot(T, - mu * Ft_A_2(:,2), 'k-', 'LineWidth', 2), hold on;
 legend("T", "mu*Fn", "-mu*Fn");
-ylim(1.2 * [min(-mu * Ft_A(:,2)), max(mu * Ft_A(:,2))]);
+ylim(1.2 * [min(-mu * Ft_A_2(:,2)), max(mu * Ft_A_2(:,2))]);
 % xlim(T([end-2*N+1,end]));
 xlim(T([end-N+1,end]));
 grid on;
@@ -413,7 +427,7 @@ wp = xplot(:, 1) + mu * kn / kt * max(xplot(:, 2), 0);
 wm = xplot(:, 1) - mu * kn / kt * max(xplot(:, 2), 0);
 plot(T, wp, 'k--', 'LineWidth', 2), hold on;
 plot(T, wm, 'r--', 'LineWidth', 2), hold on;
-plot(T, wt_A, 'b-', 'LineWidth', 2), hold on;
+plot(T, wt_A_2, 'b-', 'LineWidth', 2), hold on;
 grid on;
 plot(t, x, 'LineWidth', 2), hold on;
 legend('w+', 'w-', 'wt', "x1", "xn");
@@ -421,17 +435,17 @@ title('displacement');
 
 figure;
 % subplot(3,1,2)
-plot(xplot(:, 1), Ft_A(:, 1), 'LineWidth', 2);
+plot(xplot(:, 1), Ft_A_2(:, 1), 'LineWidth', 2);
 title('hysteresis cycle');
 grid on;
 
 figure;
 % subplot(3,1,3)
-plot(T, Ft_A(:, 1), 'LineWidth', 2), hold on;
-plot(T, mu * Ft_A(:,2), 'k-', 'LineWidth', 2), hold on;
-plot(T, - mu * Ft_A(:,2), 'k-', 'LineWidth', 2), hold on;
+plot(T, Ft_A_2(:, 1), 'LineWidth', 2), hold on;
+plot(T, mu * Ft_A_2(:,2), 'k-', 'LineWidth', 2), hold on;
+plot(T, - mu * Ft_A_2(:,2), 'k-', 'LineWidth', 2), hold on;
 legend("T", "mu*Fn", "-mu*Fn");
-ylim(1.2 * [min(-mu * Ft_A(:,2)), max(mu * Ft_A(:,2))]);
+ylim(1.2 * [min(-mu * Ft_A_2(:,2)), max(mu * Ft_A_2(:,2))]);
 title('friction forces');
 grid on;
 
@@ -443,7 +457,7 @@ dTdxt_time_AN = JNLt_A(1:N, 1:2*H+1);
 dTdxn_time_AN = JNLt_A(1:N, 2*H+2:end);
 
 % num = 18;
-for i = 2:2
+for i = 17:18
     fig = figure; %('PaperOrientation','landscape','PaperUnits','centimeters','PaperPosition', 100 * [0 0 29.7 21], 'PaperSize',[29.7 21] * 100);
     
     fig.WindowState = 'maximized';
@@ -484,9 +498,9 @@ for i = 2:2
     legend('difference');
     grid on
 
-    pintname = string(titlename) + '.png';
-    set(gcf,'PaperOrientation','landscape');
-    exportgraphics(gcf, pintname,'ContentType','vector');
+    % pintname = string(titlename) + '.png';
+    % set(gcf,'PaperOrientation','landscape');
+    % exportgraphics(gcf, pintname,'ContentType','vector');
 
 end
 

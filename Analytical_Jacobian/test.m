@@ -83,9 +83,9 @@ ll = 1:size(a,1);
 N = length(a);
 record = zeros(size(a));
 record_plus = zeros(size(a));
-p_plus = 0;
-p_minus = 0;
-p = 0;
+p_plus = 1; % set default value to 1 not 0, to avoid index of vector irreasonable in code
+p_minus = 1;
+p = 1;
 keep = 0;
 for i = 1:N
 
@@ -109,15 +109,48 @@ for i = 1:N
 
     if a(i) == 0 && keep == 1
         keep = 0;
-        p_plus = 0;
-        p_minus = 0;
-        p = 0;
+        p_plus = 1;
+        p_minus = 1;
+        p = 1;
     end
 
     record_plus(i) = p_plus;
-    record(i) = p;
+    record(i) = p_minus;
 
 
 end
+dxt = [1:21]';
+dxt_p = dxt(record);
+conditi = [a, record, record_plus, dxt, dxt_p];
 
-conditi = [a, record, record_plus];
+%% test dXinFourier
+N = 1024;
+H = 200;
+t = (0:(N-1)) * 2 * pi / N;
+t = t';
+% x = t .^ 3;
+% dx = 3 * t .^ 2;
+x = sin(sin(t));
+dx = cos(sin(t)) .* cos(t);
+[E EH] = fft_matrices(N, H);
+X = EH * x;
+dX = dXinFourier(X, H);
+dxR = E * dX;
+
+figure;
+plot(t, dx, 'b-'), hold on;
+plot(t, dxR, 'r--'), hold on;
+grid on;
+function dX = dXinFourier(X, H)
+    dX = zeros(size(X));
+    for i = 1:H
+        dX(2 * i, :) =  i .* X(2 * i + 1, :);
+        dX(2 * i + 1, :) =  -i .* X(2 * i, :);
+    end
+
+end
+%%
+dxt = [1:32]';
+dxn = ones(32, 1);
+dxn(5:12) = 0;
+dxt([dxn])
