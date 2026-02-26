@@ -1,14 +1,15 @@
-function [JNL, Mft, JNLt, F, wt] = HBMJACOB_Analytical_Final(xt, kn, xn0, mu, kt, w_in, H, N, nloop)
+function [JNL, Mft, JNLt, Ft, wt] = JNLiner_Analytical(xt, kn, xn0, mu, kt, w_in, H, N, nloop)
 
-    [F, wt, Mft] = gf_2dofs(xt, kn, xn0, mu, kt, w_in, nloop);
+    [Ft, wt, Mft] = g(xt, kn, xn0, mu, kt, w_in, nloop);
 
     
     %%
+    JNLt = zeros(2 * N, 4 * H + 2);
     a(:, 1) = Mft(1, 1, end-N+1:end);
     b(:, 1) = Mft(2, 1, end-N+1:end);
     c(:, 1) = Mft(3, 1, end-N+1:end);
 
-    JNLt = zeros(2 * N, 4 * H + 2);
+    
     JNLt(1:N, 1) = 0.5 * kt .* c .* a;
     JNLt(1:N, 2 * H + 2) = 0.5 * mu * kn .* c .* b;
     JNLt(N + 1:end, 2 * H + 2) = 0.5 * kn .* c;
