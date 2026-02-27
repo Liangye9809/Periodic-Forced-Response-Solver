@@ -1,0 +1,299 @@
+function [JNL, JNLt, Ft, wt, Mft] = JNL_Analytical(X, p)
+    
+    E = p.HBM.E;
+    EH = p.HBM.EH;
+    Nx = p.HBM.Nx;
+    N = p.HBM.N;
+    H = p.HBM.H;
+
+    kn = p.fc.kn;
+    kt = p.fc.kt;
+    xn0 = p.fc.xn0;
+    mu = p.fc.mu;
+    w_in = p.fc.w;
+    nloop = p.fc.nloop;
+
+    xt = zeros(N, 3 * Nx);
+    dx = zeros(N, 3 * Nx);
+    Xi = zeros(2 * H + 1, 1);
+    dXi = zeros(2 * H + 1, 1);
+
+    for i = 1:3 * Nx
+        Xi = X((2 * H + 1) * (i - 1) + 1:(2 * H + 1) * i);
+        xt(:, i) = E * Xi;
+
+        dXi = dXinFourier(Xi, H);
+        dx(:, i) = E * dXi;
+    end
+
+    [Ft, wt, Mft] = g(xt, kn, xn0, mu, kt, w_in, nloop);
+    
+  
+    JNLt = zeros(3 * Nx * N, (2 * H + 1) * 3 * Nx);
+    JNL = zeros((2 * H + 1) * 3 * Nx, (2 * H + 1) * 3 * Nx);
+
+    for i = 1:Nx
+        indxt1 = N * 3 * (i - 1) + 1;
+        indxt2 = N * 3 * i;
+        indxF1 = (2 * H + 1) * 3 * (i - 1) + 1;
+        indxF2 = (2 * H + 1) * 3 * i;
+
+        Mfti = Mft(:, i, :);
+        dxi = dx(:, 3 * (i - 1) + 1:3 * i);
+
+        [JNLi, JNLti] = JNL_Analytical_perNx(dxi, kn(i), mu(:, i), kt(:, i), H, N, Mfti, EH);
+
+        JNL(indxF1:indxF2, indxF1:indxF2) = JNLi;
+        JNLt(indxt1:indxt2, indxF1:indxF2) = JNLti;
+
+    end
+
+
+end
+
+function dX = dXinFourier(X, H)
+    dX = zeros(size(X));
+    for i = 1:H
+        dX(2 * i, :) =  i .* X(2 * i + 1, :);
+        dX(2 * i + 1, :) =  -i .* X(2 * i, :);
+    end
+
+end
+
+function [JNL, JNLt] = JNL_Analytical_perNx(dx, kn, mu, kt, H, N, Mft, EH)
+
+    % [F, wt, Mft] = g(xt, kn, xn0, mu, kt, w_in, nloop);
+
+    
+    %%
+    a(:, 1) = Mft(1, 1, end-N+1:end); % t1 stick condition
+    b(:, 1) = Mft(2, 1, end-N+1:end); % t1 slip condition
+
+    c(:, 1) = Mft(3, 1, end-N+1:end); % t2 stick condition
+    d(:, 1) = Mft(4, 1, end-N+1:end); % t2 slip condition
+
+    e(:, 1) = Mft(5, 1, end-N+1:end); % contact condition
+
+    JNLt = zeros(3 * N, 3 * (2 * H + 1));
+
+    % dT1/dX0
+    JNLt(1:N, 1) = 0.5 * kt(1) .* e .* a; % dT1/dX1c0
+    JNLt(1:N, 2 * (2 * H + 1) + 1) = 0.5 * mu(1) * kn .* e .* b; % dT1/dX3c0
+
+    % dT2/dX0
+    JNLt(N + 1:2 * N, (2 * H + 1) + 1) = 0.5 * kt(2) .* e .* c; % dT2/dX2c0
+    JNLt(N + 1:2 * N, 2 * (2 * H + 1) + 1) = 0.5 * mu(2) * kn .* e .* d; % dT2/dX3c0
+
+    % dFn/dXnc0
+    JNLt(2 * N + 1:end, 2 * (2 * H + 1) + 1) = 0.5 * kn .* e;
+
+    t = ((0:(N-1)) * 2 * pi / N)';
+
+    for i = 1:H
+
+        % dT1/dX1
+        JNLt(1:N, 2 * i) = kt(1) .* cos(i * t) .* e .* a;
+        JNLt(1:N, 2 * i + 1) = kt(1) .* sin(i * t) .* e .* a;
+
+        % dT1/dXn
+        JNLt(1:N, 2 * (2 * H + 1) + 2 * i) = mu(1) * kn .* cos(i * t) .* e .* b;
+        JNLt(1:N, 2 * (2 * H + 1) + 2 * i + 1) = mu(1) * kn .* sin(i * t) .* e .* b;
+
+        % dT2/dX2
+        JNLt(N + 1:2 * N, (2 * H + 1) + 2 * i) = kt(2) .* cos(i * t) .* e .* c;
+        JNLt(N + 1:2 * N, (2 * H + 1) + 2 * i + 1) = kt(2) .* sin(i * t) .* e .* c;
+
+        % dT2/dXn
+        JNLt(N + 1:2 * N, 2 * (2 * H + 1) + 2 * i) = mu(2) * kn .* cos(i * t) .* e .* d;
+        JNLt(N + 1:2 * N, 2 * (2 * H + 1) + 2 * i + 1) = mu(2) * kn .* sin(i * t) .* e .* d;
+
+        % dFn/dXn
+        JNLt(2 * N + 1:end, 2 * (2 * H + 1) + 2 * i) = kn .* cos(i * t) .* e;
+        JNLt(2 * N + 1:end, 2 * (2 * H + 1) + 2 * i + 1) = kn .* sin(i * t) .* e;
+
+    end
+
+
+    JNL = zeros(3 * (2 * H + 1), 3 * (2 * H + 1));
+    
+    % add missing part
+
+    if ismember(0, a) % slip or separation happene in t1 direction
+
+        [record_minus, record_mid, record_plus] = get_stick_trans_position(a, N);
+        t_s = (record_minus - 1) ./ N .* 2.*pi; % consider [0, N-1], so there is record - 1 
+        c_xn = e .* a .* b(mod(record_plus - 2, N) + 1); % stick part in slip to stick
+        dxt = dx(:, 1);
+        dxn = dx(:, 3);
+        cg_xn = (~e(mod(record_plus - 2, N) + 1)) .* a .* dxt(record_minus) ./ dxn(record_minus); % stick part in gap to stick
+
+        JNLt(1:N, 1) = JNLt(1:N, 1) - a .* 0.5 .* kt(1);
+        
+        JNLt(1:N, 2 * (2 * H + 1) + 1) = JNLt(1:N, 2 * (2 * H + 1) + 1) + c_xn .* 0.5 .* kn .* mu(1); % slip to stick correction
+        JNLt(1:N, 2 * (2 * H + 1) + 1) = JNLt(1:N, 2 * (2 * H + 1) + 1) + kt(1) .* cg_xn .* 0.5; % gap to stick correction
+
+        for i = 1:H
+            JNLt(1:N, 2 * i) = JNLt(1:N, 2 * i) - a .* kt(1) .* cos(t_s .* i);
+            JNLt(1:N, 2 * i + 1) = JNLt(1:N, 2 * i + 1) - a .* kt(1) .* sin(t_s .* i);
+
+            % slip to stick correction in Xn
+            JNLt(1:N, 2 * (2 * H + 1) + 2 * i) = JNLt(1:N, 2 * (2 * H + 1) + 2 * i) + c_xn .* mu(1) .* kn .* cos(t_s .* i);
+            JNLt(1:N, 2 * (2 * H + 1) + 2 * i + 1) = JNLt(1:N, 2 * (2 * H + 1) + 2 * i + 1) + c_xn .* mu(1) .* kn .* sin(t_s .* i);
+
+            % gap to stick correction in Xn
+            JNLt(1:N, 2 * (2 * H + 1) + 2 * i) = JNLt(1:N, 2 * (2 * H + 1) + 2 * i)  + kt(1) .* cg_xn .* cos(t_s .* i);
+            JNLt(1:N, 2 * (2 * H + 1) + 2 * i + 1) = JNLt(1:N, 2 * (2 * H + 1) + 2 * i + 1)  + kt(1) .* cg_xn .* sin(t_s .* i);
+        end
+
+        
+    end
+
+    if ismember(0, c) % slip or separation happene in t2 direction
+
+        [record_minus, record_mid, record_plus] = get_stick_trans_position(c, N);
+        t_s = (record_minus - 1) ./ N .* 2.*pi; % consider [0, N-1], so there is record - 1 
+        c_xn = e .* c .* d(mod(record_plus - 2, N) + 1); % stick part in slip to stick
+        dxt = dx(:, 2);
+        dxn = dx(:, 3);
+        cg_xn = (~e(mod(record_plus - 2, N) + 1)) .* c .* dxt(record_minus) ./ dxn(record_minus); % stick part in gap to stick
+
+        JNLt(N + 1:2 * N, (2 * H + 1) + 1) = JNLt(N + 1:2 * N, (2 * H + 1) + 1) - c .* 0.5 .* kt(2);
+        
+        JNLt(N + 1:2 * N, 2 * (2 * H + 1) + 1) = JNLt(N + 1:2 * N, 2 * (2 * H + 1) + 1) + c_xn .* 0.5 .* kn .* mu(2); % slip to stick correction
+        JNLt(N + 1:2 * N, 2 * (2 * H + 1) + 1) = JNLt(N + 1:2 * N, 2 * (2 * H + 1) + 1) + kt(2) .* cg_xn .* 0.5; % gap to stick correction
+
+        for i = 1:H
+            JNLt(N + 1:2 * N, (2 * H + 1) + 2 * i) = JNLt(N + 1:2 * N, (2 * H + 1) + 2 * i) - c .* kt(2) .* cos(t_s .* i);
+            JNLt(N + 1:2 * N, (2 * H + 1) + 2 * i + 1) = JNLt(N + 1:2 * N, (2 * H + 1) + 2 * i + 1) - c .* kt(2) .* sin(t_s .* i);
+
+            % slip to stick correction in Xn
+            JNLt(N + 1:2 * N, 2 * (2 * H + 1) + 2 * i) = JNLt(N + 1:2 * N, 2 * (2 * H + 1) + 2 * i) + c_xn .* mu(2) .* kn .* cos(t_s .* i);
+            JNLt(N + 1:2 * N, 2 * (2 * H + 1) + 2 * i + 1) = JNLt(N + 1:2 * N, 2 * (2 * H + 1) + 2 * i + 1) + c_xn .* mu(2) .* kn .* sin(t_s .* i);
+
+            % gap to stick correction in Xn
+            JNLt(N + 1:2 * N, 2 * (2 * H + 1) + 2 * i) = JNLt(N + 1:2 * N, 2 * (2 * H + 1) + 2 * i)  + kt(2) .* cg_xn .* cos(t_s .* i);
+            JNLt(N + 1:2 * N, 2 * (2 * H + 1) + 2 * i + 1) = JNLt(N + 1:2 * N, 2 * (2 * H + 1) + 2 * i + 1)  + kt(2) .* cg_xn .* sin(t_s .* i);
+        end
+
+        
+    end
+
+    JNL(1:2*H+1, 1:2*H+1) = EH * JNLt(1:N, 1:2*H+1);
+    JNL(1:2*H+1, 2 * (2*H+1) + 1:end) = EH * JNLt(1:N, 2 * (2*H+1) + 1:end);
+
+    JNL((2*H+1) + 1:2 * (2*H+1), (2*H+1) + 1:end) = EH * JNLt(N + 1:2 * N, (2*H+1) + 1:end);
+    
+    JNL(2 * (2*H+1) + 1:end, 2 * (2*H+1) + 1:end) = EH * JNLt(2 * N + 1:end, 2 * (2*H+1) + 1:end);
+
+end
+
+
+function [record_minus, record_mid, record_plus] = get_stick_trans_position(a, N)
+    record_minus = zeros(size(a));
+    record_plus = zeros(size(a));
+    record_mid = zeros(size(a));
+    p_plus = 1; % set default value to 1 not 0, to avoid index of vector irreasonable in code
+    p_minus = 1;
+    p = 1;
+    keep = 0;
+    for i = 1:N
+    
+        if i == 1 && a(1) ~=0 % if begin with stick, means transition time located previously 
+            for j = 1:N % backwards loop to find slip to stick transition
+                k = N - j + 1;
+                if a(k) == 0
+                    p_plus = mod(k, N + 1) + 1; % t+ transition instant, stick. add last point to create close the cycle [1, N+1]
+                    p_minus = mod(k - 1, N) + 1; % t- transition instant, slip
+                    p = 0.5 * (p_plus + p_minus); % middle transition instant.
+                    keep = 1;
+                    break;
+                end
+            end
+        elseif a(i) ~= 0 && keep == 0
+            p_plus = i; % t+ transition instant.
+            p_minus = i - 1; % t- transition instant.
+            p = 0.5 * (p_plus + p_minus); % middle transition instant.
+            keep = 1;
+        end
+    
+        if a(i) == 0 && keep == 1
+            keep = 0;
+            p_plus = 1;
+            p_minus = 1;
+            p = 1;
+        end
+    
+        % record(i) = p_plus;
+        record_mid(i) = p;
+        record_minus(i) = p_minus;
+        record_plus(i) = p_plus;
+    
+    end
+end
+
+
+function [Ft, wt, Mft] = g(xt, kn, xn0, mu, kt, w_in, nloop) % xt, each rows correspond each time, columns are different dofs
+
+    [N, M] = size(xt);
+    Nx = M / 3;
+
+    Ft = zeros(nloop * N, M);
+    wt = zeros(2, Nx, nloop * N);
+
+    Mft = zeros(5, Nx, N * nloop);
+
+    for j = 1:nloop
+        for i = 1:N
+            [Ft((j - 1) * N + i, :), wtemp, Mf] = gf(xt(i, :), kn, xn0, mu, kt, w_in);
+            w_in = wtemp; 
+            wt(:, :, (j - 1) * N + i) = wtemp;
+            Mft(:, :, (j - 1) * N + i) = Mf;
+        end
+    end
+    
+    
+end
+
+function [F, w, Mf] = gf(x, kn, xn0, mu, kt, w_in) % x is a 3*Np dof row vector, represent 2*Np tangential directions and 1*Np normal direction
+
+    Nx = size(kn, 2); % contact number
+    F = zeros(size(x));
+    w = w_in;
+    Mf = zeros(5, Nx); % condition of friction matix
+    for i = 1:Nx
+        indx1 = 3 * (i - 1) + 1;
+        indx2 = 3 * (i - 1) + 2;
+        indx3 = 3 * (i - 1) + 3;
+        F(indx3) = NormalForces(x(indx3), kn(i), xn0(i));
+        if F(indx3) > 0
+            Mf(5, i) = 1;
+        end
+        [F(indx1), w(1, i), Mf(1:2, i)] = TangentialForces(x(indx1), w(1, i), kt(1, i), mu(1, i), F(indx3));
+        [F(indx2), w(2, i), Mf(3:4, i)] = TangentialForces(x(indx2), w(2, i), kt(2, i), mu(2, i), F(indx3));
+    end
+
+end
+
+function [T, w, C] = TangentialForces(xt, wt, kt, mu, FN)
+    if FN > 0
+        T = kt * (xt - wt);
+        if abs(T) <= mu * FN
+            w = wt;
+            C = [1; 0]; % stick
+        else
+            sg = sign(T);
+            T = sg * mu * FN;
+            w = xt - sg * mu * FN / kt;
+            C = sg * [0; 1]; % 100% slip
+        end
+    else
+        T = zeros(size(xt));
+        w = xt;
+        C = [0; 0]; % gap, no stick nor slip
+    end
+end
+
+function FN = NormalForces(xn, kn, xn0)
+    u = xn - xn0;
+    FN = max(0, kn .* u);
+end

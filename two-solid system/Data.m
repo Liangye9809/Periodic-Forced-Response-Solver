@@ -81,7 +81,7 @@ kn = 1e9 ./ (Nx/4); % .* 1e5;
 xn0 = 0;
 mu = [0.1; 0.1]; % .* 1e5;
 kt = [1e6; 1e6] ./ (Nx/4); % .* 1e5;
-
+nloop = 2;
 
 %% preload initial condition for Newton method
 

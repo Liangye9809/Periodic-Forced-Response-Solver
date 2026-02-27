@@ -49,6 +49,7 @@ params.func.fc.kt = Coulombstructfc.kt;
 params.func.fc.xn0 = Coulombstructfc.xn0;
 params.func.fc.mu = Coulombstructfc.mu;
 params.func.fc.w = Coulombstructfc.w;
+params.func.fc.nloop = nloop;
 
 
 [xp, gxp, w] = Preloadxp(Rx, params); % preload displacement and preload forces in contact part

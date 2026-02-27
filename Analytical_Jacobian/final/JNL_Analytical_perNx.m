@@ -58,7 +58,7 @@ function [JNL, JNLt] = JNL_Analytical_perNx(dx, kn, mu, kt, H, N, Mft, EH)
 
     if ismember(0, a) % slip or separation happene in t1 direction
 
-        [record_minus, record_mid, record_plus] = get_stick_trans_position(a);
+        [record_minus, record_mid, record_plus] = get_stick_trans_position(a, N);
         t_s = (record_minus - 1) ./ N .* 2.*pi; % consider [0, N-1], so there is record - 1 
         c_xn = e .* a .* b(mod(record_plus - 2, N) + 1); % stick part in slip to stick
         dxt = dx(:, 1);
@@ -88,7 +88,7 @@ function [JNL, JNLt] = JNL_Analytical_perNx(dx, kn, mu, kt, H, N, Mft, EH)
 
     if ismember(0, c) % slip or separation happene in t2 direction
 
-        [record_minus, record_mid, record_plus] = get_stick_trans_position(c);
+        [record_minus, record_mid, record_plus] = get_stick_trans_position(c, N);
         t_s = (record_minus - 1) ./ N .* 2.*pi; % consider [0, N-1], so there is record - 1 
         c_xn = e .* c .* d(mod(record_plus - 2, N) + 1); % stick part in slip to stick
         dxt = dx(:, 2);
@@ -126,7 +126,7 @@ function [JNL, JNLt] = JNL_Analytical_perNx(dx, kn, mu, kt, H, N, Mft, EH)
 end
 
 
-function [record_minus, record_mid, record_plus] = get_stick_trans_position(a)
+function [record_minus, record_mid, record_plus] = get_stick_trans_position(a, N)
     record_minus = zeros(size(a));
     record_plus = zeros(size(a));
     record_mid = zeros(size(a));

@@ -13,8 +13,8 @@ function [JNL, JNLt, Ft, wt, Mft] = JNL_Analytical(X, p)
     w_in = p.fc.w;
     nloop = p.fc.nloop;
 
-    xt = zeors(N, 3 * Nx);
-    dx = zeors(N, 3 * Nx);
+    xt = zeros(N, 3 * Nx);
+    dx = zeros(N, 3 * Nx);
     Xi = zeros(2 * H + 1, 1);
     dXi = zeros(2 * H + 1, 1);
 

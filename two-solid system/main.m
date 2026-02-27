@@ -3,7 +3,7 @@ for H = 11:2:11
     for mainj = 8:8
 clearvars -except mainj H
 N = 2^mainj;
-Nx = 1;
+Nx = 16;
 % for Nx = 4:4:36
 % clearvars -except Nx
 
@@ -120,8 +120,8 @@ omega_plot = 4100;
 % end
 
 omega_0 = 3850 / sqrt(omega02);
-% omega_end = 4400 / sqrt(omega02);
-omega_end = omega_plot / sqrt(omega02);
+omega_end = 4400 / sqrt(omega02);
+% omega_end = omega_plot / sqrt(omega02);
 
 
 ContinuationCalculation

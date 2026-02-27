@@ -7,8 +7,13 @@ function J = HBMJACOB(x, Omega, pfunc)
     % non-linear part
     JNL = zeros(size(JL));
     xc = x((2 * H + 1) * Na + 1:end);
-    % dGdx = finite_diff_jac(@(x) fftgx(x, pfunc).F, xc);
-    dGdx = finite_diff_jac(@(x) fftgx(x, pfunc), xc);
+
+    % numerical jacobien
+    % dGdx = finite_diff_jac(@(x) fftgx(x, pfunc), xc);
+    
+    % analytical jacobien
+    [dGdx, JNLt, Ft, wt, Mft] = JNL_Analytical(xc, pfunc);
+
     JNL((2 * H + 1) * Na + 1:end, (2 * H + 1) * Na + 1:end) = dGdx;
 
     J = JNL + JL;
