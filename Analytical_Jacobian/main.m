@@ -185,13 +185,13 @@ end
 %% Coulomb friction of dummy fucntion 2 dofs
 clear
 clc
-close all
+% close all
 eps = [];
-h = 10^(-2);
+h = 10^(-4);
 order = 1;
 h_con = [];
-N = 2^15;
-H = 10;
+N = 2^7;
+H = 4;
 dt = 2 * pi / N;
 t = (0:(N-1)) * 2 * pi / N;
 t = t';
@@ -457,7 +457,7 @@ dTdxt_time_AN = JNLt_A(1:N, 1:2*H+1);
 dTdxn_time_AN = JNLt_A(1:N, 2*H+2:end);
 
 % num = 18;
-for i = 17:18
+for i = 1:1
     fig = figure; %('PaperOrientation','landscape','PaperUnits','centimeters','PaperPosition', 100 * [0 0 29.7 21], 'PaperSize',[29.7 21] * 100);
     
     fig.WindowState = 'maximized';

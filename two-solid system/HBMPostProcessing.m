@@ -22,7 +22,7 @@ Adof = [OMEGA, Adof];
 % Ndof = 1;
 % A = E * x_contNx(:,:,Ndof);
 % Amax = max(abs(A));
-% % figure;
+% figure;
 % frq = omega_cont; % ./ (2*pi);
 % % frq = omega_cont ./ (2*pi);
 % plot(frq, Amax,'r--'),hold on;
@@ -84,7 +84,7 @@ para.Pc = FEM.Pc;
 para.params = params;
 para.X = X;
 
-save('data/Mesh32x32/Pe100eachData_PeFixed_Omega_'+ string(omega_plot) + '_Nx_' + string(Nx) + '_H' + string(H) + '_N' + string(N) + '.mat','para');
+% save('data/Mesh32x32/Pe100eachData_PeFixed_Omega_'+ string(omega_plot) + '_Nx_' + string(Nx) + '_H' + string(H) + '_N' + string(N) + '.mat','para');
 %% H validation
 % figure;
 % c = jet(15);

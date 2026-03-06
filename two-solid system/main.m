@@ -1,6 +1,6 @@
 %% clear workspace and close all
 for H = 11:2:11
-    for mainj = 8:8
+    for mainj = 6:6
 clearvars -except mainj H
 N = 2^mainj;
 Nx = 16;
@@ -132,7 +132,7 @@ CaseTime = toc;
 
 %%
 
-HBMPostProcessing;
+% HBMPostProcessing;
 
 
 end

@@ -151,6 +151,6 @@ function dX = dXinFourier(X, H)
 end
 %%
 dxt = [1:32]';
-dxn = ones(32, 1);
-dxn(5:12) = 0;
-dxt([dxn])
+for i = 1:32
+    disp(dxt(mod(i - 2, 32) + 1));
+end

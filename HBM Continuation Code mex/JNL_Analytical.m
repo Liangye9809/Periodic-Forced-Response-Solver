@@ -12,6 +12,8 @@ function [JNL, JNLt, Ft, wt, Mft] = JNL_Analytical(X, p)
     mu = p.fc.mu;
     w_in = p.fc.w;
     nloop = p.fc.nloop;
+    xp = p.static.preload.xp;
+    gxp = p.static.preload.gxp;
 
     xt = zeros(N, 3 * Nx);
     dx = zeros(N, 3 * Nx);
@@ -26,7 +28,7 @@ function [JNL, JNLt, Ft, wt, Mft] = JNL_Analytical(X, p)
         dx(:, i) = E * dXi;
     end
 
-    [Ft, wt, Mft] = g(xt, kn, xn0, mu, kt, w_in, nloop);
+    [Ft, wt, Mft] = g(xt + xp', kn, xn0, mu, kt, w_in, nloop);
     
   
     JNLt = zeros(3 * Nx * N, (2 * H + 1) * 3 * Nx);

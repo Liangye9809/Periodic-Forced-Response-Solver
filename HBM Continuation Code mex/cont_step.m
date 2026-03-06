@@ -39,7 +39,11 @@ for k=1:maxiter
     % disp([k z(1) z(2) lambda errorx  errorf])
     if (errorx < epsx) && (errorf < epsf)
         t0 = [tx0; tomega0];
-        t = null([jacob(x, omega, params.func) deromega(x, omega, params.func)]);
+
+        % t = null([jacob(x, omega, params.func) deromega(x, omega, params.func)]);
+        t = [-(jacob(x, omega, params.func) \ deromega(x, omega, params.func)); 1];
+        t = t / norm(t);
+
         t = t * sign(t0'*t);
         tx = t(1:end-1);
         tomega = t(end);
