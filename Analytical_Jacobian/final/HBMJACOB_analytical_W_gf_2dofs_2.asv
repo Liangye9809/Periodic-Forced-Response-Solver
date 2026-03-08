@@ -15,13 +15,109 @@ function [JNL, Mft, F, wt] = HBMJACOB_analytical_W_gf_2dofs_2(xt, dx, kn, xn0, m
 end
 
 
-function [C_ss, C_gs, C_s] = get_integral_time_position(a, b, c)
+function [C_ss, C_gs, C_sp, C_sm] = get_integral_time_position(a, b, c)
 % a is stick condition each time instant, 1 is stick, 0 is non-stick, column vector
 % b is slip condition each time instant, 1 or -1 is slip, 0 is non-slip, column vector
 % c is contact condition each time instant, 1 is contact, 0 is gap, column vector
 % C_ss stick after slip time range
-% C_ss stick after slip time range
-% C_ss stick after slip time range
+% C_gs stick after gap time range
+% C_sp slip time range in plus sign
+% C_sm slip time range in minus sign
+    C_ss = - ones(1, 2); n_ss = 1;
+    C_gs = - ones(1, 2); n_gs = 1;
+    C_sp = - ones(1, 2); n_sp = 1;
+    C_sm = - ones(1, 2); n_sm = 1;
+    keep = 0;
+    N = size(a, 2);
+    % stick
+    for i = 1:N
+        if i == 1 && a(1) ~=0 % if begin with stick, means transition time located previously 
+            for j = 1:N % backwards loop to find slip to stick transition
+                k = N - j + 1;
+                if a(k) == 0
+                    p_plus = mod(k, N + 1) + 1; % t+ transition instant, stick. add last point to create close the cycle [1, N+1]
+                    p_minus = mod(k - 1, N) + 1; % t- transition instant, slip
+                    p = 0.5 * (p_plus + p_minus); % middle transition instant.
+                    keep = 1;
+                    if c(p_minus) == 0
+                        C_gs(n_gs, 1) = p_plus;
+                    else
+                        C_ss(n_ss, 1) = p_plus;
+                    end
+                    break;
+                end
+            end
+        elseif a(i) ~= 0 && keep == 0
+            p_plus = i; % t+ transition instant.
+            p_minus = i - 1; % t- transition instant.
+            p = 0.5 * (p_plus + p_minus); % middle transition instant.
+            keep = 1;
+            if c(p_minus) == 0
+                C_gs(n_gs, 1) = p_plus;
+            else
+                C_ss(n_ss, 1) = p_plus;
+            end
+        end
     
+        if a(i) == 0 && keep == 1 % stick end
+            keep = 0;
+            p_plus = 1;
+            p_minus = 1;
+            p = 1;
+            if C_gs(n_gs, 1) > 0
+                C_gs(n_gs, 2) = mod(k - 1, N) + 1;
+                n_gs = n_gs + 1;
+            else
+                C_ss(n_ss, 2) = mod(k - 1, N) + 1;
+                n_ss = n_ss + 1;
+            end
+        end
+
+    end
+
+    for i = 1:N
+        if i == 1 && a(1) ~=0 % if begin with stick, means transition time located previously 
+            for j = 1:N % backwards loop to find slip to stick transition
+                k = N - j + 1;
+                if a(k) == 0
+                    p_plus = mod(k, N + 1) + 1; % t+ transition instant, stick. add last point to create close the cycle [1, N+1]
+                    p_minus = mod(k - 1, N) + 1; % t- transition instant, slip
+                    p = 0.5 * (p_plus + p_minus); % middle transition instant.
+                    keep = 1;
+                    if c(p_minus) == 0
+                        C_gs(n_gs, 1) = p_plus;
+                    else
+                        C_ss(n_ss, 1) = p_plus;
+                    end
+                    break;
+                end
+            end
+        elseif a(i) ~= 0 && keep == 0
+            p_plus = i; % t+ transition instant.
+            p_minus = i - 1; % t- transition instant.
+            p = 0.5 * (p_plus + p_minus); % middle transition instant.
+            keep = 1;
+            if c(p_minus) == 0
+                C_gs(n_gs, 1) = p_plus;
+            else
+                C_ss(n_ss, 1) = p_plus;
+            end
+        end
+    
+        if a(i) == 0 && keep == 1 % stick end
+            keep = 0;
+            p_plus = 1;
+            p_minus = 1;
+            p = 1;
+            if C_gs(n_gs, 1) > 0
+                C_gs(n_gs, 2) = mod(k - 1, N) + 1;
+                n_gs = n_gs + 1;
+            else
+                C_ss(n_ss, 2) = mod(k - 1, N) + 1;
+                n_ss = n_ss + 1;
+            end
+        end
+
+    end
     
 end
