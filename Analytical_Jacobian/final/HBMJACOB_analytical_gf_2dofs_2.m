@@ -1,6 +1,6 @@
-function [JNL, Mft, JNLt, F, wt] = HBMJACOB_analytical_gf_2dofs_2(xt, dx, kn, xn0, mu, kt, w_in, H, N, nloop)
+function [JNL, JNLt] = HBMJACOB_analytical_gf_2dofs_2(dx, kn, mu, kt, H, N, Mft)
 
-    [F, wt, Mft] = gf_2dofs(xt, kn, xn0, mu, kt, w_in, nloop);
+    % [F, wt, Mft] = gf_2dofs(xt, kn, xn0, mu, kt, w_in, nloop);
 
     
     %%

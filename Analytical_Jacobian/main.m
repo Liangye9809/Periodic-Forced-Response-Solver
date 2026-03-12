@@ -457,7 +457,7 @@ dTdxt_time_AN = JNLt_A(1:N, 1:2*H+1);
 dTdxn_time_AN = JNLt_A(1:N, 2*H+2:end);
 
 % num = 18;
-for i = 1:1
+for i = 1:7:8
     fig = figure; %('PaperOrientation','landscape','PaperUnits','centimeters','PaperPosition', 100 * [0 0 29.7 21], 'PaperSize',[29.7 21] * 100);
     
     fig.WindowState = 'maximized';

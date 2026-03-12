@@ -1,13 +1,13 @@
 %% Coulomb friction of dummy fucntion 2 dofs
 clear
 clc
-close all
+% close all
 eps = [];
-h = 10^(-2);
+h = 10^(-4);
 order = 1;
 h_con = [];
-N = 32;
-H = 10;
+N = 2048;
+H = 100;
 dt = 2 * pi / N;
 t = (0:(N-1)) * 2 * pi / N;
 t = t';
@@ -16,8 +16,8 @@ xn = ones(N, 1);
 % xt = 2 * exp(cos(t + 1)) - 3; % separation to stick
 % xn = 2 * exp(cos(t)) - 0.5; % slip to stick
 % xn = 2 * exp(cos(t)) - 0.75; % separation to slip
-% xt = 2 * sin(sin(t)); % slip to stick
-xt = sin(sin(t)); % pure stick
+xt = 2 * sin(sin(t)); % slip to stick
+% xt = sin(sin(t)); % pure stick
 x = [xt, xn];
 
 
@@ -49,8 +49,13 @@ p.fc.mu = [mu; mu];
 p.fc.w = [w; w];
 p.fc.nloop = nloop;
 
-[JNL_A_2, Mft_A_2, JNLt_A, Ft_A_2, wt_A_2] = HBMJACOB_analytical_gf_2dofs_2(x, dx, kn, xn0, mu, kt, w, H, N, nloop);
-[JNL_F, JNLt_F, Ft_F, wt_F, Mft_F] = JNL_Analytical(X, p);
+% [JNL_A_2, Mft_A_2, JNLt_A, Ft_A_2, wt_A_2] = HBMJACOB_analytical_gf_2dofs_2(x, dx, kn, xn0, mu, kt, w, H, N, nloop);
+% [JNL_F, JNLt_F, Ft_F, wt_F, Mft_F] = JNL_Analytical(X, p);
+% [JNL_W, ~, ~, ~] = HBMJACOB_analytical_W_gf_2dofs_2(x, dx, kn, xn0, mu, kt, w, H, N, nloop);
+[Ft_A_2, wt_A_2, Mft_A_2] = gf_2dofs(x, kn, xn0, mu, kt, w, nloop);
+[JNL_A_2, JNLt_A] = HBMJACOB_analytical_gf_2dofs_2(dx, kn, mu, kt, H, N, Mft_A_2);
+JNL_W = HBMJACOB_analytical_W_gf_2dofs_2(dx, kn, mu, kt, H, N, Mft_A_2);
+
 function dX = dXinFourier(X, H)
     dX = zeros(size(X));
     for i = 1:H
@@ -60,7 +65,7 @@ function dX = dXinFourier(X, H)
 
 end
 
-
+eps = norm(JNL_W - JNL_A_2) / norm(JNL_W)
 %% print
 T = t; xplot = x;
 for i = 1:nloop - 1
@@ -70,6 +75,28 @@ for i = 1:nloop - 1
     xplot = [xplot; x];
 end
 
+figure;
+Mftplot(:, 1) = Mft_A_2(1,1,end-N+1:end);
+Mftplot(:, 2) = Mft_A_2(2,1,end-N+1:end);
+Mftplot(:, 3) = Mft_A_2(3,1,end-N+1:end);
+subplot(3,1,1)
+plot(t, Mftplot(:,1), '.'), grid on;
+% xlim(T([end-N+1,end]));
+title('stick condition');
+ylim([-1.2, 1.2]);
+
+subplot(3,1,2)
+plot(t, Mftplot(:,2), '.'), grid on;
+% xlim(T([end-N+1,end]));
+title('slip condition');
+ylim([-1.2, 1.2]);
+
+
+subplot(3,1,3)
+plot(t, Mftplot(:,3), '.'), grid on;
+% xlim(T([end-N+1,end]));
+title('contact condition');
+ylim([-1.2, 1.2]);
 
 figure;
 % subplot(3,1,1)
@@ -100,7 +127,7 @@ title('friction forces');
 grid on;
 
 %%
-epsN = norm(JNL_A_2(end-N+1:end,end-N+1:end) - JNL_F(end-N+1:end,end-N+1:end)) / norm(JNL_A_2(end-N+1:end,end-N+1:end));
+% epsN = norm(JNLt_A_2(end-N+1:end,end-N+1:end) - JNL_F(end-N+1:end,end-N+1:end)) / norm(JNL_A_2(end-N+1:end,end-N+1:end));
 
 dTdxt_time_AN = JNLt_A(1:N, 1:2*H+1);
 dTdxn_time_AN = JNLt_A(1:N, 2*H+2:end);
@@ -111,7 +138,7 @@ dTdxn_time_AN = JNLt_A(1:N, 2*H+2:end);
 dTdxt_time_F = JNLt_F(N + 1:2 * N, 2*H+1 + 1:2 * (2*H+1));
 dTdxn_time_F = JNLt_F(N + 1:2 * N, 2*(2*H+1)+1:end);
 % num = 18;
-for i = 1:10
+for i = 1:3
     fig = figure; %('PaperOrientation','landscape','PaperUnits','centimeters','PaperPosition', 100 * [0 0 29.7 21], 'PaperSize',[29.7 21] * 100);
     
     fig.WindowState = 'maximized';

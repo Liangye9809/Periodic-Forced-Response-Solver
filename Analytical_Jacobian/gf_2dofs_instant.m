@@ -1,4 +1,4 @@
-function [F, w, Mf] = gf_2dofs_instant(x, kn, xn0, mu, kt, w_in, C_, xn) 
+function [F, w, Mf, dxdn] = gf_2dofs_instant(x, kn, xn0, mu, kt, w_in, C_, xn) 
 
    
     F = zeros(size(x));
@@ -7,7 +7,7 @@ function [F, w, Mf] = gf_2dofs_instant(x, kn, xn0, mu, kt, w_in, C_, xn)
     
     
     F(2) = NormalForces(x(2), kn, xn0); % Fn
-    [F(1), w, Mf(1:2)] = TangentialForces(x(1), w, kt, mu, F(2), C_, xn); % T
+    [F(1), w, Mf(1:2), dxdn] = TangentialForces(x(1), w, kt, mu, F(2), C_, xn); % T
 
     if abs(F(2)) > 0
         Mf(3) = 1;
@@ -17,13 +17,15 @@ end
 
 % C is condition of friction, [stick; slip] 1 is active, 0 is non.
 
-function [T, w, C] = TangentialForces(xt, wt, kt, mu, FN, C_, xn)
+function [T, w, C, dxdn] = TangentialForces(xt, wt, kt, mu, FN, C_, xn)
+    dxdn = 0;
     if FN > 0
         T = kt * (xt - wt);
         if abs(T) <= mu * FN
             w = wt; % xt⁻
             if C_ == [0; 0] % previous is gap, means gap to stick
                 w = wt - xn(1) * (xt - wt) / (xn(2) - xn(1));
+                dxdn = (xt - wt) / (xn(2) - xn(1));
             end
             C = [1; 0]; % stick
         else

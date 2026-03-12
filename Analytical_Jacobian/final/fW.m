@@ -1,5 +1,8 @@
 function [W, w] = fW(t1, t2, H)
-    W = zeors(2 * H + 1, 2 * H + 1);
+    if t1 > t2
+        t2 = t2 + 2*pi;
+    end
+    W = zeros(2 * H + 1, 2 * H + 1);
     w = zeros(2 * H + 1, 1);
     W(1, 1) = t2 - t1;
     for i = 1:H
@@ -12,23 +15,24 @@ function [W, w] = fW(t1, t2, H)
             a = 1 / (i + j) * (cos((i + j) * t2) - cos((i + j) * t1));
             c = 1 / (i + j) * (sin((i + j) * t2) - sin((i + j) * t1));
             if i == j
-                W(2 * i, 2 * i) = c + (t2 - t1);
-                W(2 * i + 1, 2 * i) = - a;
-                W(2 * i, 2 * i + 1) = - a;
-                W(2 * i + 1, 2 * i + 1) = - c + (t2 - t1);
+                W(2 * i, 2 * j) = c + (t2 - t1);
+                W(2 * i + 1, 2 * j) = - a;
+                W(2 * i, 2 * j + 1) = - a;
+                W(2 * i + 1, 2 * j + 1) = - c + (t2 - t1);
             else
                 b = 1 / (i - j) * (cos((i - j) * t2) - cos((i - j) * t1));
                 d = 1 / (i - j) * (sin((i - j) * t2) - sin((i - j) * t1)); 
-                W(2 * i, 2 * i) = c + d;
-                W(2 * i + 1, 2 * i) = - a - b;
-                W(2 * i, 2 * i + 1) = - a + b;
-                W(2 * i + 1, 2 * i + 1) = - c + d;
+                W(2 * i, 2 * j) = c + d;
+                W(2 * i + 1, 2 * j) = - a - b;
+                W(2 * i, 2 * j + 1) = - a + b;
+                W(2 * i + 1, 2 * j + 1) = - c + d;
             end
         end
     end
     W = (1 / (2 * pi)) .* W;
 
     w = W(:, 1);
+    w(1) = w(1) * 2;
 
 end
 
