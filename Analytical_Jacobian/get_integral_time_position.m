@@ -92,7 +92,7 @@ function [C_ps, C_ss, C_gs, C_sp, C_sm, C_c] = get_integral_time_position(a, b, 
                             p_mid = N - 0.5;
                         end
                         keep = 1;
-                        if b(k) == 1
+                        if b(mod(k, N) + 1) == 1
                             C_sp(n_sp, 1) = p_mid;
                         else
                             C_sm(n_sm, 1) = p_mid;

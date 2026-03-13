@@ -1,11 +1,12 @@
-function [JNL, Mft, JNLt, F, wt] = HBMJACOB_analytical_gf_2dofs_2(xt, dx, kn, xn0, mu, kt, w_in, H, N, nloop)
+function [JNL, JNLt] = HBMJACOB_analytical_gf_2dofs_2(dx, kn, mu, kt, H, N, Mft, dxdnt)
 
-    [F, wt, Mft, dxdnt] = gf_2dofs(xt, kn, xn0, mu, kt, w_in, nloop);
+    
+    [E, EH] = fft_matrices(N, H);
 
     dxdn = 0;
     for i = 1:N
         if dxdnt(i) ~= 0
-            dxdn = dxdnt(i);
+            dxdn = dxdnt(i, 2);
             break
         end
     end
@@ -15,24 +16,28 @@ function [JNL, Mft, JNLt, F, wt] = HBMJACOB_analytical_gf_2dofs_2(xt, dx, kn, xn
     c(:, 1) = Mft(3, 1, end-N+1:end);
 
     JNLt = zeros(2 * N, 4 * H + 2);
-    JNLt(1:N, 1) = 0.5 * kt .* c .* a;
-    JNLt(1:N, 2 * H + 2) = 0.5 * mu * kn .* c .* b;
-    JNLt(N + 1:end, 2 * H + 2) = 0.5 * kn .* c;
-    t = ((0:(N-1)) * 2 * pi / N)';
-    for i = 1:H
-        JNLt(1:N, 2 * i) = kt .* cos(i * t) .* c .* a;
-        JNLt(1:N, 2 * i + 1) = kt .* sin(i * t) .* c .* a;
 
-        JNLt(1:N, 2 * H + 1 + 2 * i) = mu * kn .* cos(i * t) .* c .* b;
-        JNLt(1:N, 2 * H + 1 + 2 * i + 1) = mu * kn .* sin(i * t) .* c .* b;
+    % JNLt(1:N, 1) = 0.5 * kt .* c .* a;
+    % JNLt(1:N, 2 * H + 2) = 0.5 * mu * kn .* c .* b;
+    % JNLt(N + 1:end, 2 * H + 2) = 0.5 * kn .* c;
+    % t = ((0:(N-1)) * 2 * pi / N)';
+    % for i = 1:H
+    %     JNLt(1:N, 2 * i) = kt .* cos(i * t) .* c .* a;
+    %     JNLt(1:N, 2 * i + 1) = kt .* sin(i * t) .* c .* a;
+    % 
+    %     JNLt(1:N, 2 * H + 1 + 2 * i) = mu * kn .* cos(i * t) .* c .* b;
+    %     JNLt(1:N, 2 * H + 1 + 2 * i + 1) = mu * kn .* sin(i * t) .* c .* b;
+    % 
+    %     JNLt(N + 1:end, 2 * H + 1 + 2 * i) = kn .* cos(i * t) .* c;
+    %     JNLt(N + 1:end, 2 * H + 1 + 2 * i + 1) = kn .* sin(i * t) .* c;
+    % end
 
-        JNLt(N + 1:end, 2 * H + 1 + 2 * i) = kn .* cos(i * t) .* c;
-        JNLt(N + 1:end, 2 * H + 1 + 2 * i + 1) = kn .* sin(i * t) .* c;
-    end
-
+    JNLt(1:N, 1:2 * H + 1) = E .* (kt .* c .* a);
+    JNLt(1:N, 2 * H + 2:end) = E .* (mu * kn .* c .* b);
+    JNLt(N + 1:end, 2 * H + 2:end) = E .* (kn .* c);
 
     JNL = zeros(2 * (2*H+1), 2 * (2*H+1));
-    [E, EH] = fft_matrices(N, H);
+    
     % add missing part
 
     if ismember(0, a) % slip or separation happene
@@ -76,9 +81,9 @@ function [JNL, Mft, JNLt, F, wt] = HBMJACOB_analytical_gf_2dofs_2(xt, dx, kn, xn
             record_plus(i) = p_plus;
         
         end
-        t_s = (record_minus - 1) ./ N .* 2.*pi; % consider [0, N-1], so there is record - 1 
+        % t_s = (record_minus - 1) ./ N .* 2.*pi; % consider [0, N-1], so there is record - 1 
         % t_s = (record_plus - 1) ./ N .* 2.*pi; 
-        % t_s = (0.5 * (record_plus + record_minus) - 1) ./ N .* 2.*pi; 
+        t_s = (0.5 * (record_plus + record_minus) - 1) ./ N .* 2.*pi; 
         c_xn = c .* a .* b(mod(record_plus - 2, N) + 1); % stick part in slip to stick
         % dxt = dx(:, 1);
         % dxn = dx(:, 2);
@@ -86,12 +91,12 @@ function [JNL, Mft, JNLt, F, wt] = HBMJACOB_analytical_gf_2dofs_2(xt, dx, kn, xn
         cg_xn = (~c(mod(record_plus - 2, N) + 1)) .* a .* dxdn; % stick part in gap to stick
 
         
-        % for i = 1:N
-        %     if cg_xn(i) ~= 0
-        %         cg_xn(i) = 0;
-        %         break;
-        %     end
-        % end
+        for i = 1:N
+            if cg_xn(i) ~= 0
+                cg_xn(i) = 0;
+                break;
+            end
+        end
 
         JNLt(1:N, 1) = JNLt(1:N, 1) - a .* 0.5 .* kt;
         

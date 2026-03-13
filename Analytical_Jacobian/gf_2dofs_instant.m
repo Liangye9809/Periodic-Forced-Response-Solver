@@ -18,14 +18,14 @@ end
 % C is condition of friction, [stick; slip] 1 is active, 0 is non.
 
 function [T, w, C, dxdn] = TangentialForces(xt, wt, kt, mu, FN, C_, xn)
-    dxdn = 0;
+    dxdn = [0, 0];
     if FN > 0
         T = kt * (xt - wt);
         if abs(T) <= mu * FN
             w = wt; % xt⁻
             if C_ == [0; 0] % previous is gap, means gap to stick
                 w = wt - xn(1) * (xt - wt) / (xn(2) - xn(1));
-                dxdn = (xt - wt) / (xn(2) - xn(1));
+                dxdn = [1, (xt - wt) / (xn(2) - xn(1))];
             end
             C = [1; 0]; % stick
         else

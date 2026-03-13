@@ -1,4 +1,4 @@
-function JNL = HBMJACOB_analytical_W_gf_2dofs_2(dx, kn, mu, kt, H, N, Mft)
+function JNL = HBMJACOB_analytical_W_gf_2dofs_2(dx, kn, mu, kt, H, N, Mft, dxdn)
 
     % [F, wt, Mft] = gf_2dofs(xt, kn, xn0, mu, kt, w_in, nloop);
 
@@ -12,8 +12,8 @@ function JNL = HBMJACOB_analytical_W_gf_2dofs_2(dx, kn, mu, kt, H, N, Mft)
     % pure stick case
     if C_ps == 1
         [MW, ~] = fW(0, 2*pi, H);
-        JNL(1:2 * H + 1, 1:2 * H + 1) = JNL(1:2 * H + 1, 1:2 * H + 1) + kt .* MW;
-        JNL(2 * H + 1 + 1:end, 2 * H + 1 + 1:end) = JNL(2 * H + 1 + 1:end, 2 * H + 1 + 1:end) + kn .* MW;
+        JNL(1:2 * H + 1, 1:2 * H + 1) = kt .* MW;
+        JNL(2 * H + 1 + 1:end, 2 * H + 1 + 1:end) = kn .* MW;
         return;
     end
 
@@ -24,12 +24,12 @@ function JNL = HBMJACOB_analytical_W_gf_2dofs_2(dx, kn, mu, kt, H, N, Mft)
         [MW, Mw] = fW(t_ss(i, 1), t_ss(i, 2), H);
         c_vec = c_vector(t_ss(i, 1), H);
 
-        % JNL(1:2 * H + 1, 1:2 * H + 1) = JNL(1:2 * H + 1, 1:2 * H + 1) + kt .* MW - Mw * (kt .* c_vec);
-        % JNL(1:2 * H + 1, 2 * H + 1 + 1:end) = JNL(1:2 * H + 1, 2 * H + 1 + 1:end) + Mw * (b(mod(ceil(C_ss(i, 1)) - 1, N) + 1) .* mu .* kn .* c_vec);
+        JNL(1:2 * H + 1, 1:2 * H + 1) = JNL(1:2 * H + 1, 1:2 * H + 1) + kt .* MW - Mw * (kt .* c_vec);
+        JNL(1:2 * H + 1, 2 * H + 1 + 1:end) = JNL(1:2 * H + 1, 2 * H + 1 + 1:end) + Mw * (b(mod(ceil(C_ss(i, 1)) - 1, N) + 1) .* mu .* kn .* c_vec);
         
-        [E, EH] = fft_matrices_t1_t2(N, H, t_ss(i, 1), t_ss(i, 2));
-        JNL(1:2 * H + 1, 1:2 * H + 1) = JNL(1:2 * H + 1, 1:2 * H + 1) + kt .* MW - EH * (ones(N, 1) * (kt .* c_vec));
-        JNL(1:2 * H + 1, 2 * H + 1 + 1:end) = JNL(1:2 * H + 1, 2 * H + 1 + 1:end) + EH * (ones(N, 1) * (b(mod(ceil(C_ss(i, 1)) - 1, N) + 1) .* mu .* kn .* c_vec));
+        % [E, EH] = fft_matrices_t1_t2(N, H, t_ss(i, 1), t_ss(i, 2));
+        % JNL(1:2 * H + 1, 1:2 * H + 1) = JNL(1:2 * H + 1, 1:2 * H + 1) + kt .* MW - EH * (ones(N, 1) * (kt .* c_vec));
+        % JNL(1:2 * H + 1, 2 * H + 1 + 1:end) = JNL(1:2 * H + 1, 2 * H + 1 + 1:end) + EH * (ones(N, 1) * (b(mod(ceil(C_ss(i, 1)) - 1, N) + 1) .* mu .* kn .* c_vec));
         
         i = i + 1;
     end
@@ -42,11 +42,11 @@ function JNL = HBMJACOB_analytical_W_gf_2dofs_2(dx, kn, mu, kt, H, N, Mft)
         c_vec = c_vector(t_gs(i, 1), H);
         JNL(1:2 * H + 1, 1:2 * H + 1) = JNL(1:2 * H + 1, 1:2 * H + 1) + kt .* MW - Mw * (kt .* c_vec);
         
-        n_m = mod(ceil(C_ss(i, 1)) - 1, N) + 1;
-        n_p = mod(ceil(C_ss(i, 1) + 1) - 1, N) + 1;
-        dxt = 0.5 * (dx(n_m, 1) + dx(n_p, 1));
-        dxn = 0.5 * (dx(n_m, 2) + dx(n_p, 2));
-        JNL(1:2 * H + 1, 2 * H + 1 + 1:end) = JNL(1:2 * H + 1, 2 * H + 1 + 1:end) + Mw * (kt .* dxt ./ dxn .* c_vec);
+        % n_m = mod(ceil(C_ss(i, 1)) - 1, N) + 1;
+        % n_p = mod(ceil(C_ss(i, 1) + 1) - 1, N) + 1;
+        % dxt = 0.5 * (dx(n_m, 1) + dx(n_p, 1));
+        % dxn = 0.5 * (dx(n_m, 2) + dx(n_p, 2));
+        JNL(1:2 * H + 1, 2 * H + 1 + 1:end) = JNL(1:2 * H + 1, 2 * H + 1 + 1:end) + Mw * (kt .* dxdn(i) .* c_vec);
         i = i + 1;
     end
 

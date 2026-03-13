@@ -103,9 +103,9 @@ end
 clear
 % clc
 N = 256;
-H = 10;
+H = 5;
 Nx = 16;
-n = Nx * (2 * H + 1); % size of matrix
+n = 3 * Nx * (2 * H + 1); % size of matrix
 [E, EH] = fft_matrices(N, H);
 JNLt_rand = rand(N, 2 * H + 1);
 Loop = 100;
@@ -113,7 +113,7 @@ Loop = 100;
 n_range = 4; % stick-slip-stick-slip
 % n_W = 3; % number of W, dt/dxt, dt/dxn, dfn/dxn
 tic;
-for i = 1:Loop * (8 * H * H) * n_range
+for i = 1:Loop * (32 * H) * n_range
     a = cos(rand(1));
 end
 T_W_cos = toc
@@ -123,9 +123,10 @@ tic;
 for i = 1:Loop * n_d
     % a = EH * JNLt_rand;
     a = EH * rand(N, 2 * H + 1);
-    for j = 1:(2 * H * N)
-        b = cos(rand(1));
-    end
+    b = E .* rand(N, 1);
+    % for j = 1:(2 * H * N)
+    %     b = cos(rand(1));
+    % end
 end
 T_A_EH = toc
 %% null
@@ -166,3 +167,23 @@ for i = 1:Loop
 end
 T_direc = toc
 
+%% analytcial and numerical Fourier comparison
+t1 = 1;
+t2 = 2;
+H = 5;
+N = 128;
+epsW = [];
+epsw = [];
+for iN = 1:10
+    N = 2^(iN + 7);
+    for iH = 1:20
+        H = iH;
+        [E, EH] = fft_matrices_t1_t2(N, H, t1, t2);
+        [W_A, w_a] = fW(t1, t2, H);
+        W_N = EH * E;
+        w_n = EH * ones(N, 1);
+        epsW(iN, iH) = norm(W_A(2:end, :) - W_N(2:end, :)) / norm(W_A(2:end, :));
+        epsw(iN, iH) = norm(w_a - w_n) / norm(w_a);
+
+    end
+end

@@ -7,16 +7,16 @@ h = 10^(-4);
 order = 1;
 h_con = [];
 N = 2048;
-H = 100;
+H = 1;
 dt = 2 * pi / N;
 t = (0:(N-1)) * 2 * pi / N;
 t = t';
-xn = ones(N, 1);
-% xn = - 4 * sin(sin(t)) + 1; % separation to stick
-% xt = 2 * exp(cos(t + 1)) - 3; % separation to stick
+% xn = ones(N, 1);
+xn = - 4 * sin(sin(t)) + 1; % separation to stick
+xt = 2 * exp(cos(t + 1)) - 3; % separation to stick
 % xn = 2 * exp(cos(t)) - 0.5; % slip to stick
 % xn = 2 * exp(cos(t)) - 0.75; % separation to slip
-xt = 2 * sin(sin(t)); % slip to stick
+% xt = 2 * sin(sin(t)); % slip to stick
 % xt = sin(sin(t)); % pure stick
 x = [xt, xn];
 
@@ -52,9 +52,10 @@ p.fc.nloop = nloop;
 % [JNL_A_2, Mft_A_2, JNLt_A, Ft_A_2, wt_A_2] = HBMJACOB_analytical_gf_2dofs_2(x, dx, kn, xn0, mu, kt, w, H, N, nloop);
 % [JNL_F, JNLt_F, Ft_F, wt_F, Mft_F] = JNL_Analytical(X, p);
 % [JNL_W, ~, ~, ~] = HBMJACOB_analytical_W_gf_2dofs_2(x, dx, kn, xn0, mu, kt, w, H, N, nloop);
-[Ft_A_2, wt_A_2, Mft_A_2] = gf_2dofs(x, kn, xn0, mu, kt, w, nloop);
+[Ft_A_2, wt_A_2, Mft_A_2, dxdnt] = gf_2dofs(x, kn, xn0, mu, kt, w, nloop);
 [JNL_A_2, JNLt_A] = HBMJACOB_analytical_gf_2dofs_2(dx, kn, mu, kt, H, N, Mft_A_2);
-JNL_W = HBMJACOB_analytical_W_gf_2dofs_2(dx, kn, mu, kt, H, N, Mft_A_2);
+
+JNL_W = HBMJACOB_analytical_W_gf_2dofs_2(dx, kn, mu, kt, H, N, Mft_A_2, dxdn);
 
 function dX = dXinFourier(X, H)
     dX = zeros(size(X));
