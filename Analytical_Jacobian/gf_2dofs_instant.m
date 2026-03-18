@@ -24,8 +24,9 @@ function [T, w, C, dxdn] = TangentialForces(xt, wt, kt, mu, FN, C_, xn)
         if abs(T) <= mu * FN
             w = wt; % xt⁻
             if C_ == [0; 0] % previous is gap, means gap to stick
-                w = wt - xn(1) * (xt - wt) / (xn(2) - xn(1));
-                dxdn = [1, (xt - wt) / (xn(2) - xn(1))];
+                dxdti = (xt - wt) / (xn(2) - xn(1));
+                w = wt - xn(1) * dxdti;
+                dxdn = [1, dxdti];
             end
             C = [1; 0]; % stick
         else

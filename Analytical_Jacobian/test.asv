@@ -602,7 +602,7 @@ w =  -1;
 xn0 = 0; % normal pre-displacement
 
 nloop = 2;
-n = 1000;
+
 [E, EH] = fft_matrices(N, H);
 X = EH * x;
 dX = dXinFourier(X, H);
@@ -612,22 +612,14 @@ X = X(:);
 
 [Ft, wt, Mft, dxdnt] = gf_2dofs(x, kn, xn0, mu, kt, w, nloop);
 tic;
-for i = 1:n
-    [JNL_A, JNLt_A] = HBMJACOB_analytical_gf_2dofs_2(dx, kn, mu, kt, H, N, Mft, dxdnt);
-end
-T_1 = toc;
-
+[JNL_A, JNLt_A] = HBMJACOB_analytical_gf_2dofs_2(dx, kn, mu, kt, H, N, Mft, dxdnt);
+T_1 = toc
 
 dxdn = dxdnt(find(dxdnt(:, 1) > 0), 2);
 tic;
-for i = 1:n
-    JNL_W = HBMJACOB_analytical_W_gf_2dofs_2(dx, kn, mu, kt, H, N, Mft, dxdn);
-end
-T_W = toc;
+JNL_W = HBMJACOB_analytical_W_gf_2dofs_2(dx, kn, mu, kt, H, N, Mft, dxdn);
+T_W = toc
 
 tic;
-for i = 1:n
-    [JNL_A_2, JNLt_A_2] = HBMJACOB_analytical_in_time(kn, mu, kt, H, N, Mft, dxdn);
-end
-T_2 = toc;
-[T_1, T_W, T_2]
+[JNL_A_2, JNLt_A_2] = HBMJACOB_analytical_in_time(kn, mu, kt, H, N, Mft, dxdn);
+T_2 = toc

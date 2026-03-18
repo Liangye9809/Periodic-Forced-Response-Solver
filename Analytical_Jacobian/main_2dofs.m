@@ -3,10 +3,10 @@ clear
 clc
 % close all
 eps = [];
-h = 10^(-4);
+h = 10^(-8);
 order = 1;
 h_con = [];
-N = 2^8;
+N = 2^6;
 H = 4;
 dt = 2 * pi / N;
 t = (0:(N-1)) * 2 * pi / N;
@@ -37,9 +37,11 @@ X = EH * x;
 dX = dXinFourier(X, H);
 dx = E * dX;
 X = X(:);
+[Ft_A_2, wt_A_2, Mft_A_2, dxdnt] = gf_2dofs(x, kn, xn0, mu, kt, w, nloop);
+
 tic;
         % [JNL_A, Mft_A, Gp, dgt_A, Ft_A, wt_A] = HBMJACOB_analytical_gf_2dofs(x, kn, xn0, mu, kt, w, H, N, nloop);
-        [JNL_A_2, Mft_A_2, JNLt_A, Ft_A_2, wt_A_2] = HBMJACOB_analytical_gf_2dofs_2(x, dx, kn, xn0, mu, kt, w, H, N, nloop);
+        [JNL_A_2, JNLt_A] = HBMJACOB_analytical_gf_2dofs_2(dx, kn, mu, kt, H, N, Mft_A_2, dxdnt);
         
 toc;
         % eps_a = norm(JNL_A - JNL_A_2) / norm(JNL_A_2);
@@ -251,7 +253,7 @@ dTdxt_time_AN = JNLt_A(1:N, 1:2*H+1);
 dTdxn_time_AN = JNLt_A(1:N, 2*H+2:end);
 
 % num = 18;
-for i = 8:8
+for i = 1:7:8
     fig = figure; %('PaperOrientation','landscape','PaperUnits','centimeters','PaperPosition', 100 * [0 0 29.7 21], 'PaperSize',[29.7 21] * 100);
     
     fig.WindowState = 'maximized';

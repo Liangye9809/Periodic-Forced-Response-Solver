@@ -11,13 +11,13 @@ H = 10;
 dt = 2 * pi / N;
 t = (0:(N-1)) * 2 * pi / N;
 t = t';
-% xn = ones(N, 1);
-xn = - 4 * sin(sin(t)) + 1; % separation to stick
-xt = 2 * exp(cos(t + 1)) - 3; % separation to stick
+xn = ones(N, 1);
+% xn = - 4 * sin(sin(t)) + 1; % separation to stick
+% xt = 2 * exp(cos(t + 1)) - 3; % separation to stick
 % xn = 2 * exp(cos(t)) - 0.5; % slip to stick
 % xn = 2 * exp(cos(t)) - 0.75; % separation to slip
 % xt = 2 * sin(sin(t)); % slip to stick
-% xt = sin(sin(t)); % pure stick
+xt = sin(sin(t)); % pure stick
 x = [xt, xn];
 
 
@@ -37,11 +37,13 @@ dx = E * dX;
 X = [EH * x(:, 1), X];
 X = X(:);
 
-[Ft_A_2, wt_A_2, Mft_A_2, dxdnt] = gf_2dofs(x, kn, xn0, mu, kt, w, nloop);
-[JNL_A_2, JNLt_A] = HBMJACOB_analytical_gf_2dofs_2(dx, kn, mu, kt, H, N, Mft_A_2, dxdnt);
+[Ft, wt, Mft, dxdnt] = gf_2dofs(x, kn, xn0, mu, kt, w, nloop);
+[JNL_A, JNLt_A] = HBMJACOB_analytical_gf_2dofs_2(dx, kn, mu, kt, H, N, Mft, dxdnt);
 
 dxdn = dxdnt(find(dxdnt(:, 1) > 0), 2);
-JNL_W = HBMJACOB_analytical_W_gf_2dofs_2(dx, kn, mu, kt, H, N, Mft_A_2, dxdn);
+JNL_W = HBMJACOB_analytical_W_gf_2dofs_2(dx, kn, mu, kt, H, N, Mft, dxdn);
+
+[JNL_A_2, JNLt_A_2] = HBMJACOB_analytical_in_time(kn, mu, kt, H, N, Mft, dxdn);
 
 function dX = dXinFourier(X, H)
     dX = zeros(size(X));
@@ -52,7 +54,9 @@ function dX = dXinFourier(X, H)
 
 end
 
-eps = norm(JNL_W - JNL_A_2) / norm(JNL_W)
+eps1 = norm(JNL_W - JNL_A) / norm(JNL_W)
+eps2 = norm(JNL_W - JNL_A_2) / norm(JNL_W)
+eps3 = norm(JNL_A_2 - JNL_A) / norm(JNL_A_2)
 %% print
 T = t; xplot = x;
 for i = 1:nloop - 1
@@ -63,9 +67,9 @@ for i = 1:nloop - 1
 end
 
 figure;
-Mftplot(:, 1) = Mft_A_2(1,1,end-N+1:end);
-Mftplot(:, 2) = Mft_A_2(2,1,end-N+1:end);
-Mftplot(:, 3) = Mft_A_2(3,1,end-N+1:end);
+Mftplot(:, 1) = Mft(1,1,end-N+1:end);
+Mftplot(:, 2) = Mft(2,1,end-N+1:end);
+Mftplot(:, 3) = Mft(3,1,end-N+1:end);
 subplot(3,1,1)
 plot(t, Mftplot(:,1), '.'), grid on;
 % xlim(T([end-N+1,end]));
@@ -91,7 +95,7 @@ wp = xplot(:, 1) + mu * kn / kt * max(xplot(:, 2), 0);
 wm = xplot(:, 1) - mu * kn / kt * max(xplot(:, 2), 0);
 plot(T, wp, 'k--', 'LineWidth', 2), hold on;
 plot(T, wm, 'r--', 'LineWidth', 2), hold on;
-plot(T, wt_A_2, 'b-', 'LineWidth', 2), hold on;
+plot(T, wt, 'b-', 'LineWidth', 2), hold on;
 grid on;
 plot(t, x, 'LineWidth', 2), hold on;
 legend('w+', 'w-', 'wt', "x1", "xn");
@@ -99,17 +103,17 @@ title('displacement');
 
 figure;
 % subplot(3,1,2)
-plot(xplot(:, 1), Ft_A_2(:, 1), 'LineWidth', 2);
+plot(xplot(:, 1), Ft(:, 1), 'LineWidth', 2);
 title('hysteresis cycle');
 grid on;
 
 figure;
 % subplot(3,1,3)
-plot(T, Ft_A_2(:, 1), 'LineWidth', 2), hold on;
-plot(T, mu * Ft_A_2(:,2), 'k-', 'LineWidth', 2), hold on;
-plot(T, - mu * Ft_A_2(:,2), 'k-', 'LineWidth', 2), hold on;
+plot(T, Ft(:, 1), 'LineWidth', 2), hold on;
+plot(T, mu * Ft(:,2), 'k-', 'LineWidth', 2), hold on;
+plot(T, - mu * Ft(:,2), 'k-', 'LineWidth', 2), hold on;
 legend("T", "mu*Fn", "-mu*Fn");
-ylim(1.2 * [min(-mu * Ft_A_2(:,2)), max(mu * Ft_A_2(:,2))]);
+ylim(1.2 * [min(-mu * Ft(:,2)), max(mu * Ft(:,2))]);
 title('friction forces');
 grid on;
 

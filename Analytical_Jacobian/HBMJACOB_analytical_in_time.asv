@@ -1,0 +1,58 @@
+function [JNL, JNLt] = HBMJACOB_analytical_in_time(kn, mu, kt, H, N, Mft, dxdn)
+
+    
+    [E, EH] = fft_matrices(N, H);
+
+    
+    %%
+    a(:, 1) = Mft(1, 1, end-N+1:end);
+    b(:, 1) = Mft(2, 1, end-N+1:end);
+    c(:, 1) = Mft(3, 1, end-N+1:end);
+    [C_ps, C_ss, C_gs] = get_transition_time_position(a, c);
+    JNLt = zeros(2 * N, 4 * H + 2);
+
+    
+    JNLt(1:N, 1:2 * H + 1) = E .* (kt .* c .* a);
+    JNLt(1:N, 2 * H + 2:end) = E .* (mu * kn .* c .* b);
+    JNLt(N + 1:end, 2 * H + 2:end) = E .* (kn .* c);
+
+    JNL = zeros(2 * (2*H+1), 2 * (2*H+1));
+    
+    % pure stick case
+    if C_ps == 1
+        I = eye(2 * H + 1);
+        JNL(1:2 * H + 1, 1:2 * H + 1) = kt .* I;
+        JNL(2 * H + 1 + 1:end, 2 * H + 1 + 1:end) = kn .* I;
+        return;
+    end
+
+    % add missing part
+    % slip to stick part
+    i = 1;
+    while C_ss(i, 1) >= 0
+        JNLt(C_ss(i, 1):C_ss(i, 2), 1:2 * H + 1) = JNLt(C_ss(i, 1):C_ss(i, 2), 1:2 * H + 1) - kt .* E(C_ss(i, 1):C_ss(i, 2), :);
+        JNLt(C_ss(i, 1):C_ss(i, 2), 2 * H + 2:end) = JNLt(C_ss(i, 1):C_ss(i, 2), 2 * H + 2:end) + mu .* kn .* E(C_ss(i, 1):C_ss(i, 2), :);
+        i = i + 1;
+    end
+
+    % gap to stick part
+    i = 1;
+    while C_gs(i, 1) >= 0
+        JNLt(C_gs(i, 1):C_gs(i, 2), 1:2 * H + 1) = JNLt(C_gs(i, 1):C_gs(i, 2), 1:2 * H + 1) - kt .* E(C_gs(i, 1):C_gs(i, 2), :);
+        JNLt(C_gs(i, 1):C_gs(i, 2), 2 * H + 2:end) = JNLt(C_gs(i, 1):C_gs(i, 2), 2 * H + 2:end) - kt .* E(C_gs(i, 1):C_gs(i, 2), :);
+        i = i + 1;
+    end
+    
+
+    
+        
+
+
+    
+    JNL(1:2*H+1, 1:2*H+1) = EH * JNLt(1:N, 1:2*H+1);
+    JNL(1:2*H+1, 2*H+2:end) = EH * JNLt(1:N, 2*H+2:end);
+    JNL(2*H+2:end, 2*H+2:end) = EH * JNLt(N + 1:end, 2*H+2:end);
+
+end
+
+

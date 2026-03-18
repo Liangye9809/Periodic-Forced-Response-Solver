@@ -1,4 +1,4 @@
-function [W, w] = fW(t1, t2, H)
+function [W, w] = fW1(t1, t2, H)
     if t1 > t2
         t2 = t2 + 2*pi;
     end
@@ -9,7 +9,7 @@ function [W, w] = fW(t1, t2, H)
         W(2 * i, 1) = (1 / i) * (sin(i * t2) - sin(i * t1));
         W(2 * i + 1, 1) = - (1 / i) *(cos(i * t2) - cos(i * t1));
 
-        
+
         W(1, 2 * i) = 2 * W(2 * i, 1);
         W(1, 2 * i + 1) = 2 * W(2 * i + 1, 1);
 
@@ -37,3 +37,5 @@ function [W, w] = fW(t1, t2, H)
     % w(1) = w(1) * 2;
 
 end
+
+
