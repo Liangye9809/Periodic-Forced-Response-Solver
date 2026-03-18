@@ -11,13 +11,13 @@ H = 10;
 dt = 2 * pi / N;
 t = (0:(N-1)) * 2 * pi / N;
 t = t';
-xn = ones(N, 1);
+% xn = ones(N, 1);
 % xn = - 4 * sin(sin(t)) + 1; % separation to stick
 % xt = 2 * exp(cos(t + 1)) - 3; % separation to stick
-% xn = 2 * exp(cos(t)) - 0.5; % slip to stick
+xn = 2 * exp(cos(t)) - 0.5; % slip to stick
 % xn = 2 * exp(cos(t)) - 0.75; % separation to slip
-% xt = 2 * sin(sin(t)); % slip to stick
-xt = sin(sin(t)); % pure stick
+xt = 2 * sin(sin(t)); % slip to stick
+% xt = sin(sin(t)); % pure stick
 x = [xt, xn];
 
 
@@ -123,8 +123,8 @@ grid on;
 dTdxt_time_AN = JNLt_A(1:N, 1:2*H+1);
 dTdxn_time_AN = JNLt_A(1:N, 2*H+2:end);
 
-dTdxt_time_AW = E * JNL_W(1:2*H+1, 1:2*H+1);
-dTdxn_time_AW = E * JNL_W(1:2*H+1, 2*H+2:end);
+dTdxt_time_AN_2 = JNLt_A_2(1:N, 1:2*H+1);
+dTdxn_time_AN_2 = JNLt_A_2(1:N, 2*H+2:end);
 
 % num = 18;
 for i = 1:3
@@ -133,9 +133,9 @@ for i = 1:3
     fig.WindowState = 'maximized';
 
     subplot(2,2,1)
-    plot(t, dTdxt_time_AW(:, i), 'LineWidth', 2), hold on
+    plot(t, dTdxt_time_AN_2(:, i), 'LineWidth', 2), hold on
     plot(t, dTdxt_time_AN(:, i), 'LineWidth', 2), grid on;
-    legend('dTdxt W', 'dTdxt N');
+    legend('dTdxt 2', 'dTdxt 1');
     if i == 1
         titlename = 'N = ' + string(N) + ', H = ' + string(H) + ', ' +'cos0';
     elseif mod(i, 2) == 0
@@ -146,19 +146,19 @@ for i = 1:3
     title(titlename);
 
     subplot(2,2,3)
-    plot(t, dTdxt_time_AW(:, i) - dTdxt_time_AN(:, i), 'LineWidth', 2), hold on
+    plot(t, dTdxt_time_AN_2(:, i) - dTdxt_time_AN(:, i), 'LineWidth', 2), hold on
     legend('difference');
     grid on
 
     subplot(2,2,2)
-    plot(t, dTdxn_time_AW(:, i), 'LineWidth', 2), hold on
+    plot(t, dTdxt_time_AN_2(:, i), 'LineWidth', 2), hold on
     plot(t, dTdxn_time_AN(:, i), 'LineWidth', 2), grid on;
-    legend('dTdxn W', 'dTdxn N');
+    legend('dTdxn 2', 'dTdxn 1');
     
     title(titlename);
 
     subplot(2,2,4)
-    plot(t, dTdxn_time_AW(:, i) - dTdxn_time_AN(:, i), 'LineWidth', 2), hold on
+    plot(t, dTdxt_time_AN_2(:, i) - dTdxn_time_AN(:, i), 'LineWidth', 2), hold on
     legend('difference');
     grid on
 

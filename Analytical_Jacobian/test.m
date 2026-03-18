@@ -579,18 +579,18 @@ eps = [];
 h = 10^(-4);
 order = 1;
 h_con = [];
-N = 64;
+N = 128;
 H = 3;
 dt = 2 * pi / N;
 t = (0:(N-1)) * 2 * pi / N;
 t = t';
-xn = ones(N, 1);
+% xn = ones(N, 1);
 % xn = - 4 * sin(sin(t)) + 1; % separation to stick
 % xt = 2 * exp(cos(t + 1)) - 3; % separation to stick
-% xn = 2 * exp(cos(t)) - 0.5; % slip to stick
+xn = 2 * exp(cos(t)) - 0.5; % slip to stick
 % xn = 2 * exp(cos(t)) - 0.75; % separation to slip
-% xt = 2 * sin(sin(t)); % slip to stick
-xt = sin(sin(t)); % pure stick
+xt = 2 * sin(sin(t)); % slip to stick
+% xt = sin(sin(t)); % pure stick
 x = [xt, xn];
 
 

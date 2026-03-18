@@ -21,7 +21,7 @@ function JNL = HBMJACOB_analytical_W_gf_2dofs_2(dx, kn, mu, kt, H, N, Mft, dxdn)
     i = 1;
     while C_ss(i, 1) >= 0
         t_ss = C_ss ./ N .* (2 * pi);
-        [MW, Mw] = fW(t_ss(i, 1), t_ss(i, 2), H);
+        [MW, Mw] = fW1(t_ss(i, 1), t_ss(i, 2), H);
         c_vec = c_vector(t_ss(i, 1), H);
 
         JNL(1:2 * H + 1, 1:2 * H + 1) = JNL(1:2 * H + 1, 1:2 * H + 1) + kt .* MW - Mw * (kt .* c_vec);
@@ -34,7 +34,7 @@ function JNL = HBMJACOB_analytical_W_gf_2dofs_2(dx, kn, mu, kt, H, N, Mft, dxdn)
     i = 1;
     while C_gs(i, 1) >= 0
         t_gs = C_gs ./ N .* (2 * pi);
-        [MW, Mw] = fW(t_gs(i, 1), t_gs(i, 2), H);
+        [MW, Mw] = fW1(t_gs(i, 1), t_gs(i, 2), H);
         c_vec = c_vector(t_gs(i, 1), H);
         JNL(1:2 * H + 1, 1:2 * H + 1) = JNL(1:2 * H + 1, 1:2 * H + 1) + kt .* MW - Mw * (kt .* c_vec);
         
@@ -46,7 +46,7 @@ function JNL = HBMJACOB_analytical_W_gf_2dofs_2(dx, kn, mu, kt, H, N, Mft, dxdn)
     i = 1;
     while C_sm(i, i) >= 0
         t_sm = C_sm ./ N .* (2 * pi);
-        [MW, ~] = fW(t_sm(i, 1), t_sm(i, 2), H);
+        [MW, ~] = fW1(t_sm(i, 1), t_sm(i, 2), H);
         JNL(1:2 * H + 1, 2 * H + 1 + 1:end) = JNL(1:2 * H + 1, 2 * H + 1 + 1:end) - mu .* kn .* MW;
         i = i + 1;
     end
@@ -55,7 +55,7 @@ function JNL = HBMJACOB_analytical_W_gf_2dofs_2(dx, kn, mu, kt, H, N, Mft, dxdn)
     i = 1;
     while C_sp(i, i) >= 0
         t_sp = C_sp ./ N .* (2 * pi);
-        [MW, ~] = fW(t_sp(i, 1), t_sp(i, 2), H);
+        [MW, ~] = fW1(t_sp(i, 1), t_sp(i, 2), H);
         JNL(1:2 * H + 1, 2 * H + 1 + 1:end) = JNL(1:2 * H + 1, 2 * H + 1 + 1:end) + mu .* kn .* MW;
         i = i + 1;
     end
@@ -64,7 +64,7 @@ function JNL = HBMJACOB_analytical_W_gf_2dofs_2(dx, kn, mu, kt, H, N, Mft, dxdn)
     i = 1;
     while C_c(i, i) >= 0
         t_c = C_c ./ N .* (2 * pi);
-        [MW, ~] = fW(t_c(i, 1), t_c(i, 2), H);
+        [MW, ~] = fW1(t_c(i, 1), t_c(i, 2), H);
         JNL(2 * H + 1 + 1:end, 2 * H + 1 + 1:end) = JNL(2 * H + 1 + 1:end, 2 * H + 1 + 1:end) + kn .* MW;
         i = i + 1;
     end
