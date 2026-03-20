@@ -81,8 +81,8 @@ function [JNL, JNLt] = HBMJACOB_analytical_gf_2dofs_2(dx, kn, mu, kt, H, N, Mft,
             record_plus(i) = p_plus;
         
         end
-        % t_s = (record_minus - 1) ./ N .* 2.*pi; % consider [0, N-1], so there is record - 1 
-        t_s = (record_plus - 1) ./ N .* 2.*pi; 
+        t_s = (record_minus - 1) ./ N .* 2.*pi; % consider [0, N-1], so there is record - 1 
+        % t_s = (record_plus - 1) ./ N .* 2.*pi; 
         % t_s = (0.5 * (record_plus + record_minus) - 1) ./ N .* 2.*pi; 
         c_xn = c .* a .* b(mod(record_plus - 2, N) + 1); % stick part in slip to stick
         % dxt = dx(:, 1);

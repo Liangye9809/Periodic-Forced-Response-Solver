@@ -316,7 +316,7 @@ n = Nx * (2 * H + 1); % size of matrix
 A = rand(n, n + 1);
 Fx = A(:, 1:n);
 Fl = A(:, end);
-Loop = 1000;
+Loop = 100;
 
 
 tic;
@@ -328,21 +328,28 @@ T_null = toc
 
 tic;
 for i = 1:Loop
-    a = svds([A; zeros(1, n + 1)], 1, 'smallest');
+    [b,~,~] = svds([A; zeros(1, n + 1)], 1, 'smallest');
 end
 T_svds = toc
 
 tic;
 for i = 1:Loop
-    b = - (Fx\Fl);
-    if norm(b) > 1e10
-        a = null(A);
+    bb = - (Fx\Fl);
+    if norm(bb) > 1e10
+        c = null(A);
     else
-        a = [b; 1];
-        a = a / norm(a);
+        c = [bb; 1];
+        c = c / norm(c);
     end
 end
-T_direc = toc
+T_linear = toc
+
+tic;
+for i = 1:Loop
+    [Q, ~] = qr(A');
+    d = Q(:, end);
+end
+T_QR = toc
 
 %% analytcial and numerical Fourier comparison
 t1 = 1;
@@ -631,3 +638,14 @@ for i = 1:n
 end
 T_2 = toc;
 [T_1, T_W, T_2]
+
+%%
+C_ = [0; 0];
+xn = [1; 1];
+if (C_ == [0; 0]) & (xn(1) ~= xn(2))
+    c = 1
+else
+    c = 0
+end
+
+

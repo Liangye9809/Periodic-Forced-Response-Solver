@@ -3,7 +3,7 @@ for H = 11:2:11
     for mainj = 6:6
 clearvars -except mainj H
 N = 2^mainj;
-Nx = 16;
+Nx = 4;
 % for Nx = 4:4:36
 % clearvars -except Nx
 

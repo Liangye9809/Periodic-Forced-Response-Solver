@@ -13,11 +13,15 @@ for Ndof = 1:3*Nx + Na
 end
 OMEGA = sqrt(omega02) .* omega_cont';
 Adof = [OMEGA, Adof];
-% figure
-% plot(Adof(:,1), Adof(:,3)), hold on;
-% filename = 'data/Mesh32x32/Pe100each_Adof_CP' + string(Nx) + '_PreloadFixed_9points_H' + string(H) + '_N' + string(N) + '.mat';
-% filename = 'data/NewMesh/Pe112.5each_Adof_CP' + string(Nx) + '_PreloadFixed_8points.mat';
-% save(filename, "Adof");
+
+figure
+yyaxis left
+plot(Adof(:,1), Adof(:,3), 'b-', 'LineWidth', 2), hold on;
+
+yyaxis right
+stem(Adof(:, 1), k_cont'), grid on
+
+title('Analytical Jacobian');
 
 % Ndof = 1;
 % A = E * x_contNx(:,:,Ndof);
