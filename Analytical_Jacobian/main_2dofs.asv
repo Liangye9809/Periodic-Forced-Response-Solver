@@ -1,13 +1,13 @@
 %% Coulomb friction of dummy fucntion 2 dofs
 clear
 clc
-close all
+% close all
 eps = [];
 h = 10^(-7);
 order = 1;
 h_con = [];
-N = 2^6;
-H = 5;
+N = 2^5;
+H = 4;
 dt = 2 * pi / N;
 t = (0:(N-1)) * 2 * pi / N;
 t = t';
@@ -20,6 +20,7 @@ xt = 2 * exp(cos(t + 1)) - 3; % separation to stick
 
 % xt = 1.05  * sin(2 .* exp(cos(t))); % tangent case1
 % xt = 1.00 * sin(sin(t)) ./ sin(1); % tangent case2
+% xt = 0.5 * sin(sin(t)) ./ sin(1) + 0.5; % tangent case3
 x = [xt, xn];
 
 % figure; % displacement
@@ -68,19 +69,29 @@ end
 %% calculate G(X+h)
 a(:, 1) = Mft_A_2(1, 1, end - N + 1:end);
 c(:, 1) = Mft_A_2(3, 1, end - N + 1:end);
-A_Ft = [a, Ft_A_2(end - N + 1:end, 1)];
-A_Fn = [c, Ft_A_2(end - N + 1:end, 2)];
+Ftemp = fftFt(X, kn, xn0, mu, kt, wt_A_2(end), H, N, nloop);
+A_Ft = [a, Ftemp(1:N)];
+A_Fn = [c, Ftemp(N + 1:end)];
 DX = zeros(2 * (2*H+1), 1);
 h = 10^(-7);
-for i = 1:2 * (2*H+1)
-    DXi = DX;
-    DXi(i) = h;
-    F_plus_i = fftFt(X + DXi, kn, xn0, mu, kt, wt_A_2(end), H, N, nloop);
+for i = 1:size(X, 1)
+    Xplus = X;
+    Xplus(i) = Xplus(i) + h;
+    F_plus_i = fftFt(Xplus, kn, xn0, mu, kt, wt_A_2(end), H, N, nloop);
 
     A_Ft = [A_Ft, F_plus_i(1:N)];
-    A_Fn = [A_Fn, F_plus_i(N+1:end)];
+    A_Fn = [A_Fn, F_plus_i(N + 1:end)];
 end
-DFt = A_Ft(:, 3:end) - A_Ft()
+DFt = (A_Ft(:, 3:end) - A_Ft(:, 2)) ./ h;
+DFn = (A_Fn(:, 3:end) - A_Fn(:, 2)) ./ h;
+
+% check the xn after cos0 perturbation
+XN = X(2*H+2:end);
+XNt = E * XN;
+plot(t, xn, 'b-'), hold on;
+plot(t, XNt, 'r--'), hold on;
+legend('xn', 'X')
+
 %%
 T = t; xplot = x;
 for i = 1:nloop - 1

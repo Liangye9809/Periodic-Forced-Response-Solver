@@ -16,12 +16,13 @@ Adof = [OMEGA, Adof];
 
 figure
 yyaxis left
-plot(Adof(:,1), Adof(:,3), 'b-', 'LineWidth', 2), hold on;
+plot(Adof(:,2), Adof(:,3), 'b-', 'LineWidth', 2), hold on;
 
 yyaxis right
-stem(Adof(:, 1), k_cont'), grid on
+stem(Adof(:, 2), k_cont'), grid on
 
-title('Analytical Jacobian');
+title('Numerical Jacobian');
+% title('Analytical Jacobian');
 
 % Ndof = 1;
 % A = E * x_contNx(:,:,Ndof);
@@ -59,6 +60,7 @@ x_poss = x_cont(:, end);
 % if FUN(x) ~= 0, calculate corresponse value
 if norm(FUN_poss) > params.Newton.epsf
     params.cont.ds = 0;
+    params.cont.omega_0 = omega_poss;
     params.cont.step = 100001;
     [x_poss, omega_poss, ~, ~, w_poss] = cont_step(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);
 end
@@ -83,8 +85,8 @@ para.xp = xp;
 para.gxp = gxp;
 para.fc = params.func.fc;
 para.HBM = params.func.HBM;
-para.Pe = FEM.Pe;
-para.Pc = FEM.Pc;
+% para.Pe = FEM.Pe;
+% para.Pc = FEM.Pc;
 para.params = params;
 para.X = X;
 

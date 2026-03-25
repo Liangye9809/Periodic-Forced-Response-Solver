@@ -9,10 +9,10 @@ function J = HBMJACOB(x, Omega, pfunc)
     xc = x((2 * H + 1) * Na + 1:end);
 
     % numerical jacobien
-    % dGdx = finite_diff_jac(@(x) fftgx(x, pfunc), xc);
+    dGdx = finite_diff_jac(@(x) fftgx(x, pfunc), xc);
     
     % analytical jacobien
-    [dGdx, JNLt, Ft, wt, Mft] = JNL_Analytical(xc, pfunc);
+    % [dGdx, JNLt, Ft, wt, Mft] = JNL_Analytical(xc, pfunc);
 
     JNL((2 * H + 1) * Na + 1:end, (2 * H + 1) * Na + 1:end) = dGdx;
 

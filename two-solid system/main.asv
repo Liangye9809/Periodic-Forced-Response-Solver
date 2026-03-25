@@ -43,11 +43,11 @@ Data_original_input
 
 % CriagBamptonReduction
 
-load('CB.mat');
-load('Rx.mat');
-load('xe0.mat');
+% load('CB.mat');
+% load('Rx.mat');
+% load('xe0.mat');
 
-% ReadFromCSV % here we directly read the Criag-Bampton matrices from CSV file 
+ReadFromCSV % here we directly read the Criag-Bampton matrices from CSV file 
 
 %% Dimensionless
 
@@ -94,7 +94,6 @@ load('xe0.mat');
 % *************************************************************************************************
 
 Nondimensionalization
-
 %% continuation calculation with HBM
 
 tic;
@@ -130,10 +129,8 @@ omega_0 = 0.81;
 omega_end = 0.85;
 
 % problematic point
-% omega_0 = 0.829;
-% omega_end = 0.85;
-% load('problematic point/X0_0.829_H5N256.mat');
-% x0 = X0_H5N256;
+omega_0 = 0.81;
+omega_end = 0.85;
 
 ContinuationCalculation
 CaseTime = toc;

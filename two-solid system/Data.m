@@ -13,11 +13,14 @@
 % FEM.Fe(Fe_idx) = 1;
 % FEM.Fc = zeros(size(FEM.Mcc, 1), 1);
 
+%% for 32x32 mesh
+
 FEM.Fe = zeros(size(FEM.Mee, 1), 1);
 Fe_idx = FEM.idx_Fe - 1; % change y direction to x direction
 FEM.Fe(Fe_idx) = 1;
 FEM.Fc = zeros(size(FEM.Mcc, 1), 1);
 
+%%
 % for old mesh
 
 % tep = pwd;
@@ -62,12 +65,14 @@ xi = 1e-6;
 % FEM.Pe = FEM.Kec * Xcn0;
 % FEM.Pc = FEM.Kcc * Xcn0;
 
+%% for 32x32 mesh
 FEM.Pe = zeros(size(FEM.Kec, 1), 1);
 F_each = 100; % for 32x32 contact mesh, 9 points each side, total 900 N each side
 % F_each = 112.5; % for 10x13 contact mesh, 8 points each side, total 900 N each side
 FEM.Pe(FEM.idx_Pe1) = F_each;
 FEM.Pe(FEM.idx_Pe2) = - F_each;
 FEM.Pc = zeros(size(FEM.Kcc, 1), 1);
+
 %% Newton Method parameters
 
 epsx = 1e-3;

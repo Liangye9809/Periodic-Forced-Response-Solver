@@ -72,4 +72,4 @@ else
 end
 params.cont = struct('ds', ds, 'maxstep', maxstep, 'omega_0', omega_0, 'omega_end', omega_end, ...
                      'x0', x0, 'tx0', tx0, 'tomega0', tomega0);
-[x_cont, omega_cont, k_cont] = continuation(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);
+[x_cont, omega_cont, k_cont, w_cont] = continuation(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);

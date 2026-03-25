@@ -1,13 +1,13 @@
 %% Coulomb friction of dummy fucntion 2 dofs
 clear
 clc
-close all
+% close all
 eps = [];
 h = 10^(-7);
 order = 1;
 h_con = [];
 N = 2^6;
-H = 5;
+H = 4;
 dt = 2 * pi / N;
 t = (0:(N-1)) * 2 * pi / N;
 t = t';
@@ -20,7 +20,7 @@ xn = ones(N, 1);
 
 % xt = 1.05  * sin(2 .* exp(cos(t))); % tangent case1
 % xt = 1.00 * sin(sin(t)) ./ sin(1); % tangent case2
-xt = 0.5 * sin(sin(t)) ./ sin(1) + 0.5; % tangent case3
+xt = 0.5 * sin(sin(t)) ./ sin(1) + 0.5; % tangent case3 only one side
 x = [xt, xn];
 
 % figure; % displacement
@@ -38,10 +38,11 @@ nloop = 2;
 
 [E, EH] = fft_matrices(N, H);
 X = EH * x;
+xpr = E * X;
 dX = dXinFourier(X, H);
 dx = E * dX;
 X = X(:);
-[Ft_A_2, wt_A_2, Mft_A_2, dxdnt] = gf_2dofs(x, kn, xn0, mu, kt, w, nloop);
+[Ft_A_2, wt_A_2, Mft_A_2, dxdnt] = gf_2dofs(xpr, kn, xn0, mu, kt, w, nloop);
 
 tic;
         % [JNL_A, Mft_A, Gp, dgt_A, Ft_A, wt_A] = HBMJACOB_analytical_gf_2dofs(x, kn, xn0, mu, kt, w, H, N, nloop);
@@ -67,22 +68,43 @@ function dX = dXinFourier(X, H)
 
 end
 %% calculate G(X+h)
-% a(:, 1) = Mft_A_2(1, 1, end - N + 1:end);
-% c(:, 1) = Mft_A_2(3, 1, end - N + 1:end);
-% A_Ft = [a, Ft_A_2(end - N + 1:end, 1)];
-% A_Fn = [c, Ft_A_2(end - N + 1:end, 2)];
-% DX = zeros(2 * (2*H+1), 1);
-% h = 10^(-7);
-% for i = 1:2 * (2*H+1)
-%     DXi = DX;
-%     DXi(i) = h;
-%     F_plus_i = fftFt(X + DXi, kn, xn0, mu, kt, wt_A_2(end), H, N, nloop);
-% 
-%     A_Ft = [A_Ft, F_plus_i(1:N)];
-%     A_Fn = [A_Fn, F_plus_i(N+1:end)];
-% end
-% DFt = (A_Ft(:, 3:end) - A_Ft(:, 2)) ./ h;
-% DFn = (A_Fn(:, 3:end) - A_Fn(:, 2)) ./ h;
+a(:, 1) = Mft_A_2(1, 1, end - N + 1:end);
+c(:, 1) = Mft_A_2(3, 1, end - N + 1:end);
+Ftemp = fftFt(X, kn, xn0, mu, kt, wt_A_2(end), H, N, nloop);
+A_Ft = [a, Ftemp(1:N)];
+A_Fn = [c, Ftemp(N + 1:end)];
+DX = zeros(2 * (2*H+1), 1);
+h = 10^(-7);
+for i = 1:size(X, 1)
+    Xplus = X;
+    Xplus(i) = Xplus(i) + h;
+    F_plus_i = fftFt(Xplus, kn, xn0, mu, kt, wt_A_2(end), H, N, nloop);
+
+    A_Ft = [A_Ft, F_plus_i(1:N)];
+    A_Fn = [A_Fn, F_plus_i(N + 1:end)];
+end
+DFt = (A_Ft(:, 3:end) - A_Ft(:, 2)) ./ h;
+DFn = (A_Fn(:, 3:end) - A_Fn(:, 2)) ./ h;
+
+% check the xn after cos0 perturbation
+XN = X(2*H+2:end);
+XNt = E * XN;
+figure;
+plot(t, xn, 'k-'), hold on;
+plot(t, XNt, 'b-'), hold on;
+% legend('xn', 'XNt');
+XNp = XN;
+XNp(1) = XNp(1) + h;
+XNpt = E * XNp;
+plot(t, XNpt, 'r--'), grid on;
+legend('xn', 'XNt', 'XNpt');
+
+dXNt = XNpt - XNt;
+
+Fnt = NormalForces(xn, kn, 0);
+FNt = NormalForces(XNt, kn, 0);
+FNpt = NormalForces(XNpt, kn, 0);
+
 %%
 T = t; xplot = x;
 for i = 1:nloop - 1
@@ -207,7 +229,7 @@ dTdxt_time_AN = JNLt_A(1:N, 1:2*H+1);
 dTdxn_time_AN = JNLt_A(1:N, 2*H+2:end);
 
 % num = 18;
-for i = 1:1:11
+for i = 1:1:1
     fig = figure; %('PaperOrientation','landscape','PaperUnits','centimeters','PaperPosition', 100 * [0 0 29.7 21], 'PaperSize',[29.7 21] * 100);
     
     fig.WindowState = 'maximized';

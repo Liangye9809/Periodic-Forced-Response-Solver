@@ -1,0 +1,121 @@
+clear
+clc
+load("P_H5N256.mat");
+Na = P.params.func.HBM.Na;
+Nx = P.params.func.HBM.Nx;
+H = P.params.func.HBM.H;
+N = P.params.func.HBM.N;
+
+for i = 1:size(P.k_cont, 2)
+    niter = P.k_cont(i);
+    x = P.x(:, i);
+    omega = P.omega(i);
+    w = P.w(:, 4*i-3:4*i);
+    params = P.params;
+    params.func.fc.w = w;
+
+    [FUNi, wi] = HBMFUNC(x, omega, params.func);
+
+    
+    % if FUN(x) ~= 0, calculate corresponse value
+    if norm(FUNi) > params.Newton.epsf
+        params.cont.ds = 0;
+        params.cont.omega_0 = omega;
+        params.cont.step = 100001;
+        params.cont.x0 = x;
+        [x, omega, ~, ~, w] = cont_step(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);
+        disp(i);
+    end
+    
+    for j = 1:Na + 3 * Nx
+        r1 = (2 * H + 1) * (j - 1) + 1;
+        r2 = (2 * H + 1) * j;
+        X(:,j) = x(r1:r2); % reorder in dofs in column
+    end
+    
+    xt = params.func.HBM.E * X; 
+    xct = xt(:, Na + 1:end);
+    [Ft, w] = g(xct + P.xp', params.func.fc);
+    T = 2 * pi / omega;
+    dt = T / N;
+    t = 0:dt:(T - dt);
+
+    figure;
+    for k = 1:4
+
+        subplot(2,2,k);
+        plot(t', Ft(:, 3*k) * 0.1, 'k-', 'LineWidth', 2), hold on;
+        plot(t', - Ft(:, 3*k) * 0.1, 'k-', 'LineWidth', 2), grid on;
+        plot(t', Ft(:, 3*k - 1), 'b-', 'LineWidth', 2), grid on;
+        legend('+mu*Fn', '-mu*Fn', 'T2');
+        titlename = 'Nx = ' + string(k) + ', T2' + ', niter = ' + string(niter);
+        title(titlename);
+
+    end
+
+    % figure;
+    % for k = 1:4
+    % 
+    %     subplot(2,2,k);
+    %     plot(xct(:, 3*k - 1), Ft(:, 3*k - 1)), hold on;
+    %     grid on;
+    %     % plot(xct(:, 3*k - 1), Ft(:, 3*k - 1), 'b-', 'LineWidth', 2), grid on;
+    %     % legend('+mu*Fn', '-mu*Fn', 'T2');
+    %     titlename = 'Nx = ' + string(k) + ', T2' + ', niter = ' + string(niter);
+    %     title(titlename);
+    % 
+    % end
+end
+
+% for k = 1:4
+% 
+%     subplot(2,2,k);
+%     plot(xct(:, 3*k - 1), Ft(:, 3*k - 1)), hold on;
+%     grid on;
+%     % plot(xct(:, 3*k - 1), Ft(:, 3*k - 1), 'b-', 'LineWidth', 2), grid on;
+%     legend('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14');
+%     titlename = 'Nx = ' + string(k) + ', T2' + ', niter = ' + string(niter);
+%     title(titlename);
+% 
+% end
+%%
+for k = 1:4
+    figure;
+    subplot(1,2,1);
+    plot(t', Ft(:, 3*k) * 0.1, 'k-', 'LineWidth', 2), hold on;
+    plot(t', - Ft(:, 3*k) * 0.1, 'k-', 'LineWidth', 2), grid on;
+    plot(t', Ft(:, 3*k - 2), 'b-', 'LineWidth', 2), grid on;
+    legend('+mu*Fn', '-mu*Fn', 'T1');
+    titlename = 'Nx' + string(k) + ' T1';
+    title(titlename);
+    subplot(1,2,2);
+    plot(t', Ft(:, 3*k) * 0.1, 'k-', 'LineWidth', 2), hold on;
+    plot(t', - Ft(:, 3*k) * 0.1, 'k-', 'LineWidth', 2), grid on;
+    plot(t', Ft(:, 3*k - 1), 'b-', 'LineWidth', 2), grid on;
+    legend('+mu*Fn', '-mu*Fn', 'T2');
+    titlename = 'Nx' + string(k) + ' T2';
+    title(titlename);
+end
+    
+figure;
+for k = 1:4
+    subplot(2,2,k);
+    plot(t', Ft(:, 3*k) * 0.1, 'k-', 'LineWidth', 2), hold on;
+    plot(t', - Ft(:, 3*k) * 0.1, 'k-', 'LineWidth', 2), grid on;
+    plot(t', Ft(:, 3*k - 2), 'b-', 'LineWidth', 2), grid on;
+    legend('+mu*Fn', '-mu*Fn', 'T1');
+    titlename = 'Nx' + string(k) + ' T1';
+    title(titlename);
+    
+end
+
+figure;
+for k = 1:4
+    subplot(2,2,k);
+    plot(t', Ft(:, 3*k) * 0.1 + Ft(:, 3*k - 2), 'r-', 'LineWidth', 2), grid on;
+    legend('diff');
+    titlename = 'Nx' + string(k) + ' (T1 - Fn)';
+    title(titlename);
+    
+end
+

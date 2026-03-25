@@ -1,4 +1,4 @@
-function [x_cont, omega_cont, k_cont] = continuation(FUNC, JACOB, JLAMBDA, params)
+function [x_cont, omega_cont, k_cont, w_cont] = continuation(FUNC, JACOB, JLAMBDA, params)
     
     % First, Calculate the initial point, with ds = 0, 
     ds = params.cont.ds;
@@ -13,6 +13,7 @@ function [x_cont, omega_cont, k_cont] = continuation(FUNC, JACOB, JLAMBDA, param
     params.func.fc.w = w; % update w
     x_cont = x;
     k_cont = k;
+    w_cont = w;
     omega_cont = omega;
     if omega_0 == omega_end
         return;
@@ -35,6 +36,7 @@ function [x_cont, omega_cont, k_cont] = continuation(FUNC, JACOB, JLAMBDA, param
         x_cont = [x_cont, x];
         omega_cont = [omega_cont, omega];
         k_cont = [k_cont, k];
+        w_cont = [w_cont, w];
         if sign(omega_end - omega_0) * (omega + ds*tomega - omega_end) > 0 % the final point
             params.cont.ds = 0;
             params.cont.tx0 = zeros(size(tx));
@@ -46,6 +48,7 @@ function [x_cont, omega_cont, k_cont] = continuation(FUNC, JACOB, JLAMBDA, param
             x_cont = [x_cont, x];
             omega_cont = [omega_cont, omega];
             k_cont = [k_cont, k];
+            w_cont = [w_cont, w];
             break;
         end
         

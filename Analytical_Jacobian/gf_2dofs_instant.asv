@@ -23,7 +23,7 @@ function [T, w, C, dxdn] = TangentialForces(xt, wt, kt, mu, FN, C_, xn)
         T = kt * (xt - wt);
         if abs(T) <= mu * FN
             w = wt; % xt⁻
-            if and(C_ == [0; 0], abs(1 - xn(2) / xn(1)) > 1e-5)% previous is gap, means gap to stick
+            if and(C_ == [0; 0], abs(xn(1) - xn(2)))% previous is gap, means gap to stick
                 dxdti = (xt - wt) / (xn(2) - xn(1));
                 w = wt - xn(1) * dxdti;
                 T = kt * (xt - w); % Does it need to be compare with mu*Fn?
