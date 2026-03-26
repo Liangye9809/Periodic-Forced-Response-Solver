@@ -27,7 +27,7 @@ if size(xp,1) == 1
     xp = xp * ones(size(Rx));
 end
 fc = params.func.fc;
-
+% fc.w = zeros(2, params.func.HBM.Nx); % in preload calculate, w == 0.
 maxiter = params.Newton.maxiter;
 epsx = params.Newton.epsx;
 epsf = params.Newton.epsf;

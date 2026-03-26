@@ -1,4 +1,4 @@
-function [x, omega, tx, tomega, w, k, ifslip] = cont_step(func, jacob, deromega, params)
+function [x, omega, tx, tomega, w, k] = cont_step(func, jacob, deromega, params)
 x0 = params.cont.x0;
 omega_0 = params.cont.omega_0;
 ds = params.cont.ds;
@@ -11,14 +11,13 @@ x = x0 + ds*tx0;
 omega = omega_0 + ds*tomega0;
 z = [x
      omega];
+%% output slip state
 
-Nx = params.func.HBM.Nx;
-H = params.func.HBM.H;
-Na = params.func.HBM.Na;
-ifslip = zeros(Nx, 1);
+
+
 %% calculate (min(w+) - max(w-)) / 2
-% xc = x((2 * H + 1) * Na + 1:end);
 % pfunc = params.func;
+% xc = x((2 * H + 1) * Na + 1:end);
 % w = get_w_middle(xc, pfunc);
 % params.func.fc.w = w;
 %%
@@ -62,13 +61,6 @@ for k=1:maxiter
         format short g
         disp([params.cont.step  z(1) z(2) omega  errorx  errorf   k])
         % w = FUNCstruct.w; % update w
-
-        %% output slip state
-        xc = x((2 * H + 1) * Na + 1:end);
-        pfunc = params.func;
-        ifslip = get_slip_state(xc, pfunc);
-        %%
-
         return
     end
 end
@@ -110,8 +102,9 @@ function w = get_w_middle(xc, pfunc)
         
 end
 
-function ifslip = get_slip_state(X, p)
+function ifslip = get_slip_state(xc, p)
     E = p.HBM.E;
+    EH = p.HBM.EH;
     Nx = p.HBM.Nx;
     N = p.HBM.N;
     H = p.HBM.H;
@@ -123,18 +116,8 @@ function ifslip = get_slip_state(X, p)
     w_in = p.fc.w;
     nloop = p.fc.nloop;
     xp = p.static.preload.xp;
-    
-    xt = zeros(N, 3 * Nx);
-    Xi = zeros(2 * H + 1, 1);
-    
+    gxp = p.static.preload.gxp;
 
-    for i = 1:3 * Nx
-        Xi = X((2 * H + 1) * (i - 1) + 1:(2 * H + 1) * i);
-        xt(:, i) = E * Xi;
-
-    end
-
-    [~, ~, Mft] = g_in_cont(xt + xp', kn, xn0, mu, kt, w_in, nloop);
 
     ifslip = zeros(Nx, 1);
     for i = 1:Nx
@@ -142,10 +125,9 @@ function ifslip = get_slip_state(X, p)
             ifslip(i) = 1;
         end
     end
-
 end
 
-function [Ft, wt, Mft] = g_in_cont(xt, kn, xn0, mu, kt, w_in, nloop) % xt, each rows correspond each time, columns are different dofs
+function [Ft, wt, Mft] = g(xt, kn, xn0, mu, kt, w_in, nloop) % xt, each rows correspond each time, columns are different dofs
 
     [N, M] = size(xt);
     Nx = M / 3;
@@ -157,7 +139,7 @@ function [Ft, wt, Mft] = g_in_cont(xt, kn, xn0, mu, kt, w_in, nloop) % xt, each 
 
     for j = 1:nloop
         for i = 1:N
-            [Ft((j - 1) * N + i, :), wtemp, Mf] = gf_in_cont(xt(i, :), kn, xn0, mu, kt, w_in);
+            [Ft((j - 1) * N + i, :), wtemp, Mf] = gf(xt(i, :), kn, xn0, mu, kt, w_in);
             w_in = wtemp; 
             wt(:, :, (j - 1) * N + i) = wtemp;
             Mft(:, :, (j - 1) * N + i) = Mf;
@@ -167,7 +149,7 @@ function [Ft, wt, Mft] = g_in_cont(xt, kn, xn0, mu, kt, w_in, nloop) % xt, each 
     
 end
 
-function [F, w, Mf] = gf_in_cont(x, kn, xn0, mu, kt, w_in) % x is a 3*Np dof row vector, represent 2*Np tangential directions and 1*Np normal direction
+function [F, w, Mf] = gf(x, kn, xn0, mu, kt, w_in) % x is a 3*Np dof row vector, represent 2*Np tangential directions and 1*Np normal direction
 
     Nx = size(kn, 2); % contact number
     F = zeros(size(x));
@@ -177,17 +159,17 @@ function [F, w, Mf] = gf_in_cont(x, kn, xn0, mu, kt, w_in) % x is a 3*Np dof row
         indx1 = 3 * (i - 1) + 1;
         indx2 = 3 * (i - 1) + 2;
         indx3 = 3 * (i - 1) + 3;
-        F(indx3) = NormalForces_in_cont(x(indx3), kn(i), xn0(i));
+        F(indx3) = NormalForces(x(indx3), kn(i), xn0(i));
         if F(indx3) > 0
             Mf(5, i) = 1;
         end
-        [F(indx1), w(1, i), Mf(1:2, i)] = TangentialForces_in_cont(x(indx1), w(1, i), kt(1, i), mu(1, i), F(indx3));
-        [F(indx2), w(2, i), Mf(3:4, i)] = TangentialForces_in_cont(x(indx2), w(2, i), kt(2, i), mu(2, i), F(indx3));
+        [F(indx1), w(1, i), Mf(1:2, i)] = TangentialForces(x(indx1), w(1, i), kt(1, i), mu(1, i), F(indx3));
+        [F(indx2), w(2, i), Mf(3:4, i)] = TangentialForces(x(indx2), w(2, i), kt(2, i), mu(2, i), F(indx3));
     end
 
 end
 
-function [T, w, C] = TangentialForces_in_cont(xt, wt, kt, mu, FN)
+function [T, w, C] = TangentialForces(xt, wt, kt, mu, FN)
     if FN > 0
         T = kt * (xt - wt);
         if abs(T) <= mu * FN
@@ -206,7 +188,7 @@ function [T, w, C] = TangentialForces_in_cont(xt, wt, kt, mu, FN)
     end
 end
 
-function FN = NormalForces_in_cont(xn, kn, xn0)
+function FN = NormalForces(xn, kn, xn0)
     u = xn - xn0;
     FN = max(0, kn .* u);
 end

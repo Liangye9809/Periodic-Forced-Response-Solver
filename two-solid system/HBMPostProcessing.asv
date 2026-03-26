@@ -188,13 +188,11 @@ for i = 1:4
     plot(omega_cont, w_cont(1, i:4:end), 'r--', 'LineWidth', 2), hold on;
     plot(omega_cont, w_cont(2, i:4:end), 'b-', 'LineWidth', 2), grid on;
     ylabel('w');
-
+    
     yyaxis right
-    plot(omega_cont, ss_cont(i, :), 'LineWidth', 2);
-    ylim([0, 1]);
+    stem(omega_cont, k_cont, 'LineWidth', 0.5);
     xlabel('Omega');
-    ylabel('slip range');
-    legend('w1', 'w2', 'slip range');
+    legend('w1', 'w2', 'n iter');
     titlename = 'Nx = ' + string(i);
     title(titlename);
 end

@@ -1,4 +1,4 @@
-function [JNL, JNLt, Ft, wt, Mft] = JNL_Analytical(X, p)
+function [JNL, JNLt, Ft, wt, Mft, ifslip] = JNL_Analytical(X, p)
     
     E = p.HBM.E;
     EH = p.HBM.EH;
@@ -31,6 +31,13 @@ function [JNL, JNLt, Ft, wt, Mft] = JNL_Analytical(X, p)
     [Ft, wt, Mft] = g(xt + xp', kn, xn0, mu, kt, w_in, nloop);
     
   
+    ifslip = zeros(Nx, 1);
+    for i = 1:Nx
+        if sum(ismember([1, -1], Mft([2, 4], i, :))) > 0
+            ifslip(i) = 1;
+        end
+    end
+
     JNLt = zeros(3 * Nx * N, (2 * H + 1) * 3 * Nx);
     JNL = zeros((2 * H + 1) * 3 * Nx, (2 * H + 1) * 3 * Nx);
 
@@ -252,7 +259,7 @@ function [Ft, wt, Mft] = g(xt, kn, xn0, mu, kt, w_in, nloop) % xt, each rows cor
             Mft(:, :, (j - 1) * N + i) = Mf;
         end
     end
-    
+
     
 end
 

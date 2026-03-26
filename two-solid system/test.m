@@ -589,4 +589,16 @@ for iH = 1:4
 end
 
 
+%% test AFT (Alternative Fourier and Time)
+clear
+H = 5;
+N = 256;
+Nx = 4;
+X = rand(2 * H + 1, 3 * Nx);
+[E, EH] = HBM.fft_matrices(N, H);
+xt = E * X;
 
+Xp = EH * xt;
+
+eq = isequal(X, Xp)
+eps = norm(X - Xp) / norm(X)
