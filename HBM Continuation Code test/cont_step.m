@@ -19,6 +19,13 @@ ifslip = zeros(Nx, 1);
 %% calculate (min(w+) - max(w-)) / 2
 % xc = x((2 * H + 1) * Na + 1:end);
 % pfunc = params.func;
+% if params.cont.step == 267
+%     stophere = 1;
+% end
+% 
+% if omega_0 > 0.8289
+%     stophere = 1;
+% end
 % w = get_w_middle(xc, pfunc);
 % params.func.fc.w = w;
 %%
@@ -39,7 +46,11 @@ for k=1:maxiter
     % FUNCstruct = func(x, omega, params.func);
     [F, w] = func(x, omega, params.func);
     % params.func.fc.w = FUNCstruct.w; % update w
+
     params.func.fc.w = w; % update w
+    % w = get_w_middle(xc, pfunc);
+    % params.func.fc.w = w;
+
     G = [F 
          tx0'*(x-x0) + tomega0*(omega-omega_0)-ds];
     errorx = norm(dz) / norm(z);
@@ -94,19 +105,25 @@ function w = get_w_middle(xc, pfunc)
         X1 = xc(n * (3 * i - 3) + 1:n * (3 * i - 2));
         X2 = xc(n * (3 * i - 2) + 1:n * (3 * i - 1));
         Xn = xc(n * (3 * i - 1) + 1:n * (3 * i));
-        xtt(:, 1) = E * X1;
-        xtt(:, 2) = E * X2;
-        xtn = E * Xn;
+        xtt(:, 1) = E * X1 + pfunc.static.preload.xp(3 * i - 2);
+        xtt(:, 2) = E * X2 + pfunc.static.preload.xp(3 * i - 1);
+        xtn = E * Xn + pfunc.static.preload.xp(3 * i);
         for j = 1:2
             w_plus = xtt(:, j) + mu(j, i) * kn(i) / kt(j, i) * max(xtn, 0);
             w_minus = xtt(:, j) - mu(j, i) * kn(i) / kt(j, i) * max(xtn, 0);
             if min(w_plus) >= max(w_minus)
-                w(j, i) = 0.5 * (min(w_plus) - max(w_minus));
+                w(j, i) = 0.5 * (min(w_plus) + max(w_minus));
             else
                 w(j, i) = w_in(j, i);
             end
+            % t = [0:N-1]';
+            % figure;
+            % plot(t, w_plus, 'k-'), hold on;
+            % plot(t, w_minus, 'b--'), grid on;
+            % plot(t, w(j, i) * ones(N, 1), 'r-');
         end
     end
+
         
 end
 

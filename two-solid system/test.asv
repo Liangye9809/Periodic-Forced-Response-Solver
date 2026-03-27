@@ -541,10 +541,116 @@ clear
 close all
 OmegaFS = zeros(5, 1);
 for resti = 1:5
-    Nx = 4^(i - 1);
-    filename = 'data/NewMesh/Pe112.5each_Adof_CP' + string(Nx) + '_PreloadFixed_8points.mat';
+    Nx = 4^(resti - 1);
+    filename = 'data/Mesh32x32/Pe100each_Adof_CP' + string(Nx) + '_PreloadFixed_9points.mat';
     load(filename);
     OmegaFS(resti) = Adof(1, 1) / Adof(1, 2);
     figure(1)
     plot(Adof(:,1), Adof(:,3)), hold on;
-    plot(OmegaFS(resti))
+    % plot([OmegaFS(resti), OmegaFS(resti)], [0, 80], 'k--');
+end
+legend('Nx1','Nx4','Nx16','Nx64','Nx256')
+figure(2)
+plot([1, 4, 16, 64, 256]', OmegaFS, 'o-');
+
+
+%%
+clear
+close all
+for iH = 1:4
+    H = 2 * iH - 1;
+    % figure(iH)
+    for iN = 1:3
+        figure(iN)
+        N = 2 ^ (iN + 5);
+        filename = 'data/Mesh32x32/Pe100each_Adof_CP64_PreloadFixed_9points_H' + string(H) + '_N' + string(N) + '.mat';
+        load(filename);
+        figure(iN)
+        plot(Adof(:,1), Adof(:,3)), hold on;
+        % legend('N64','N128','N256');
+        % grid on;
+        % titlename = 'H' + string(H);
+        % title(titlename);
+        % xlabel('Omega');
+        % ylabel('|dof_1|');
+    end
+    for iN = 1:3
+        N = 2 ^ (iN + 5);
+        figure(iN)
+        legend('H1','H3','H5','H7');
+        grid on;
+        titlename = 'N' + string(N);
+        title(titlename);
+        xlabel('Omega');
+        ylabel('|dof_1|');
+        xlim([4170,4239]);
+        ylim([60,70]);
+    end
+end
+
+
+%% test AFT (Alternative Fourier and Time)
+clear
+H = 5;
+N = 256;
+Nx = 4;
+X = rand(2 * H + 1, 3 * Nx);
+[E, EH] = HBM.fft_matrices(N, H);
+xt = E * X;
+
+Xp = EH * xt;
+
+eq = isequal(X, Xp)
+eps = norm(X - Xp) / norm(X)
+
+%% use middle w
+
+pfunc.HBM.H = 5;
+pfunc.HBM.N = 256;
+pfunc.HBM.Nx = 1;
+pfunc.HBM.E = ;
+pfunc.fc.kn;
+pfunc.fc.kt;
+pfunc.fc.w;
+pfunc.fc.mu;
+
+
+function w = get_w_middle(xc, pfunc)
+    H = pfunc.HBM.H;
+    N = pfunc.HBM.N;
+    Nx = pfunc.HBM.Nx;
+    E = pfunc.HBM.E;
+    kn = pfunc.fc.kn;
+    kt = pfunc.fc.kt;
+    w_in = pfunc.fc.w;
+    mu = pfunc.fc.mu;
+
+    w = zeros(2, Nx);
+    n = 2 * H + 1;
+    xtt = zeros(N, 2);
+    xtn = zeros(N, 1);
+    for i = 1:Nx
+        X1 = xc(n * (3 * i - 3) + 1:n * (3 * i - 2));
+        X2 = xc(n * (3 * i - 2) + 1:n * (3 * i - 1));
+        Xn = xc(n * (3 * i - 1) + 1:n * (3 * i));
+        xtt(:, 1) = E * X1;
+        xtt(:, 2) = E * X2;
+        xtn = E * Xn;
+        for j = 1:2
+            w_plus = xtt(:, j) + mu(j, i) * kn(i) / kt(j, i) * max(xtn, 0);
+            w_minus = xtt(:, j) - mu(j, i) * kn(i) / kt(j, i) * max(xtn, 0);
+            if min(w_plus) >= max(w_minus)
+                w(j, i) = 0.5 * (min(w_plus) - max(w_minus));
+            else
+                w(j, i) = w_in(j, i);
+            end
+            t = [0:N-1]';
+            figure;
+            plot(t, w_plus, 'k-'), hold on;
+            plot(t, w_minus, 'b--'), grid on;
+            plot(t, w(j, i) * ones(N, 1), 'r-');
+        end
+    end
+
+        
+end

@@ -602,3 +602,63 @@ Xp = EH * xt;
 
 eq = isequal(X, Xp)
 eps = norm(X - Xp) / norm(X)
+
+%% use middle w
+
+pfunc.HBM.H = 5;
+pfunc.HBM.N = 256;
+pfunc.HBM.Nx = 1;
+pfunc.HBM.E = HBM.fft_matrices(256, 5);
+pfunc.fc.kn = [2; 2];
+pfunc.fc.kt = ones(2, 2);
+pfunc.fc.w = 0 * ones(2, 2);
+pfunc.fc.mu = 0.5 * ones(2, 2);
+xc = zeros((2 * H + 1) * 3, 1);
+xc(2) = 1; % cost
+xc(1) = 1;
+
+xc(2 * H + 4) = 1; % sint
+xc(2 * H + 2) = -1;
+
+xc(4 * H + 3) = 2.5;
+w = get_w_middle(xc, pfunc);
+
+function w = get_w_middle(xc, pfunc)
+    H = pfunc.HBM.H;
+    N = pfunc.HBM.N;
+    Nx = pfunc.HBM.Nx;
+    E = pfunc.HBM.E;
+    kn = pfunc.fc.kn;
+    kt = pfunc.fc.kt;
+    w_in = pfunc.fc.w;
+    mu = pfunc.fc.mu;
+
+    w = zeros(2, Nx);
+    n = 2 * H + 1;
+    xtt = zeros(N, 2);
+    xtn = zeros(N, 1);
+    for i = 1:Nx
+        X1 = xc(n * (3 * i - 3) + 1:n * (3 * i - 2));
+        X2 = xc(n * (3 * i - 2) + 1:n * (3 * i - 1));
+        Xn = xc(n * (3 * i - 1) + 1:n * (3 * i));
+        xtt(:, 1) = E * X1;
+        xtt(:, 2) = E * X2;
+        xtn = E * Xn;
+        for j = 1:2
+            w_plus = xtt(:, j) + mu(j, i) * kn(i) / kt(j, i) * max(xtn, 0);
+            w_minus = xtt(:, j) - mu(j, i) * kn(i) / kt(j, i) * max(xtn, 0);
+            if min(w_plus) >= max(w_minus)
+                w(j, i) = 0.5 * (min(w_plus) + max(w_minus));
+            else
+                w(j, i) = w_in(j, i);
+            end
+            t = [0:N-1]';
+            figure;
+            plot(t, w_plus, 'k-'), hold on;
+            plot(t, w_minus, 'b--'), grid on;
+            plot(t, w(j, i) * ones(N, 1), 'r-');
+        end
+    end
+
+        
+end

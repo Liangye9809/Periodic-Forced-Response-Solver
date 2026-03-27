@@ -1,6 +1,20 @@
-clear
-clc
-load("P_H5N256.mat");
+%% save data
+% clear
+% clc
+P.params = params;
+P.gxp = gxp;
+P.k_cont = k_cont(end);
+P.omega = omega_cont(end);
+P.w = w_cont(:, end-3:end);
+P.xp = xp;
+P.x = x_cont(:, end);
+save P_H5N256_slip_AllHalf_w.mat
+%%
+% clear
+% clc
+% load("P_H5N256.mat");
+% load("P_H5N256_slip_AllHalf_w.mat");
+load("P_H5N256_slip_Previous_w.mat");
 Na = P.params.func.HBM.Na;
 Nx = P.params.func.HBM.Nx;
 H = P.params.func.HBM.H;
@@ -48,23 +62,23 @@ for i = 1:size(P.k_cont, 2)
         plot(t', - Ft(:, 3*k) * 0.1, 'k-', 'LineWidth', 2), grid on;
         plot(t', Ft(:, 3*k - 1), 'b-', 'LineWidth', 2), grid on;
         legend('+mu*Fn', '-mu*Fn', 'T2');
-        titlename = 'Nx = ' + string(k) + ', T2' + ', niter = ' + string(niter);
+        titlename = 'Nx = ' + string(k) + ', T2' + ', niter = ' + string(niter) + 'omega = ' + string(omega);
         title(titlename);
 
     end
 
-    % figure;
-    % for k = 1:4
-    % 
-    %     subplot(2,2,k);
-    %     plot(xct(:, 3*k - 1), Ft(:, 3*k - 1)), hold on;
-    %     grid on;
-    %     % plot(xct(:, 3*k - 1), Ft(:, 3*k - 1), 'b-', 'LineWidth', 2), grid on;
-    %     % legend('+mu*Fn', '-mu*Fn', 'T2');
-    %     titlename = 'Nx = ' + string(k) + ', T2' + ', niter = ' + string(niter);
-    %     title(titlename);
-    % 
-    % end
+    figure;
+    for k = 1:4
+
+        subplot(2,2,k);
+        plot(xct(:, 3*k - 1), Ft(:, 3*k - 1), 'LineWidth', 2), hold on;
+        grid on;
+        % plot(xct(:, 3*k - 1), Ft(:, 3*k - 1), 'b-', 'LineWidth', 2), grid on;
+        % legend('+mu*Fn', '-mu*Fn', 'T2');
+        titlename = 'Nx = ' + string(k) + ', T2' + ', niter = ' + string(niter) + 'omega = ' + string(omega);
+        title(titlename);
+
+    end
 end
 
 % for k = 1:4
@@ -118,4 +132,117 @@ for k = 1:4
     title(titlename);
     
 end
+
+%%
+
+Ftt = zeros(256, 12, 3);
+xtt = zeros(256, 12, 3);
+for kk = 1:3
+    if kk == 1
+        load("P_H5N256_slip_Previous_w.mat");
+    elseif kk == 2
+        load("P_H5N256_slip_InitialHalf_w.mat");
+    else
+        load("P_H5N256_slip_AllHalf_w.mat");
+    end
+
+
+Na = P.params.func.HBM.Na;
+Nx = P.params.func.HBM.Nx;
+H = P.params.func.HBM.H;
+N = P.params.func.HBM.N;
+
+for i = 1:size(P.k_cont, 2)
+    niter = P.k_cont(i);
+    x = P.x(:, i);
+    omega = P.omega(i);
+    w = P.w(:, 4*i-3:4*i);
+    params = P.params;
+    params.func.fc.w = w;
+
+    [FUNi, wi] = HBMFUNC(x, omega, params.func);
+
+    
+    % if FUN(x) ~= 0, calculate corresponse value
+    if norm(FUNi) > params.Newton.epsf
+        params.cont.ds = 0;
+        params.cont.omega_0 = omega;
+        params.cont.step = 100001;
+        params.cont.x0 = x;
+        [x, omega, ~, ~, w] = cont_step(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);
+        disp(i);
+    end
+    
+    for j = 1:Na + 3 * Nx
+        r1 = (2 * H + 1) * (j - 1) + 1;
+        r2 = (2 * H + 1) * j;
+        X(:,j) = x(r1:r2); % reorder in dofs in column
+    end
+    
+    xt = params.func.HBM.E * X; 
+    xct = xt(:, Na + 1:end);
+    [Ft, w] = g(xct + P.xp', params.func.fc);
+    T = 2 * pi / omega;
+    dt = T / N;
+    t = 0:dt:(T - dt);
+
+    figure;
+    for k = 1:4
+
+        subplot(2,2,k);
+        plot(t', Ft(:, 3*k) * 0.1, 'k-', 'LineWidth', 2), hold on;
+        plot(t', - Ft(:, 3*k) * 0.1, 'k-', 'LineWidth', 2), grid on;
+        plot(t', Ft(:, 3*k - 1), 'b-', 'LineWidth', 2), grid on;
+        legend('+mu*Fn', '-mu*Fn', 'T2');
+        titlename = 'Nx = ' + string(k) + ', T2' + ', niter = ' + string(niter) + 'omega = ' + string(omega);
+        title(titlename);
+
+    end
+
+    figure;
+    for k = 1:4
+
+        subplot(2,2,k);
+        plot(xct(:, 3*k - 1), Ft(:, 3*k - 1), 'LineWidth', 2), hold on;
+        grid on;
+        % plot(xct(:, 3*k - 1), Ft(:, 3*k - 1), 'b-', 'LineWidth', 2), grid on;
+        % legend('+mu*Fn', '-mu*Fn', 'T2');
+        titlename = 'Nx = ' + string(k) + ', T2' + ', niter = ' + string(niter) + 'omega = ' + string(omega);
+        title(titlename);
+
+    end
+end
+Ftt(:, :, kk) = Ft;
+xtt(:, :, kk) = xct;
+end
+for j = 1:2
+    figure;
+    for i = 2:3
+        for k = 1:4
+        
+            subplot(2,2,k);
+            plot(xtt(:, 3*k - j, i), Ftt(:, 3*k - j, i), 'LineWidth', 2), hold on;
+            grid on;
+            Tn = 3 - j;
+            titlename = 'Nx = ' + string(k) + ', T' + string(Tn) + ', niter = ' + string(niter) + 'omega = ' + string(omega);
+            title(titlename);
+        
+        end
+    end
+    for k = 1:4
+        subplot(2,2,k);
+        legend('w previous','w middle');
+    end
+end
+%%
+T = 2 * pi / 0.832;
+dt = T / N;
+t = 0:dt:(T - dt);
+figure;
+norm(Ftt(:,:,1) - Ftt(:,:,2)) / norm(Ftt(:,:,1))
+
+figure
+plot(Adof(:,2), Adof(:,3), 'LineWidth', 2), hold on;
+xlabel('Omega');
+ylabel('||CB1||');
 

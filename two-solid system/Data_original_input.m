@@ -25,8 +25,8 @@ xi = 0.5e-6;
 
 %% Newton Method parameters
 
-epsx = 1e-4;
-epsf = 1e-4;
+epsx = 1e-6;
+epsf = 1e-6;
 maxiter = 100;
 
 %% Coulomb friction
@@ -46,7 +46,7 @@ xp0 = 0; % if no value defined here, the default value inside is 0
 %% continuation parameters
 
 
-ds = 0.5;
+ds = 5;
 maxstep = 20000;
 % omega_0 = 0.81; % 
 % omega_end = 0.87;
