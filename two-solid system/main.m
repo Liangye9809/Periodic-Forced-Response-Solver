@@ -126,8 +126,8 @@ omega_plot = 4100;
 % omega_end = omega_plot / sqrt(omega02);
 
 % for original input
-omega_0 = 0.81;
-omega_end = 0.85;
+omega_0 = 0.85;
+omega_end = 0.81;
 
 % problematic point
 % omega_0 = 0.829;

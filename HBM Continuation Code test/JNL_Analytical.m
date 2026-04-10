@@ -241,68 +241,68 @@ function [record_minus, record_mid, record_plus] = get_stick_trans_position(a, N
 end
 
 
-function [Ft, wt, Mft] = g(xt, kn, xn0, mu, kt, w_in, nloop) % xt, each rows correspond each time, columns are different dofs
+% function [Ft, wt, Mft] = g(xt, kn, xn0, mu, kt, w_in, nloop) % xt, each rows correspond each time, columns are different dofs
+% 
+%     [N, M] = size(xt);
+%     Nx = M / 3;
+% 
+%     Ft = zeros(nloop * N, M);
+%     wt = zeros(2, Nx, nloop * N);
+% 
+%     Mft = zeros(5, Nx, N * nloop);
+% 
+%     for j = 1:nloop
+%         for i = 1:N
+%             [Ft((j - 1) * N + i, :), wtemp, Mf] = gf(xt(i, :), kn, xn0, mu, kt, w_in);
+%             w_in = wtemp; 
+%             wt(:, :, (j - 1) * N + i) = wtemp;
+%             Mft(:, :, (j - 1) * N + i) = Mf;
+%         end
+%     end
+% 
+% 
+% end
 
-    [N, M] = size(xt);
-    Nx = M / 3;
+% function [F, w, Mf] = gf(x, kn, xn0, mu, kt, w_in) % x is a 3*Np dof row vector, represent 2*Np tangential directions and 1*Np normal direction
+% 
+%     Nx = size(kn, 2); % contact number
+%     F = zeros(size(x));
+%     w = w_in;
+%     Mf = zeros(5, Nx); % condition of friction matix
+%     for i = 1:Nx
+%         indx1 = 3 * (i - 1) + 1;
+%         indx2 = 3 * (i - 1) + 2;
+%         indx3 = 3 * (i - 1) + 3;
+%         F(indx3) = NormalForces(x(indx3), kn(i), xn0(i));
+%         if F(indx3) > 0
+%             Mf(5, i) = 1;
+%         end
+%         [F(indx1), w(1, i), Mf(1:2, i)] = TangentialForces(x(indx1), w(1, i), kt(1, i), mu(1, i), F(indx3));
+%         [F(indx2), w(2, i), Mf(3:4, i)] = TangentialForces(x(indx2), w(2, i), kt(2, i), mu(2, i), F(indx3));
+%     end
+% 
+% end
 
-    Ft = zeros(nloop * N, M);
-    wt = zeros(2, Nx, nloop * N);
+% function [T, w, C] = TangentialForces(xt, wt, kt, mu, FN)
+%     if FN > 0
+%         T = kt * (xt - wt);
+%         if abs(T) <= mu * FN
+%             w = wt;
+%             C = [1; 0]; % stick
+%         else
+%             sg = sign(T);
+%             T = sg * mu * FN;
+%             w = xt - sg * mu * FN / kt;
+%             C = sg * [0; 1]; % 100% slip
+%         end
+%     else
+%         T = zeros(size(xt));
+%         w = xt;
+%         C = [0; 0]; % gap, no stick nor slip
+%     end
+% end
 
-    Mft = zeros(5, Nx, N * nloop);
-
-    for j = 1:nloop
-        for i = 1:N
-            [Ft((j - 1) * N + i, :), wtemp, Mf] = gf(xt(i, :), kn, xn0, mu, kt, w_in);
-            w_in = wtemp; 
-            wt(:, :, (j - 1) * N + i) = wtemp;
-            Mft(:, :, (j - 1) * N + i) = Mf;
-        end
-    end
-
-    
-end
-
-function [F, w, Mf] = gf(x, kn, xn0, mu, kt, w_in) % x is a 3*Np dof row vector, represent 2*Np tangential directions and 1*Np normal direction
-
-    Nx = size(kn, 2); % contact number
-    F = zeros(size(x));
-    w = w_in;
-    Mf = zeros(5, Nx); % condition of friction matix
-    for i = 1:Nx
-        indx1 = 3 * (i - 1) + 1;
-        indx2 = 3 * (i - 1) + 2;
-        indx3 = 3 * (i - 1) + 3;
-        F(indx3) = NormalForces(x(indx3), kn(i), xn0(i));
-        if F(indx3) > 0
-            Mf(5, i) = 1;
-        end
-        [F(indx1), w(1, i), Mf(1:2, i)] = TangentialForces(x(indx1), w(1, i), kt(1, i), mu(1, i), F(indx3));
-        [F(indx2), w(2, i), Mf(3:4, i)] = TangentialForces(x(indx2), w(2, i), kt(2, i), mu(2, i), F(indx3));
-    end
-
-end
-
-function [T, w, C] = TangentialForces(xt, wt, kt, mu, FN)
-    if FN > 0
-        T = kt * (xt - wt);
-        if abs(T) <= mu * FN
-            w = wt;
-            C = [1; 0]; % stick
-        else
-            sg = sign(T);
-            T = sg * mu * FN;
-            w = xt - sg * mu * FN / kt;
-            C = sg * [0; 1]; % 100% slip
-        end
-    else
-        T = zeros(size(xt));
-        w = xt;
-        C = [0; 0]; % gap, no stick nor slip
-    end
-end
-
-function FN = NormalForces(xn, kn, xn0)
-    u = xn - xn0;
-    FN = max(0, kn .* u);
-end
+% function FN = NormalForces(xn, kn, xn0)
+%     u = xn - xn0;
+%     FN = max(0, kn .* u);
+% end

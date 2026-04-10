@@ -608,12 +608,20 @@ eps = norm(X - Xp) / norm(X)
 pfunc.HBM.H = 5;
 pfunc.HBM.N = 256;
 pfunc.HBM.Nx = 1;
-pfunc.HBM.E = ;
-pfunc.fc.kn;
-pfunc.fc.kt;
-pfunc.fc.w;
-pfunc.fc.mu;
+pfunc.HBM.E = HBM.fft_matrices(256, 5);
+pfunc.fc.kn = [2; 2];
+pfunc.fc.kt = ones(2, 2);
+pfunc.fc.w = 0 * ones(2, 2);
+pfunc.fc.mu = 0.5 * ones(2, 2);
+xc = zeros((2 * H + 1) * 3, 1);
+xc(2) = 1; % cost
+xc(1) = 1;
 
+xc(2 * H + 4) = 1; % sint
+xc(2 * H + 2) = -1;
+
+xc(4 * H + 3) = 2.5;
+w = get_w_middle(xc, pfunc);
 
 function w = get_w_middle(xc, pfunc)
     H = pfunc.HBM.H;
@@ -640,7 +648,7 @@ function w = get_w_middle(xc, pfunc)
             w_plus = xtt(:, j) + mu(j, i) * kn(i) / kt(j, i) * max(xtn, 0);
             w_minus = xtt(:, j) - mu(j, i) * kn(i) / kt(j, i) * max(xtn, 0);
             if min(w_plus) >= max(w_minus)
-                w(j, i) = 0.5 * (min(w_plus) - max(w_minus));
+                w(j, i) = 0.5 * (min(w_plus) + max(w_minus));
             else
                 w(j, i) = w_in(j, i);
             end
@@ -654,3 +662,27 @@ function w = get_w_middle(xc, pfunc)
 
         
 end
+
+%% compare of frequency sweep
+load('Adof_middle_e-6.mat');
+Adof_mid = Adof;
+load('Adof_pre_e-6.mat')
+Adof_pre = Adof;
+figure;
+subplot(1,2,2);
+plot(Adof_mid(:, 2), Adof_mid(:, 3), 'b-', 'LineWidth', 2), hold on;
+plot(Adof_pre(:, 2), Adof_pre(:, 3), 'r-', 'LineWidth', 2), grid on;
+
+% subplot(2,2,4);
+% plot(Adof_mid(:, 2), Adof_mid(:, 3) - Adof_pre(:, 3), 'k-', 'LineWidth', 2), grid on;
+
+load('Adof_IniticalHalf_w.mat');
+Adof_mid = Adof;
+load('Adof_previous_w.mat');
+Adof_pre = Adof;
+subplot(1,2,1);
+plot(Adof_mid(:, 2), Adof_mid(:, 3), 'b-', 'LineWidth', 2), hold on;
+plot(Adof_pre(:, 2), Adof_pre(:, 3), 'r-', 'LineWidth', 2), grid on;
+
+% subplot(2,2,3);
+% plot(Adof_mid(:, 2), Adof_mid(:, 3) - Adof_pre(:, 3), 'k-', 'LineWidth', 2), grid on;

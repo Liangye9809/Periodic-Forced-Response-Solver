@@ -662,3 +662,37 @@ function w = get_w_middle(xc, pfunc)
 
         
 end
+
+%% compare of frequency sweep
+load('Adof_middle_e-6.mat');
+Adof_mid = Adof;
+load('Adof_pre_e-6.mat')
+Adof_pre = Adof;
+figure;
+subplot(2,2,2);
+plot(Adof_mid(:, 2), Adof_mid(:, 3), 'b-', 'LineWidth', 2), hold on;
+plot(Adof_pre(:, 2), Adof_pre(:, 3), 'r-', 'LineWidth', 2), grid on;
+legend('w0 middle', 'w0 previous');
+title('Newton tolerance 1e-6');
+subplot(2,2,4);
+% plot(Adof_mid(:, 2), Adof_mid(:, 3) - Adof_pre(:, 3), 'k-', 'LineWidth', 2), grid on;
+plot(Adof_mid(:, 2), Adof_mid(:, 3), 'b-', 'LineWidth', 2), hold on;
+plot(Adof_pre(:, 2), Adof_pre(:, 3), 'r-', 'LineWidth', 2), grid on;
+legend('w0 middle', 'w0 previous');
+title('Newton tolerance 1e-6');
+
+load('Adof_IniticalHalf_w.mat');
+Adof_mid = Adof;
+load('Adof_previous_w.mat');
+Adof_pre = Adof;
+subplot(2,2,1);
+plot(Adof_mid(:, 2), Adof_mid(:, 3), 'b-', 'LineWidth', 2), hold on;
+plot(Adof_pre(:, 2), Adof_pre(:, 3), 'r-', 'LineWidth', 2), grid on;
+legend('w0 middle', 'w0 previous');
+title('Newton tolerance 1e-4');
+subplot(2,2,3);
+% plot(Adof_mid(:, 2), Adof_mid(:, 3) - Adof_pre(:, 3), 'k-', 'LineWidth', 2), grid on;
+plot(Adof_mid(:, 2), Adof_mid(:, 3), 'b-', 'LineWidth', 2), hold on;
+plot(Adof_pre(:, 2), Adof_pre(:, 3), 'r-', 'LineWidth', 2), grid on;
+legend('w0 middle', 'w0 previous');
+title('Newton tolerance 1e-4');

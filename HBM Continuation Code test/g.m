@@ -1,9 +1,32 @@
-function [F, w] = g(xt, fc) % xt, each rows correspond each time, columns are different dofs
-%% cubic 
-% F = 1 .* 1e8 .* xt.^3;
-% w = fc.w;
+% function [F, w] = g(xt, fc) % xt, each rows correspond each time, columns are different dofs
+% %% cubic 
+% % F = 1 .* 1e8 .* xt.^3;
+% % w = fc.w;
+% 
+% %% friction
+% [F, w] = g_mex(xt, fc);
+% 
+% end
 
-%% friction
-[F, w] = g_mex(xt, fc);
+
+function [Ft, wt, Mft] = g(xt, kn, xn0, mu, kt, w_in, nloop) % xt, each rows correspond each time, columns are different dofs
+
+    [N, M] = size(xt);
+    Nx = M / 3;
+
+    Ft = zeros(nloop * N, M);
+    wt = zeros(2, Nx, nloop * N);
+
+    Mft = zeros(5, Nx, N * nloop);
+
+    for j = 1:nloop
+        for i = 1:N
+            [Ft((j - 1) * N + i, :), wtemp, Mf] = gf(xt(i, :), kn, xn0, mu, kt, w_in);
+            w_in = wtemp; 
+            wt(:, :, (j - 1) * N + i) = wtemp;
+            Mft(:, :, (j - 1) * N + i) = Mf;
+        end
+    end
+
     
 end
