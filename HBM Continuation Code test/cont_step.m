@@ -17,17 +17,10 @@ H = params.func.HBM.H;
 Na = params.func.HBM.Na;
 ifslip = zeros(Nx, 1);
 %% calculate (min(w+) - max(w-)) / 2
-% xc = x((2 * H + 1) * Na + 1:end);
-% pfunc = params.func;
-% if params.cont.step == 267
-%     stophere = 1;
-% end
-% 
-% if omega_0 > 0.8289
-%     stophere = 1;
-% end
-% w = get_w_middle(xc, pfunc);
-% params.func.fc.w = w;
+xc = x((2 * H + 1) * Na + 1:end);
+pfunc = params.func;
+w = get_w_middle(xc, pfunc);
+params.func.fc.w = w;
 %%
 [F, w] = func(x, omega, params.func);
 

@@ -2,7 +2,7 @@
 % x = [a¹0,a¹1,b¹1,a¹2,b¹2,...,a¹H,b¹H,  a²0,a²1,b²1,a²2,b²2,...,a²H,b²H,...]'
 
 %% original structure
-function [F, w] = fftgx(x, pfunc) % x(t) = E*X
+function [F, w, flag] = fftgx(x, pfunc) % x(t) = E*X
     E = pfunc.HBM.E;
     EH = pfunc.HBM.EH;
     xp = pfunc.static.preload.xp;
@@ -16,8 +16,15 @@ function [F, w] = fftgx(x, pfunc) % x(t) = E*X
         X(:,i) = x(r1:r2); % reorder in dofs in column
     end
     xt = E * X; 
-    % [Ft, w] = g_mex(xt + xp', pfunc.fc); % call mex function
-    [Ft, w] = g(xt + xp', pfunc.fc); % call mex function inside g
+
+    kn = pfunc.fc.kn;
+    xn0 = pfunc.fc.xn0;
+    mu = pfunc.fc.mu;
+    kt = pfunc.fc.kt;
+    w_in  = pfunc.fc.w;
+    nloop = pfunc.fc.nloop;
+
+    [Ft, w, flag] = g(xt + xp', kn, xn0, mu, kt, w_in, nloop); % call mex function inside g
     
     Ft = Ft - gxp';
     hndn = EH * Ft;

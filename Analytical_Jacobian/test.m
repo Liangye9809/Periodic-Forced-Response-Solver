@@ -649,3 +649,78 @@ else
 end
 
 
+%%
+% flag = [1,1,1,1,2,2,2,2,2,2,2,-1,-1,-1,2,2,2, 1,1];
+flag = ones(10,1) * 2;
+segments = find_cyclic_segments(flag);
+
+
+function segments = find_cyclic_segments(flag)
+% FIND_CYCLIC_SEGMENTS Find cyclic time ranges for each segment in flag vector
+% Time axis: t(i) = (i-1)/N * 2pi, i = 1..N
+% Boundaries are at midpoints between transitions
+
+flag = flag(:);
+N = length(flag);
+
+% --- Find transition points (cyclic) ---
+% diff detects where value changes; also check wrap-around
+diffs = [diff(flag); flag(1) - flag(end)];  % length N, last element is wrap
+trans_idx = find(diffs ~= 0);               % indices WHERE change happens
+% Boundary midpoint index (fractional): between trans_idx and trans_idx+1 (cyclic)
+n_trans = length(trans_idx);
+
+if n_trans == 0
+    fprintf('Signal is constant: value = %d over [0, 2pi]\n', flag(1));
+    segments = struct('value', flag(1), 't_start', 0, 't_end', 2*pi);
+    return;
+end
+
+% Boundary midpoints (fractional 1-based index, cyclic)
+boundary_idx = trans_idx + 0.5;  % midpoint between last-of-old and first-of-new
+
+% --- Build segments ---
+% Each segment starts at one boundary and ends at the next
+% Value of segment = flag at the first index AFTER the boundary
+
+segments = struct('value', {}, 't_start', {}, 't_end', {});
+
+for k = 1:n_trans
+    b_start = boundary_idx(k);                          % start boundary (index)
+    b_end   = boundary_idx(mod(k, n_trans) + 1);        % next boundary (index, cyclic)
+    
+    % First sample index after b_start
+    first_idx = mod(trans_idx(k), N) + 1;               % 1-based, cyclic
+    val = flag(first_idx);
+    
+    % Convert boundary indices to time: t = (idx - 1) / N * 2pi
+    t_start = (b_start - 1) / N * 2 * pi;
+    t_end   = (b_end   - 1) / N * 2 * pi;
+    
+    % Handle cyclic wrap: if t_end <= t_start, it wraps around
+    if t_end <= t_start
+        t_end = t_end + 2 * pi;
+    end
+    
+    segments(k).value   = val;
+    segments(k).t_start = t_start;
+    segments(k).t_end   = t_end;
+end
+
+% --- Display ---
+fprintf('\nCyclic Segment Results (N = %d):\n', N);
+fprintf('%-8s  %-30s  %-30s\n', 'Value', 'Start (radians)', 'End (radians)');
+fprintf('%s\n', repmat('-', 1, 72));
+for k = 1:length(segments)
+    s = segments(k);
+    fprintf('%-8d  %-30s  %-30s\n', s.value, ...
+        format_angle(s.t_start, N), ...
+        format_angle(s.t_end,   N));
+end
+end
+
+% Helper: print angle as fraction of 2pi for readability
+function str = format_angle(t, N)
+    frac = t / (2*pi) * N;  % back to fractional index - 1
+    str = sprintf('%.4f rad  (= %.4g/N * 2pi)', t, frac);
+end
