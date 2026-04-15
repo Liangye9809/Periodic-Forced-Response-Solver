@@ -1,6 +1,8 @@
 function JNL = JNL_Analytical(flag, H)
+
     [~, Nx, N] = size(flag);
     JNL = zeros(3 * Nx * (2 * H + 1), 3 * Nx * (2 * H + 1));
+    
     for i = 1:Nx
         flagT1(:, 1) = flag(1, i, :);
         flagT2(:, 1) = flag(2, i, :);
@@ -15,9 +17,22 @@ end
 
 
 function JNLi = JNL_one_Nx(flagT1, flagT2, H)
+
+    JNLi = zeros(3 * (2 * H + 1), 3 * (2 * H + 1));
+
     segmentsT1 = get_integral_time_position(flagT1);
-    [dFdX1, dFdXn] = get
+    [dF1dX1, dF1dXn, dFndXn] = get_dFdX(segmentsT1, H);
+    
     segmentsT2 = get_integral_time_position(flagT2);
+    [dF2dX2, dF2dXn, ~] = get_dFdX(segmentsT2, H);
+
+    JNLi(1:2 * H + 1, 1:2 * H + 1) = dF1dX1;
+    JNLi(1:2 * H + 1, 2 * (2 * H + 1) + 1:end) = dF1dXn;
+
+    JNLi((2 * H + 1) + 1:2 * (2 * H + 1), (2 * H + 1) + 1:2 * (2 * H + 1)) = dF2dX2;
+    JNLi((2 * H + 1) + 1:2 * (2 * H + 1), 2 * (2 * H + 1) + 1:end) = dF2dXn;
+
+    JNLi(2 * (2 * H + 1) + 1:end, 2 * (2 * H + 1) + 1:end) = dFndXn;
 end
 
 
@@ -72,4 +87,45 @@ function segments = get_integral_time_position(flag)
         segments(k).t_start = t_start;
         segments(k).t_end   = t_end;
     end
+end
+
+function [dFdX, dFdXn, dFndXn] = get_dFdX(segmentsT, H)
+    dFdX = zeros(2 * H + 1, 2 * H + 1);
+    dFdXn = zeros(2 * H + 1, 2 * H + 1);
+    dFndXn = zeros(2 * H + 1, 2 * H + 1);
+
+    k = length(segmentsT);
+
+    if k == 1 % pure stick or whole gap
+        if segmentsT(1).value == 2 % pure stick
+            dFdX = kt .* eye(2 * H + 1);
+            dFndXn = kn .* eye(2 * H + 1);
+            return;
+        elseif segmentsT(1).value == 0 % whole gap
+            return;
+        end
+    end
+
+    for i = 1:k
+        t1 = segmentsT(i).t_start;
+        t2 = segmentsT(i).t_end;
+        switch segmentsT(i).value
+            case 2 % stick after slip or gap
+                [MW, Mw] = fW(t1, t2, H);
+                c_vec = c_vector(t1, H);
+                dFdX = dFdX + kt .* MW - Mw * (kt .* c_vec);
+                switch segmentsT(mod(i - 2, k) + 1).value
+                    case 0 % gap to stick
+                        dFdXn = dFdXn + Mw * (kt .* dxdn(i) .* c_vec);
+                    case {-1, 1} % slip to stick
+                        dFdXn = dFdXn + Mw * (segmentsT(mod(i - 2, k) + 1).value .* mu .* kn .* c_vec);
+                end
+                dFndXn = dFndXn + kn .* MW; % contact
+            case {-1, 1} % slip
+                [MW, ~] = fW(t1, t2, H);
+                dFdXn = dFdXn + segmentsT(i).value .* mu .* kn .* MW;
+                dFndXn = dFndXn + kn .* MW; % contact
+        end
+    end
+
 end

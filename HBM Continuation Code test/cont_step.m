@@ -1,34 +1,37 @@
 function [x, omega, tx, tomega, w, k, ifslip] = cont_step(func, jacob, deromega, params)
-x0 = params.cont.x0;
+     x0 = params.cont.x0;
 omega_0 = params.cont.omega_0;
-ds = params.cont.ds;
-tx0 = params.cont.tx0;
+     ds = params.cont.ds;
+    tx0 = params.cont.tx0;
 tomega0 = params.cont.tomega0;
-epsx = params.Newton.epsx;
-epsf = params.Newton.epsf;
+   epsx = params.Newton.epsx;
+   epsf = params.Newton.epsf;
 maxiter = params.Newton.maxiter;
-x = x0 + ds*tx0;
-omega = omega_0 + ds*tomega0;
-z = [x
-     omega];
+      x = x0 + ds*tx0;
+  omega = omega_0 + ds*tomega0;
+      z = [x; omega];
 
 Nx = params.func.HBM.Nx;
-H = params.func.HBM.H;
+H  = params.func.HBM.H;
 Na = params.func.HBM.Na;
+E  = params.func.HBM.E;
+
+
 ifslip = zeros(Nx, 1);
 %% calculate (min(w+) - max(w-)) / 2
-xc = x((2 * H + 1) * Na + 1:end);
+xc  = x((2 * H + 1) * Na + 1:end);
 pfunc = params.func;
 w = get_w_middle(xc, pfunc);
 params.func.fc.w = w;
 %%
-[F, w] = func(x, omega, params.func);
+xct = Fourier_to_Time(x(Na * (2 * H + 1) + 1:end), H, Nx, E);
+[F, w, JL, flag] = func(x, xct, omega, params.func);
 
 params.func.fc.w = w; % update w
 G = [F 
-     tx0'*(x-x0) + tomega0*(omega-omega_0)-ds];
-for k=1:maxiter
-    JG = [jacob(x, omega, params.func) deromega(x, omega, params.func)
+     tx0' * (x - x0) + tomega0 * (omega - omega_0) - ds];
+for k = 1:maxiter
+    JG = [jacob(xct, params.func, JL, flag) deromega(x, omega, params.func)
           tx0' tomega0];
     % A = [jacob(x, omega, params.func) deromega(x, omega, params.func)];
     % e_ = svd(A);
@@ -37,7 +40,8 @@ for k=1:maxiter
     x = z(1:end-1);
     omega = z(end);
     % FUNCstruct = func(x, omega, params.func);
-    [F, w] = func(x, omega, params.func);
+    xct = Fourier_to_Time(x(Na * (2 * H + 1) + 1:end), H, Nx, E);
+    [F, w, JL, flag] = func(x, xct, omega, params.func);
     % params.func.fc.w = FUNCstruct.w; % update w
 
     params.func.fc.w = w; % update w
@@ -45,7 +49,7 @@ for k=1:maxiter
     % params.func.fc.w = w;
 
     G = [F 
-         tx0'*(x-x0) + tomega0*(omega-omega_0)-ds];
+         tx0' * (x - x0) + tomega0 * (omega - omega_0) - ds];
     errorx = norm(dz) / norm(z);
     errorf = norm(G);
     % format short g
@@ -56,7 +60,7 @@ for k=1:maxiter
         % t = null([jacob(x, omega, params.func) deromega(x, omega, params.func)]);
         % t = [-(jacob(x, omega, params.func) \ deromega(x, omega, params.func)); 1];
         % t = t / norm(t);
-        A = [jacob(x, omega, params.func) deromega(x, omega, params.func)];
+        A = [jacob(xct, params.func, JL, flag) deromega(x, omega, params.func)];
         [Q, R] = qr(A');
         t = Q(:, end);
 
@@ -77,6 +81,17 @@ for k=1:maxiter
     end
 end
 
+
+end
+
+function xct = Fourier_to_Time(Xc, H, Nx, E)
+
+    for i = 1:3 * Nx
+        r1 = (2 * H + 1) * (i - 1) + 1;
+        r2 = (2 * H + 1) * i;
+        X(:,i) = Xc(r1:r2); % reorder in dofs in column
+    end
+    xct = E * X; 
 
 end
 

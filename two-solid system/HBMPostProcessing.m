@@ -17,12 +17,13 @@ Adof = [OMEGA, Adof];
 figure
 yyaxis left
 plot(Adof(:,2), Adof(:,3), 'b-', 'LineWidth', 2), hold on;
+grid on;
 
-yyaxis right
-stem(Adof(:, 2), k_cont'), grid on
+% yyaxis right
+% stem(Adof(:, 2), k_cont'), grid on
 
-title('Numerical Jacobian');
-% title('Analytical Jacobian');
+% title('Numerical Jacobian');
+title('Analytical Jacobian');
 
 % Ndof = 1;
 % A = E * x_contNx(:,:,Ndof);
