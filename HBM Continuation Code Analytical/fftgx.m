@@ -1,0 +1,30 @@
+% x are in frequency domain 
+% x = [a¹0,a¹1,b¹1,a¹2,b¹2,...,a¹H,b¹H,  a²0,a²1,b²1,a²2,b²2,...,a²H,b²H,...]'
+
+%% original structure
+function [F, w, flag] = fftgx(xct, pfunc) % x(t) = E*X
+    
+    EH = pfunc.HBM.EH;
+     N = pfunc.HBM.N;
+    
+    gxp = pfunc.static.preload.gxp;
+    
+       kn = pfunc.fc.kn;
+      xn0 = pfunc.fc.xn0;
+       mu = pfunc.fc.mu;
+       kt = pfunc.fc.kt;
+     w_in = pfunc.fc.w;
+    nloop = pfunc.fc.nloop;
+
+    % xct = xt + xp';
+
+    [Fti, wi, flag] = g(xct, kn, xn0, mu, kt, w_in, nloop); 
+    w = wi(1:2, :, end);
+    
+    Ft = Fti(N + 1:end, :) - gxp';
+    hndn = EH * Ft;
+    F = hndn(:);
+    
+end
+
+
