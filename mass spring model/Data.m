@@ -5,14 +5,18 @@ FEM.Mcc = eye(3);
 FEM.Mec = zeros(3,3);
 
 
-FEM.Kee = diag([1,2,3]);
-FEM.Kec = -diag([1,2,3]);
-FEM.Kcc = diag([1,2,3]);
+FEM.Kee = diag([2, 4, 6]);
+% FEM.Kee(1:3, 4:6) = diag([-1, -2, -3]);
+% FEM.Kee(4:6, 1:3) = diag([-1, -2, -3]);
 
-FEM.Fe = [1, 0, 1]';
+FEM.Kec = diag([-1, -2, -3]);
+
+FEM.Kcc = diag([1, 2, 3]);
+
+FEM.Fe = 0.1 * [1, 0, 0]';
 FEM.Fc = [0, 0 ,0]';
 
-FEM.Pe = [0, 0, -1]';
+FEM.Pe = [0, 0, 1]';
 FEM.Pc = [0, 0 ,0]';
 
 % xn = - 4 * sin(sin(t)) + 1; % separation to stick
@@ -29,7 +33,7 @@ H = 5; % number of harmonics assumption
 N = 2^6; % number of time points per force cycle
 Nx = 1; % number of contact points, means having 4 * 3 = 12 dofs
 Na = 1; % number of CB modes
-xi = 1e-6; 
+xi = 0.1; 
 
 
 %% Newton Method parameters
@@ -42,8 +46,8 @@ maxiter = 100;
 
 kn = 1; % .* 1e5;
 xn0 = 0;
-mu = [0.1; 0.1]; % .* 1e5;
-kt = [1; 1]; % .* 1e5;
+mu = 0.5 * [0.1; 0.1]; % .* 1e5;
+kt = 0.01 * [1; 1]; % .* 1e5;
 nloop = 2;
 
 %% preload initial condition for Newton method
@@ -54,7 +58,7 @@ xp0 = 0; % if no value defined here, the default value inside is 0
 %% continuation parameters
 
 
-ds = 0.5;
+ds = 0.05;
 maxstep = 20000;
 % omega_0 = 0.81; % 
 % omega_end = 0.87;

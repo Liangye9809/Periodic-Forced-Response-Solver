@@ -120,7 +120,7 @@ function [dFdX, dFdXn, dFndXn] = get_dFdX(segmentsT, H, N, kt, kn, mu, xt, xn)
 
                     case 0 % gap to stick
                         i_p   = segmentsT(i).index_start; % stick start index
-                        i_m   = mod(ind_i_p - 2, N) + 1;  % previous index
+                        i_m   = mod(i_p - 2, N) + 1;  % previous index
                         dxdn  = (xt(i_p) - xt(i_m)) / (xn(i_p) - xn(i_m));
                         dFdXn = dFdXn + Mw * (kt .* dxdn .* c_vec);
 

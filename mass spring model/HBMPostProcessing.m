@@ -15,16 +15,28 @@ OMEGA = sqrt(omega02) .* omega_cont';
 Adof = [OMEGA, Adof];
 
 figure
-% yyaxis left
+yyaxis left
 plot(Adof(:,2), Adof(:,3), 'b-', 'LineWidth', 2), hold on;
 grid on;
-
-% yyaxis right
+ylabel('CB1');
+yyaxis right
 % stem(Adof(:, 2), k_cont'), grid on
+plot(Adof(:, 2), ss_cont', 'LineWidth', 2), hold on;
+ylim([0, 1]);
 
 % title('Numerical Jacobian');
-title('Analytical Jacobian');
+% title('Analytical Jacobian');
 
+
+figure
+yyaxis left
+plot(Adof(:, 2), Adof(:, 4), 'b-', 'LineWidth', 2), hold on;
+grid on;
+ylabel('X1');
+
+yyaxis right
+plot(Adof(:, 2), ss_cont', 'LineWidth', 2), hold on;
+ylim([0, 1]);
 % Ndof = 1;
 % A = E * x_contNx(:,:,Ndof);
 % Amax = max(abs(A));
@@ -54,42 +66,42 @@ title('Analytical Jacobian');
 %% calculate nonlinear forces
 
 % check FUN(x) = 0;
-omega_poss = omega_end;
-x_poss = x_cont(:, end);
-[FUN_poss, w_poss] = HBMFUNC(x_poss, omega_poss, params.func);
-
-% if FUN(x) ~= 0, calculate corresponse value
-if norm(FUN_poss) > params.Newton.epsf
-    params.cont.ds = 0;
-    params.cont.omega_0 = omega_poss;
-    params.cont.step = 100001;
-    [x_poss, omega_poss, ~, ~, w_poss] = cont_step(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);
-end
-
-for i = 1:Na + 3 * Nx
-    r1 = (2 * H + 1) * (i - 1) + 1;
-    r2 = (2 * H + 1) * i;
-    X(:,i) = x_poss(r1:r2); % reorder in dofs in column
-end
-xt_poss = params.func.HBM.E * X; 
-xct_poss = xt_poss(:, Na + 1:end);
-[Ft_poss, w_poss] = g(xct_poss + xp', params.func.fc);
-T = 2 * pi / omega_poss;
-dt = T / N;
-t_poss = 0:dt:(T - dt);
-
-para.t = t_poss';
-para.xt = xt_poss;
-para.Ft = Ft_poss;
-para.omega = omega_poss;
-para.xp = xp;
-para.gxp = gxp;
-para.fc = params.func.fc;
-para.HBM = params.func.HBM;
-% para.Pe = FEM.Pe;
-% para.Pc = FEM.Pc;
-para.params = params;
-para.X = X;
+% omega_poss = omega_end;
+% x_poss = x_cont(:, end);
+% [FUN_poss, w_poss] = HBMFUNC(x_poss, omega_poss, params.func);
+% 
+% % if FUN(x) ~= 0, calculate corresponse value
+% if norm(FUN_poss) > params.Newton.epsf
+%     params.cont.ds = 0;
+%     params.cont.omega_0 = omega_poss;
+%     params.cont.step = 100001;
+%     [x_poss, omega_poss, ~, ~, w_poss] = cont_step(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);
+% end
+% 
+% for i = 1:Na + 3 * Nx
+%     r1 = (2 * H + 1) * (i - 1) + 1;
+%     r2 = (2 * H + 1) * i;
+%     X(:,i) = x_poss(r1:r2); % reorder in dofs in column
+% end
+% xt_poss = params.func.HBM.E * X; 
+% xct_poss = xt_poss(:, Na + 1:end);
+% [Ft_poss, w_poss] = g(xct_poss + xp', params.func.fc);
+% T = 2 * pi / omega_poss;
+% dt = T / N;
+% t_poss = 0:dt:(T - dt);
+% 
+% para.t = t_poss';
+% para.xt = xt_poss;
+% para.Ft = Ft_poss;
+% para.omega = omega_poss;
+% para.xp = xp;
+% para.gxp = gxp;
+% para.fc = params.func.fc;
+% para.HBM = params.func.HBM;
+% % para.Pe = FEM.Pe;
+% % para.Pc = FEM.Pc;
+% para.params = params;
+% para.X = X;
 
 % save('data/Mesh32x32/Pe100eachData_PeFixed_Omega_'+ string(omega_plot) + '_Nx_' + string(Nx) + '_H' + string(H) + '_N' + string(N) + '.mat','para');
 %% H validation
@@ -182,20 +194,20 @@ para.X = X;
 
 
 %% plot w
-figure;
-for i = 1:4
-    subplot(2,2,i)
-    yyaxis left
-    plot(omega_cont, w_cont(1, i:4:end), 'r--', 'LineWidth', 2), hold on;
-    plot(omega_cont, w_cont(2, i:4:end), 'b-', 'LineWidth', 2), grid on;
-    ylabel('w');
-
-    yyaxis right
-    plot(omega_cont, ss_cont(i, :), 'LineWidth', 2);
-    ylim([0, 1]);
-    xlabel('Omega');
-    ylabel('slip range');
-    legend('w1', 'w2', 'slip range');
-    titlename = 'Nx = ' + string(i);
-    title(titlename);
-end
+% figure;
+% for i = 1:4
+%     subplot(2,2,i)
+%     yyaxis left
+%     plot(omega_cont, w_cont(1, i:4:end), 'r--', 'LineWidth', 2), hold on;
+%     plot(omega_cont, w_cont(2, i:4:end), 'b-', 'LineWidth', 2), grid on;
+%     ylabel('w');
+% 
+%     yyaxis right
+%     plot(omega_cont, ss_cont(i, :), 'LineWidth', 2);
+%     ylim([0, 1]);
+%     xlabel('Omega');
+%     ylabel('slip range');
+%     legend('w1', 'w2', 'slip range');
+%     titlename = 'Nx = ' + string(i);
+%     title(titlename);
+% end
