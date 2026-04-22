@@ -35,7 +35,7 @@ ylim([0, 1.2]);
 figure % X1
 yyaxis left
 plot(Adof(:, 2), Adof(:, 4), 'b.', 'LineWidth', 2), hold on;
-plot(Adof(ind_gap_stick, 2), Adof(ind_gap_stick, 4), 'k.', 'LineWidth', 2), hold on;
+plot(Adof(ind_gap, 2), Adof(ind_gap, 4), 'k.', 'LineWidth', 2), hold on;
 grid on;
 ylabel('X1');
 
@@ -63,7 +63,7 @@ plot(Adof(:, 2), Adof(:, 6), 'b.', 'LineWidth', 2), hold on;
 grid on;
 ylabel('Xn');
 
-plot(Adof(ind_gap_stick, 2), Adof(ind_gap_stick, 6), 'k.', 'LineWidth', 2), hold on;
+plot(Adof(ind_gap, 2), Adof(ind_gap, 6), 'k.', 'LineWidth', 2), hold on;
 
 % yyaxis right
 % plot(Adof(:, 2), gap_cont', 'LineWidth', 2), hold on;
@@ -76,7 +76,7 @@ plot(Adof(ind_gap_stick, 2), Adof(ind_gap_stick, 6), 'k.', 'LineWidth', 2), hold
 %% calculate nonlinear forces
 
 % check FUN(x) = 0;
-i_plot = min(ind_gap_stick);
+i_plot = find(Adof(:, 6) == max(Adof(:, 6)));
 x_poss = x_cont(:, i_plot);
 omega_poss = omega_cont(i_plot);
 params.func.fc.w = w_cont(:, i_plot);
@@ -127,37 +127,13 @@ para.params = params;
 para.X = X;
 para.flag = flag_poss;
 
-figure; % displacement
+figure;
 plot(t_poss, xt_poss(:, 2), 'b-', 'LineWidth', 2), hold on;
-plot(t_poss, xt_poss(:, 4), 'r-', 'LineWidth', 2), grid on;
+plot(t_poss, xt_poss(:, 4), 'r-', 'LineWidth', 2), hold on;
 legend('x1', 'xn');
-
-figure; % cycle
-plot(xt_poss(:, 2), Ft_poss(N + 1:end, 1), 'b-', 'LineWidth', 2), hold on;
-grid on;
-xlabel('x1');
-ylabel('T1');
-title('hysteresis cycle')
-
-figure; % friction
-plot(t_poss, max(mu(1) .* kn .* (xt_poss(:, 4) + xp(3)), 0), 'k-', 'LineWidth', 2), hold on;
-plot(t_poss, -max(mu(1) .* kn .* (xt_poss(:, 4) + xp(3)), 0), 'k-', 'LineWidth', 2), grid on;
-plot(t_poss, Ft_poss(N + 1:end, 1), 'b-', 'LineWidth', 2);
-legend('mu * Fn', '-mu * Fn', 'T1');
-
-figure; % friction state
-a(1:2, :) = flag_poss(1:2, 1, N + 1:end);
-subplot(2, 1, 1)
-plot(t_poss, a(1, :)', 'bo', 'MarkerSize', 2, 'MarkerFaceColor', 'b'), grid on;
-ylim([-1.1, 2.1]);
-legend('T1');
-title('friction state');
-
-subplot(2 ,1, 2)
-plot(t_poss, a(2, :)', 'bo', 'MarkerSize', 2, 'MarkerFaceColor', 'b'), grid on;
-ylim([-1.1, 2.1]);
-legend('T2');
-save para_gap_to_stick_point.mat para;
+figure;
+plot(xt_poss(:, 2), Ft_poss(:, 1))
+% save para_gap_to_stick_point.mat para;
 %% H validation
 % figure;
 % c = jet(15);

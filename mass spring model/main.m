@@ -99,14 +99,18 @@ omega_end = 1.5;
 
 ContinuationCalculation
 
+
 t = [0:N-1]' * (2 * pi / N);
-xn = (- 4 * sin(sin(t)) + 1) .* 0.01; % separation to stick
+xn = (- 4 * sin(sin(t)) + 1) .* 0.05; % separation to stick
 xt = (2 * exp(cos(t + 1)) - 3) .* 0.05; % separation to stick
 Xn = params.func.HBM.EH * xn;
 Xt = params.func.HBM.EH * xt;
+% for Na = 1
 params.func.HBM.fftfa = Xt / (alpha * omega02);
-params.func.HBM.fftfa = (0.5 .* Xt + 0.5 .* Xn) * beta / (alpha^2 * omega02);
-[x_cont, omega_cont, k_cont, w_cont, ss_cont] = continuation(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);
+params.func.HBM.fftfx = [0.5 .* Xt; zeros(2 * H + 1, 1); 0.5 .* Xn] .* beta / (alpha^2 * omega02);
+
+
+[x_cont, omega_cont, k_cont, w_cont, stick_cont, slipP_cont, slipM_cont, gap_cont] = continuation(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);
 
 CaseTime = toc;
 

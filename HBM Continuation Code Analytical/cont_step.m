@@ -1,4 +1,4 @@
-function [x, omega, tx, tomega, w, k, ifslip] = cont_step(func, jacob, deromega, params)
+function [x, omega, tx, tomega, w, k, FlagState] = cont_step(func, jacob, deromega, params)
      x0 = params.cont.x0;
 omega_0 = params.cont.omega_0;
      ds = params.cont.ds;
@@ -18,7 +18,7 @@ Na = params.func.HBM.Na;
 E  = params.func.HBM.E;
 
 
-ifslip = zeros(Nx, 1);
+FlagState = zeros(Nx, 4);
 
 xct = Fourier_to_Time(x(Na * (2 * H + 1) + 1:end), H, Nx, E);
 %% calculate (min(w+) - max(w-)) / 2
@@ -65,7 +65,8 @@ for k = 1:maxiter
         disp([params.cont.step  z(1) z(2) omega  errorx  errorf   k])
        
         %% output slip state
-        ifslip = get_slip_state(flag);
+        FlagState = get_slip_state(flag); % [2, 1, -1, 0] = [stick, slipPlus, slipMinus, gap] [Nx * 4]
+        
         %%
         return
     end
@@ -119,16 +120,16 @@ function w = get_w_middle(xct, pfunc)
         
 end
 
-function ifslip = get_slip_state(flag)
+function FlagState = get_slip_state(flag)
     Nx = size(flag, 2);
-    ifslip = zeros(Nx, 1);
+    FlagState = zeros(Nx, 4);
     for i = 1:Nx
-        if sum(ismember([1, -1], flag(:, i, :))) > 0
-            ifslip(i) = 1;
-        end
+        FlagState(i, :) = ismember([2, 1, -1, 0], flag(:, i, :));
     end
 
 end
+
+
 
 
 

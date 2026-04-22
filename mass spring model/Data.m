@@ -5,13 +5,13 @@ FEM.Mcc = eye(3);
 FEM.Mec = zeros(3,3);
 
 
-FEM.Kee = diag([2, 4, 6]);
+FEM.Kee = diag([2, 2, 2]);
 % FEM.Kee(1:3, 4:6) = diag([-1, -2, -3]);
 % FEM.Kee(4:6, 1:3) = diag([-1, -2, -3]);
 
-FEM.Kec = diag([-1, -2, -3]);
+FEM.Kec = diag([-1, -1, -1]);
 
-FEM.Kcc = diag([1, 2, 3]);
+FEM.Kcc = diag([1, 1, 1 ]);
 
 FEM.Fe = 0.1 * [1, 0, 0]';
 FEM.Fc = [0, 0 ,0]';
@@ -30,7 +30,7 @@ H_F_ext = [0, 0, 1]; % fourier coefficient of f(t)
 %% HBM parameters
 
 H = 5; % number of harmonics assumption
-N = 2^6; % number of time points per force cycle
+N = 2^8; % number of time points per force cycle
 Nx = 1; % number of contact points, means having 4 * 3 = 12 dofs
 Na = 1; % number of CB modes
 xi = 0.1; 
@@ -58,8 +58,8 @@ xp0 = 0; % if no value defined here, the default value inside is 0
 %% continuation parameters
 
 
-ds = 0.05;
-maxstep = 20000;
+ds = 0.01;
+maxstep = 50000;
 % omega_0 = 0.81; % 
 % omega_end = 0.87;
 
