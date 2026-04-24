@@ -86,7 +86,7 @@ function segments = get_integral_time_position(flag)
         segments(k).value       = val;
         segments(k).t_start     = t_start;
         segments(k).t_end       = t_end;
-        segments(k).index_start = b_start + 0.5;
+        segments(k).index_start = mod(b_start - 0.5, N) + 1;
     end
 end
 

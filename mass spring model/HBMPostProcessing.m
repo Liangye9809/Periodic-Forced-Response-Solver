@@ -12,10 +12,11 @@ for Ndof = 1:3*Nx + Na
     Adof(:, Ndof + 1) = Amax';
 end
 OMEGA = sqrt(omega02) .* omega_cont';
-Adof = [OMEGA, Adof];
+Adof = [OMEGA, Adof, k_cont'];
 
 
 ind_gap_stick = find(gap_cont == 1 & (slipP_cont + slipM_cont) == 0);
+ind_gap = find(gap_cont == 1);
 
 figure
 yyaxis left
@@ -34,7 +35,7 @@ ylim([0, 1.2]);
 
 figure % X1
 yyaxis left
-plot(Adof(:, 2), Adof(:, 4), 'b.', 'LineWidth', 2), hold on;
+plot(Adof(:, 2), Adof(:, 4), 'b-', 'LineWidth', 2), hold on;
 plot(Adof(ind_gap_stick, 2), Adof(ind_gap_stick, 4), 'k.', 'LineWidth', 2), hold on;
 grid on;
 ylabel('X1');
@@ -59,11 +60,11 @@ ylim([0, 1.2]);
 
 figure % Xn
 % yyaxis left
-plot(Adof(:, 2), Adof(:, 6), 'b.', 'LineWidth', 2), hold on;
+plot(Adof(:, 2), Adof(:, 6), 'b-', 'LineWidth', 2), hold on;
 grid on;
 ylabel('Xn');
 
-plot(Adof(ind_gap_stick, 2), Adof(ind_gap_stick, 6), 'k.', 'LineWidth', 2), hold on;
+% plot(Adof(ind_gap_stick, 2), Adof(ind_gap_stick, 6), 'k.', 'LineWidth', 2), hold on;
 
 % yyaxis right
 % plot(Adof(:, 2), gap_cont', 'LineWidth', 2), hold on;
@@ -72,11 +73,13 @@ plot(Adof(ind_gap_stick, 2), Adof(ind_gap_stick, 6), 'k.', 'LineWidth', 2), hold
 
 
 
+% save Adof_Analytical_matlab_g.mat Adof
 
 %% calculate nonlinear forces
-
+close all
 % check FUN(x) = 0;
-i_plot = min(ind_gap_stick);
+% i_plot = min(ind_gap_stick);
+i_plot = ind_gap(2);
 x_poss = x_cont(:, i_plot);
 omega_poss = omega_cont(i_plot);
 params.func.fc.w = w_cont(:, i_plot);
@@ -93,10 +96,13 @@ xct_poss = xt_poss(:, Na + 1:end);
 
 % if FUN(x) ~= 0, calculate corresponse value
 if norm(FUN_poss) > params.Newton.epsf
+    warning('norm(FUN_poss) > params.Newton.epsf');
     params.cont.ds = 0;
     params.cont.omega_0 = omega_poss;
     params.cont.step = 100001;
+    params.cont.x0 = x_poss;
     [x_poss, omega_poss, ~, ~, w_poss, ~, FlagState_poss] = cont_step(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);
+    params.func.fc.w = w_poss;
 
     for i = 1:Na + 3 * Nx
         r1 = (2 * H + 1) * (i - 1) + 1;
@@ -109,6 +115,7 @@ end
 
 
 [Ft_poss, w_poss, flag_poss] = g(xct_poss + xp', kn, xn0, mu, kt, params.func.fc.w, nloop); 
+JNL_poss = JNL_Analytical(xct_poss, flag_poss(:, :, end - N + 1:end), H, N, kt, kn, mu);
 T = 2 * pi / omega_poss;
 dt = T / N;
 t_poss = [0:dt:(T - dt)]';
@@ -119,34 +126,48 @@ para.Ft = Ft_poss;
 para.omega = omega_poss;
 para.xp = xp;
 para.gxp = gxp;
-para.fc = params.func.fc;
-para.HBM = params.func.HBM;
-% para.Pe = FEM.Pe;
-% para.Pc = FEM.Pc;
 para.params = params;
 para.X = X;
 para.flag = flag_poss;
+% solution
+para.x_cont = x_cont;
+para.k_cont = k_cont;
+para.omega_cont = omega_cont;
+para.JNL_poss = JNL_poss;
+
 
 figure; % displacement
 plot(t_poss, xt_poss(:, 2), 'b-', 'LineWidth', 2), hold on;
-plot(t_poss, xt_poss(:, 4), 'r-', 'LineWidth', 2), grid on;
-legend('x1', 'xn');
+plot(t_poss, xt_poss(:, 3), 'r-', 'LineWidth', 2), hold on;
+plot(t_poss, xt_poss(:, 4), 'k-', 'LineWidth', 2), grid on;
+legend('x1', 'x2', 'xn');
 
 figure; % cycle
-plot(xt_poss(:, 2), Ft_poss(N + 1:end, 1), 'b-', 'LineWidth', 2), hold on;
+% subplot(1,2,1)
+plot(xt_poss(:, 2), Ft_poss(end - N + 1:end, 1), 'b-', 'LineWidth', 2), hold on;
+plot(xt_poss(:, 3), Ft_poss(end - N + 1:end, 2), 'r-', 'LineWidth', 2), hold on;
 grid on;
-xlabel('x1');
-ylabel('T1');
+xlabel('x');
+ylabel('T');
+legend('x1-T1', 'x2-T2');
 title('hysteresis cycle')
+
+% subplot(1,2,2)
+% plot(xt_poss(:, 3), Ft_poss(end - N + 1:end, 2), 'b-', 'LineWidth', 2), hold on;
+% grid on;
+% xlabel('x2');
+% ylabel('T2');
+% title('hysteresis cycle')
+
 
 figure; % friction
 plot(t_poss, max(mu(1) .* kn .* (xt_poss(:, 4) + xp(3)), 0), 'k-', 'LineWidth', 2), hold on;
 plot(t_poss, -max(mu(1) .* kn .* (xt_poss(:, 4) + xp(3)), 0), 'k-', 'LineWidth', 2), grid on;
-plot(t_poss, Ft_poss(N + 1:end, 1), 'b-', 'LineWidth', 2);
+plot(t_poss, Ft_poss(end - N + 1:end, 1), 'b-', 'LineWidth', 2);
 legend('mu * Fn', '-mu * Fn', 'T1');
 
 figure; % friction state
-a(1:2, :) = flag_poss(1:2, 1, N + 1:end);
+a(1:2, :) = flag_poss(1:2, 1, end - N + 1:end);
 subplot(2, 1, 1)
 plot(t_poss, a(1, :)', 'bo', 'MarkerSize', 2, 'MarkerFaceColor', 'b'), grid on;
 ylim([-1.1, 2.1]);
@@ -157,111 +178,55 @@ subplot(2 ,1, 2)
 plot(t_poss, a(2, :)', 'bo', 'MarkerSize', 2, 'MarkerFaceColor', 'b'), grid on;
 ylim([-1.1, 2.1]);
 legend('T2');
-save para_gap_to_stick_point.mat para;
-%% H validation
-% figure;
-% c = jet(15);
-% for i = 1:2:15
-%     name = 'data/NewMesh/dof_H' + string(i) + '.mat';
-%     load(name);
-%     frq = a1(:, 1);
-% 
-%     subplot(2, 2, 1); % a1
-%     plot(frq, a1(:, 2), 'Color', c(i, :)), hold on;
-% 
-%     subplot(2, 2, 3); % t1
-%     plot(frq, a1(:, 3), 'Color', c(i, :)), hold on;
-% 
-%     subplot(2, 2, 4); % t2
-%     plot(frq, a1(:, 4), 'Color', c(i, :)), hold on;
-% 
-%     subplot(2, 2, 2); % n
-%     plot(frq, a1(:, 5), 'Color', c(i, :)), hold on;
-% 
-% end
-% subplot(2, 2, 1); % a1
-% title('a1');
-% xlabel('Omega');
-% ylabel('||dof_1||');
-% grid on;
-% legend('H1', 'H3', 'H5', 'H7', 'H9', 'H11', 'H13', 'H15');
-% 
-% subplot(2, 2, 3); % t1
-% plot(frq, a1(:, 3), 'Color', c(i, :)), hold on;
-% title('x1-t1');
-% xlabel('Omega');
-% ylabel('||dof_6||');
-% grid on;
-% legend('H1', 'H3', 'H5', 'H7', 'H9', 'H11', 'H13', 'H15');
-% 
-% subplot(2, 2, 4); % t2
-% plot(frq, a1(:, 4), 'Color', c(i, :)), hold on;
-% title('x1-t2');
-% xlabel('Omega');
-% ylabel('||dof_7||');
-% grid on;
-% legend('H1', 'H3', 'H5', 'H7', 'H9', 'H11', 'H13', 'H15');
-% 
-% subplot(2, 2, 2); % n
-% plot(frq, a1(:, 5), 'Color', c(i, :)), hold on;
-% title('x1-n');
-% xlabel('Omega');
-% ylabel('||dof_8||');
-% grid on;
-% legend('H1', 'H3', 'H5', 'H7', 'H9', 'H11', 'H13', 'H15');
-%% ifft and convert a to Xe
-% Nc = 3*Nx;
-% clear x_contDOF xt A_cont A_a A_x A_Xe at Xet
-% [E,EH] = HBM.fft_matrices(N, H);
-% for i = 1:Na % for elastic part, convert to Xe
-%     x_contDOF(:,:,i) = x_cont((2*H+1)*(i-1)+1:(2*H+1)*i, :);
-%     at(:,:,i) = E * x_contDOF(:,:,i);
-% end
-% j = 1;
-% for i = (Na + 1):(Na + Nc) % for contact part
-%     x_contDOF(:,:,i) = x_cont((2*H+1)*(i-1)+1:(2*H+1)*i, :);
-%     xt(:,:,j) = E * x_contDOF(:,:,i);
-%     j = j + 1;
-% end
-% at = permute(at,[3,1,2]);
-% xt = permute(xt,[3,1,2]);
-% xp = params.func.static.preload.xp;
-% Xct = xt + xp;
-% for j = 1:size(at,3)
-%     Xet(:,:,j) = params.func.CBmods.Phi * at(:,:,j) + params.func.CBmods.Psi * Xct(:,:,j) + params.func.static.preload.xe0;
-% end
-% Xet = permute(Xet,[2,3,1]);
-% Xct = permute(Xct,[2,3,1]);
-% xt = permute(xt,[2,3,1]);
-% 
-% for i = 1:Na % for elastic part
-%     A_cont(i,:) = max( abs(Xet(:,:,i) ));
-% end
-% j = 1;
-% for i = (Na + 1):(Na + Nc) % for contact part
-%     A_cont(i,:) = max(abs(xt(:,:,j)));
-%     j = j + 1;
-% end
-% A_cont(Na + Nc + 1,:) = omega_cont;
-% A_cont = A_cont';
-% 
+% save para_gap_to_stick_point.mat para;
+
+%%
+JNLt_A_11 = E * JNL_poss(1:2 * H + 1, 1:2 * H + 1);
+JNLt_A_13 = E * JNL_poss(1:2 * H + 1, 2 * (2 * H + 1) + 1:end);
+JNLt_A_22 = E * JNL_poss((2 * H + 1) + 1:2 * (2 * H + 1), (2 * H + 1) + 1:2 * (2 * H + 1));
+JNLt_A_23 = E * JNL_poss((2 * H + 1) + 1:2 * (2 * H + 1), 2 * (2 * H + 1) + 1:end);
+
+t = t_poss;
+for i = 1:11
+    fig = figure; %('PaperOrientation','landscape','PaperUnits','centimeters','PaperPosition', 100 * [0 0 29.7 21], 'PaperSize',[29.7 21] * 100);
+    
+    fig.WindowState = 'maximized';
+    if i == 1
+        titlename = 'N = ' + string(N) + ', H = ' + string(H) + ', ' +'cos0';
+    elseif mod(i, 2) == 0
+        titlename = 'N = ' + string(N) + ', H = ' + string(H) + ', ' +'cos' + string(floor(i/2));
+    else
+        titlename = 'N = ' + string(N) + ', H = ' + string(H) + ', ' +'sin' + string(floor(i/2));
+    end
+    title(titlename);
+
+    subplot(2,2,1)
+    plot(t, JNLt_A_11(:, i), 'LineWidth', 2), hold on
+    legend('dTdxt 11');
+    title(titlename);
+    
+
+    subplot(2,2,2)
+    plot(t, JNLt_A_13(:, i), 'LineWidth', 2), hold on
+    legend('dTdxn 13');
+    title(titlename);
+    
+
+    subplot(2,2,3)
+    plot(t, JNLt_A_22(:, i), 'LineWidth', 2), hold on
+    legend('dTdxt 22');
+    title(titlename);
+    
+
+    subplot(2,2,4)
+    plot(t, JNLt_A_23(:, i), 'LineWidth', 2), hold on
+    legend('dTdxn 23');
+    title(titlename);
+    
+    % pintname = string(titlename) + '.png';
+    % set(gcf,'PaperOrientation','landscape');
+    % exportgraphics(gcf, pintname,'ContentType','vector');
+
+end
 
 
-%% plot w
-% figure;
-% for i = 1:4
-%     subplot(2,2,i)
-%     yyaxis left
-%     plot(omega_cont, w_cont(1, i:4:end), 'r--', 'LineWidth', 2), hold on;
-%     plot(omega_cont, w_cont(2, i:4:end), 'b-', 'LineWidth', 2), grid on;
-%     ylabel('w');
-% 
-%     yyaxis right
-%     plot(omega_cont, ss_cont(i, :), 'LineWidth', 2);
-%     ylim([0, 1]);
-%     xlabel('Omega');
-%     ylabel('slip range');
-%     legend('w1', 'w2', 'slip range');
-%     titlename = 'Nx = ' + string(i);
-%     title(titlename);
-% end

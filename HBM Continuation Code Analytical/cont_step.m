@@ -63,7 +63,9 @@ for k = 1:maxiter
         tomega = t(end);
         format short g
         disp([params.cont.step  z(1) z(2) omega  errorx  errorf   k])
-       
+        if params.cont.step == 2623
+            stop = 1;
+        end
         %% output slip state
         FlagState = get_slip_state(flag); % [2, 1, -1, 0] = [stick, slipPlus, slipMinus, gap] [Nx * 4]
         

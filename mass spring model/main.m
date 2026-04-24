@@ -100,23 +100,34 @@ omega_end = 1.5;
 ContinuationCalculation
 
 
-t = [0:N-1]' * (2 * pi / N);
-xn = (- 4 * sin(sin(t)) + 1) .* 0.05; % separation to stick
-xt = (2 * exp(cos(t + 1)) - 3) .* 0.05; % separation to stick
-Xn = params.func.HBM.EH * xn;
-Xt = params.func.HBM.EH * xt;
-% for Na = 1
-params.func.HBM.fftfa = Xt / (alpha * omega02);
-params.func.HBM.fftfx = [0.5 .* Xt; zeros(2 * H + 1, 1); 0.5 .* Xn] .* beta / (alpha^2 * omega02);
+% t = [0:N-1]' * (2 * pi / N);
+% xn = (- 4 * sin(sin(t)) + 1) .* 0.05; % separation to stick
+% xt = (2 * exp(cos(t + 1)) - 3) .* 0.05; % separation to stick
+% Xn = params.func.HBM.EH * xn;
+% Xt = params.func.HBM.EH * xt;
+% % figure;
+% % plot(t, xt, 'b-'), hold on;
+% % plot(t, xn, 'r-'), grid on;
+% % legend('xt', 'xn');
+% % for Na = 1
+% params.func.HBM.fftfa = Xt / (alpha * omega02);
+% Xt2 = zeros(2 * H + 1, 1);
+% % Xt2(2) = 1 * 0.05;
+% Xt2 = Xt;
+% params.func.HBM.fftfx = 0.5 .* [Xt; Xt2; Xn] .* beta / (alpha^2 * omega02);
 
-
+% Analytical
 [x_cont, omega_cont, k_cont, w_cont, stick_cont, slipP_cont, slipM_cont, gap_cont] = continuation(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);
+
+% Numerical
+% [x_cont, omega_cont, k_cont] = continuation(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);
 
 CaseTime = toc;
 
 %%
 
 HBMPostProcessing;
+% HBMPostProcessing_Numerical;
 
 
 

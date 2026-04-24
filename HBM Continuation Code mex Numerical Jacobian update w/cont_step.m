@@ -1,17 +1,28 @@
-function [x, omega, tx, tomega, w] = cont_step(func, jacob, deromega, params)
-x0 = params.cont.x0;
+function [x, omega, tx, tomega, w, k] = cont_step(func, jacob, deromega, params)
+     x0 = params.cont.x0;
 omega_0 = params.cont.omega_0;
-ds = params.cont.ds;
-tx0 = params.cont.tx0;
+     ds = params.cont.ds;
+    tx0 = params.cont.tx0;
 tomega0 = params.cont.tomega0;
-epsx = params.Newton.epsx;
-epsf = params.Newton.epsf;
+     xp = params.func.static.preload.xp;
+   epsx = params.Newton.epsx;
+   epsf = params.Newton.epsf;
 maxiter = params.Newton.maxiter;
-x = x0 + ds*tx0;
-omega = omega_0 + ds*tomega0;
-z = [x
-     omega];
-% disp(':   k   x1   x2   lambda  errorx  errorf  ')
+      x = x0 + ds*tx0;
+  omega = omega_0 + ds*tomega0;
+      z = [x; omega];
+
+Nx = params.func.HBM.Nx;
+H  = params.func.HBM.H;
+Na = params.func.HBM.Na;
+E  = params.func.HBM.E;
+
+xct = Fourier_to_Time(x(Na * (2 * H + 1) + 1:end), H, Nx, E);
+%% calculate (min(w+) - max(w-)) / 2
+pfunc = params.func;
+w = get_w_middle(xct + xp', pfunc);
+params.func.fc.w = w;
+%%
 % FUNCstruct = func(x, omega, params.func);
 [F, w] = func(x, omega, params.func);
 % params.func.fc.w = FUNCstruct.w; % update w
@@ -40,9 +51,9 @@ for k=1:maxiter
     if (errorx < epsx) && (errorf < epsf)
         t0 = [tx0; tomega0];
 
-        t = null([jacob(x, omega, params.func) deromega(x, omega, params.func)]);
-        % t = [-(jacob(x, omega, params.func) \ deromega(x, omega, params.func)); 1];
-        % t = t / norm(t);
+        A = [jacob(x, omega, params.func) deromega(x, omega, params.func)];
+        [Q, R] = qr(A');
+        t = Q(:, end);
 
         t = t * sign(t0'*t);
         tx = t(1:end-1);
@@ -57,3 +68,47 @@ end
 
 end
 
+function xct = Fourier_to_Time(Xc, H, Nx, E)
+
+    for i = 1:3 * Nx
+        r1 = (2 * H + 1) * (i - 1) + 1;
+        r2 = (2 * H + 1) * i;
+        X(:,i) = Xc(r1:r2); % reorder in dofs in column
+    end
+    xct = E * X; 
+
+end
+
+function w = get_w_middle(xct, pfunc)
+    N = pfunc.HBM.N;
+    Nx = pfunc.HBM.Nx;
+    kn = pfunc.fc.kn;
+    kt = pfunc.fc.kt;
+    w_in = pfunc.fc.w;
+    mu = pfunc.fc.mu;
+
+    w = zeros(2, Nx);
+    xtt = zeros(N, 2);
+    xtn = zeros(N, 1);
+    for i = 1:Nx
+        xtt(:, 1) = xct(:, 3 * i - 2);
+        xtt(:, 2) = xct(:, 3 * i - 1);
+        xtn = xct(:, 3 * i);
+        for j = 1:2
+            w_plus = xtt(:, j) + mu(j, i) * kn(i) / kt(j, i) * max(xtn, 0);
+            w_minus = xtt(:, j) - mu(j, i) * kn(i) / kt(j, i) * max(xtn, 0);
+            if min(w_plus) >= max(w_minus)
+                w(j, i) = 0.5 * (min(w_plus) + max(w_minus));
+            else
+                w(j, i) = w_in(j, i);
+            end
+            % t = [0:N-1]';
+            % figure;
+            % plot(t, w_plus, 'k-'), hold on;
+            % plot(t, w_minus, 'b--'), grid on;
+            % plot(t, w(j, i) * ones(N, 1), 'r-');
+        end
+    end
+
+        
+end

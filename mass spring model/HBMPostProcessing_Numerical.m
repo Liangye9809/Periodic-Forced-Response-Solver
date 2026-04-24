@@ -15,74 +15,58 @@ OMEGA = sqrt(omega02) .* omega_cont';
 Adof = [OMEGA, Adof, k_cont'];
 
 
-ind_gap_stick = find(gap_cont == 1 & (slipP_cont + slipM_cont) == 0);
-ind_gap = find(gap_cont == 1);
 
 figure
-yyaxis left
+% yyaxis right
+% stem(Adof(:, 2), k_cont'), grid on
+% 
+% yyaxis left
 plot(Adof(:,2), Adof(:,3), 'b-', 'LineWidth', 2), hold on;
 grid on;
 ylabel('CB1');
-yyaxis right
-% stem(Adof(:, 2), k_cont'), grid on
-plot(Adof(:, 2), gap_cont', 'LineWidth', 2), hold on;
-plot(Adof(:, 2), slipP_cont', 'LineWidth', 2, 'LineStyle', '--', 'Color', 'r'), hold on;
-ylim([0, 1.2]);
 
-% title('Numerical Jacobian');
-% title('Analytical Jacobian');
+title('Numerical Jacobian');
 
 
 figure % X1
-yyaxis left
+% yyaxis right
+% stem(Adof(:, 2), k_cont'), grid on
+% 
+% yyaxis left
 plot(Adof(:, 2), Adof(:, 4), 'b-', 'LineWidth', 2), hold on;
-plot(Adof(ind_gap_stick, 2), Adof(ind_gap_stick, 4), 'k.', 'LineWidth', 2), hold on;
 grid on;
 ylabel('X1');
 
-yyaxis right
-plot(Adof(:, 2), gap_cont', 'LineWidth', 2), hold on;
-plot(Adof(:, 2), slipP_cont', 'LineWidth', 2, 'LineStyle', '--', 'Color', 'r'), hold on;
-ylim([0, 1.2]);
-
-
 figure % X2
-yyaxis left
+% yyaxis right
+% stem(Adof(:, 2), k_cont'), grid on
+% 
+% yyaxis left
 plot(Adof(:, 2), Adof(:, 5), 'b-', 'LineWidth', 2), hold on;
 grid on;
 ylabel('X2');
 
-yyaxis right
-plot(Adof(:, 2), gap_cont', 'LineWidth', 2), hold on;
-plot(Adof(:, 2), slipP_cont', 'LineWidth', 2, 'LineStyle', '--', 'Color', 'r'), hold on;
-ylim([0, 1.2]);
-
 
 figure % Xn
+% yyaxis right
+% stem(Adof(:, 2), k_cont'), grid on
+
 % yyaxis left
 plot(Adof(:, 2), Adof(:, 6), 'b-', 'LineWidth', 2), hold on;
 grid on;
 ylabel('Xn');
 
-% plot(Adof(ind_gap_stick, 2), Adof(ind_gap_stick, 6), 'k.', 'LineWidth', 2), hold on;
-
-% yyaxis right
-% plot(Adof(:, 2), gap_cont', 'LineWidth', 2), hold on;
-% plot(Adof(:, 2), slipP_cont', 'LineWidth', 2, 'LineStyle', '--', 'Color', 'r'), hold on;
-% ylim([0, 1.2]);
 
 
-
-% save Adof_Analytical_matlab_g.mat Adof
-
+% save Adof_Numerical_mex_g.mat Adof
 %% calculate nonlinear forces
-
+% close all
 % check FUN(x) = 0;
-% i_plot = min(ind_gap_stick);
-i_plot = ind_gap(1);
-x_poss = x_cont(:, i_plot);
-omega_poss = omega_cont(i_plot);
-params.func.fc.w = w_cont(:, i_plot);
+% para_A = load("data/Analytical Jacobian results 1.0/para_gap_to_stick_point.mat");
+para_A = load("data/Analytical Jacobian results 1.1/para_gap_to_stick_point.mat");
+x_poss = para_A.para.X(:);
+omega_poss = para_A.para.omega;
+params.func.fc.w = para_A.para.params.func.fc.w;
 
 for i = 1:Na + 3 * Nx
     r1 = (2 * H + 1) * (i - 1) + 1;
@@ -92,7 +76,7 @@ end
 xt_poss = params.func.HBM.E * X;
 xct_poss = xt_poss(:, Na + 1:end);
 
-[FUN_poss, w_poss, ~, flag_poss] = HBMFUNC(x_poss, xct_poss + xp', omega_poss, params.func);
+[FUN_poss, w_poss] = HBMFUNC(x_poss, omega_poss, params.func);
 
 % if FUN(x) ~= 0, calculate corresponse value
 if norm(FUN_poss) > params.Newton.epsf
@@ -101,7 +85,7 @@ if norm(FUN_poss) > params.Newton.epsf
     params.cont.omega_0 = omega_poss;
     params.cont.step = 100001;
     params.cont.x0 = x_poss;
-    [x_poss, omega_poss, ~, ~, w_poss, ~, FlagState_poss] = cont_step(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);
+    [x_poss, omega_poss, ~, ~, w_poss, ~] = cont_step(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);
     params.func.fc.w = w_poss;
 
     for i = 1:Na + 3 * Nx
@@ -113,9 +97,8 @@ if norm(FUN_poss) > params.Newton.epsf
     xct_poss = xt_poss(:, Na + 1:end);
 end
 
-
-[Ft_poss, w_poss, flag_poss] = g(xct_poss + xp', kn, xn0, mu, kt, params.func.fc.w, nloop); 
-JNL_poss = JNL_Analytical(xct_poss, flag_poss(:, :, end - N + 1:end), H, N, kt, kn, mu);
+[Ft_poss, w_poss] = g(xct_poss, params.func.fc);
+JNL_poss = finite_diff_jac(@(x) fftgx(x, params.func), x_poss(Na * (2 * H + 1) + 1:end));
 T = 2 * pi / omega_poss;
 dt = T / N;
 t_poss = [0:dt:(T - dt)]';
@@ -126,9 +109,10 @@ para.Ft = Ft_poss;
 para.omega = omega_poss;
 para.xp = xp;
 para.gxp = gxp;
+% para.Pe = FEM.Pe;
+% para.Pc = FEM.Pc;
 para.params = params;
 para.X = X;
-para.flag = flag_poss;
 % solution
 para.x_cont = x_cont;
 para.k_cont = k_cont;
@@ -143,49 +127,79 @@ plot(t_poss, xt_poss(:, 4), 'k-', 'LineWidth', 2), grid on;
 legend('x1', 'x2', 'xn');
 
 figure; % cycle
-% subplot(1,2,1)
 plot(xt_poss(:, 2), Ft_poss(end - N + 1:end, 1), 'b-', 'LineWidth', 2), hold on;
 plot(xt_poss(:, 3), Ft_poss(end - N + 1:end, 2), 'r-', 'LineWidth', 2), hold on;
 grid on;
 xlabel('x');
 ylabel('T');
-legend('x1-T1', 'x2-T2');
+legend('x1', 'x2');
 title('hysteresis cycle')
 
-% subplot(1,2,2)
-% plot(xt_poss(:, 3), Ft_poss(end - N + 1:end, 2), 'b-', 'LineWidth', 2), hold on;
-% grid on;
-% xlabel('x2');
-% ylabel('T2');
-% title('hysteresis cycle')
-
-
 figure; % friction
-plot(t_poss, max(mu(1) .* kn .* (xt_poss(:, 4) + xp(3)), 0), 'k-', 'LineWidth', 2), hold on;
-plot(t_poss, -max(mu(1) .* kn .* (xt_poss(:, 4) + xp(3)), 0), 'k-', 'LineWidth', 2), grid on;
+plot(t_poss,  mu(1) .* kn .* max((xt_poss(:, 4) + xp(3)), 0), 'k-', 'LineWidth', 2), hold on;
+plot(t_poss, -mu(2) .* kn .* max((xt_poss(:, 4) + xp(3)), 0), 'k-', 'LineWidth', 2), grid on;
 plot(t_poss, Ft_poss(end - N + 1:end, 1), 'b-', 'LineWidth', 2);
-legend('mu * Fn', '-mu * Fn', 'T1');
+plot(t_poss, Ft_poss(end - N + 1:end, 2), 'r-', 'LineWidth', 2);
+legend('mu * Fn', '-mu * Fn', 'T1', 'T2');
 
-figure; % friction state
-a(1:2, :) = flag_poss(1:2, 1, end - N + 1:end);
-subplot(2, 1, 1)
-plot(t_poss, a(1, :)', 'bo', 'MarkerSize', 2, 'MarkerFaceColor', 'b'), grid on;
-ylim([-1.1, 2.1]);
-legend('T1');
-title('friction state');
 
-subplot(2 ,1, 2)
-plot(t_poss, a(2, :)', 'bo', 'MarkerSize', 2, 'MarkerFaceColor', 'b'), grid on;
-ylim([-1.1, 2.1]);
-legend('T2');
 % save para_gap_to_stick_point.mat para;
+%% compare amplitude
 
-%%
-JNLt_A_11 = E * JNL_poss(1:2 * H + 1, 1:2 * H + 1);
-JNLt_A_13 = E * JNL_poss(1:2 * H + 1, 2 * (2 * H + 1) + 1:end);
-JNLt_A_22 = E * JNL_poss((2 * H + 1) + 1:2 * (2 * H + 1), (2 * H + 1) + 1:2 * (2 * H + 1));
-JNLt_A_23 = E * JNL_poss((2 * H + 1) + 1:2 * (2 * H + 1), 2 * (2 * H + 1) + 1:end);
+Adof_A = load("data/Analytical Jacobian results 1.1/Adof_Analytical_matlab_g.mat");
+Adof_N = load("data/Numerical Jacobian results 1.1/Adof_Numerical_mex_g.mat");
+figure
+for i = 1:4
+    subplot(2,2,i)
+    plot(Adof_N.Adof(:, 2), Adof_N.Adof(:, i + 2), 'b-', 'LineWidth', 2), hold on;
+    plot(Adof_A.Adof(:, 2), Adof_A.Adof(:, i + 2), 'r--', 'LineWidth', 2), grid on;
+    yname = 'CB1';
+    if i > 1
+        yname = 'x' + string(i - 1);
+    end
+    ylabel(yname);
+    legend('Numerical', 'Analytical');
+end
 
+%% compare iteration
+figure
+Adof_A = load("data/Analytical Jacobian results 1.1/Adof_Analytical_matlab_g.mat");
+Adof_N = load("data/Numerical Jacobian results 1.1/Adof_Numerical_mex_g.mat");
+para_A = load("data/Analytical Jacobian results 1.1/para_gap_to_stick_point.mat");
+plot(Adof_N.Adof(:, 2), Adof_N.Adof(:, 7), 'b*'), hold on, grid on;
+
+plot(Adof_A.Adof(:, 2), Adof_A.Adof(:, 7)', 'ro'), hold on, grid on;
+legend('Numerical', 'Analytical');
+
+%% compare displacement and Jacobian
+para_A = load("data/Analytical Jacobian results 1.1/para_gap_to_stick_point.mat");
+para_N = load('data/Numerical Jacobian results 1.1/para_gap_to_stick_point.mat');
+E = para_A.para.params.func.HBM.E;
+H = para_A.para.params.func.HBM.H;
+N = para_A.para.params.func.HBM.N;
+figure
+yname = 'CB1';
+for i = 1:4
+    subplot(2, 2, i)
+    plot(para_N.para.t, para_N.para.xt(:, i), 'b-', 'LineWidth', 2), hold on;
+    plot(para_A.para.t, para_A.para.xt(:, i), 'r--', 'LineWidth', 2), grid on;
+    if i > 1
+        yname = 'x' + string(i - 1);
+    end
+    ylabel(yname);
+    legend('Numerical', 'Analytical');
+end
+
+eps_J = norm(para_A.para.JNL_poss - para_N.para.JNL_poss) / norm(para_A.para.JNL_poss);
+JNLt_A_11 = E * para_A.para.JNL_poss(1:2 * H + 1, 1:2 * H + 1);
+JNLt_A_13 = E * para_A.para.JNL_poss(1:2 * H + 1, 2 * (2 * H + 1) + 1:end);
+JNLt_A_22 = E * para_A.para.JNL_poss((2 * H + 1) + 1:2 * (2 * H + 1), (2 * H + 1) + 1:2 * (2 * H + 1));
+JNLt_A_23 = E * para_A.para.JNL_poss((2 * H + 1) + 1:2 * (2 * H + 1), 2 * (2 * H + 1) + 1:end);
+
+JNLt_N_11 = E * para_N.para.JNL_poss(1:2 * H + 1, 1:2 * H + 1);
+JNLt_N_13 = E * para_N.para.JNL_poss(1:2 * H + 1, 2 * (2 * H + 1) + 1:end);
+JNLt_N_22 = E * para_N.para.JNL_poss((2 * H + 1) + 1:2 * (2 * H + 1), (2 * H + 1) + 1:2 * (2 * H + 1));
+JNLt_N_23 = E * para_N.para.JNL_poss((2 * H + 1) + 1:2 * (2 * H + 1), 2 * (2 * H + 1) + 1:end);
 
 t = para_A.para.t;
 for i = 1:11
@@ -206,7 +220,10 @@ for i = 1:11
     plot(t, JNLt_N_11(:, i), 'LineWidth', 2), grid on;
     legend('dTdxt A', 'dTdxt N');
     title(titlename);
-    
+    subplot(2,4,5)
+    plot(t, (JNLt_A_11(:, i) - JNLt_N_11(:, i)) ./ norm(JNLt_N_11(:, i)), 'LineWidth', 2), hold on
+    legend('relative difference');
+    grid on
 
     subplot(2,4,2)
     plot(t, JNLt_A_13(:, i), 'LineWidth', 2), hold on
