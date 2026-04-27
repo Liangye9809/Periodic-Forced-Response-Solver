@@ -5,18 +5,18 @@ FEM.Mcc = eye(3);
 FEM.Mec = zeros(3,3);
 
 
-FEM.Kee = diag([2, 2, 2]);
+FEM.Kee = 10 .* diag([2, 2, 0.7]);
 % FEM.Kee(1:3, 4:6) = diag([-1, -2, -3]);
 % FEM.Kee(4:6, 1:3) = diag([-1, -2, -3]);
 
-FEM.Kec = diag([-1, -1, -1]);
+FEM.Kec = 10 .* diag([-1, -1, -0.35]);
 
-FEM.Kcc = diag([1, 1, 1 ]);
+FEM.Kcc = 10 .* diag([1, 1, 0.35]);
 
-FEM.Fe = 1 * [1, 0.5, 0.1]';
+FEM.Fe = 2 * [1, 0.5, 2]';
 FEM.Fc = [0, 0 ,0]';
 
-FEM.Pe = [0, 0, 1]';
+FEM.Pe = 20 .* [0, 0, 1]';
 FEM.Pc = [0, 0 ,0]';
 
 % xn = - 4 * sin(sin(t)) + 1; % separation to stick
@@ -44,10 +44,10 @@ maxiter = 100;
 
 %% Coulomb friction
 
-kn = 1; % .* 1e5;
+kn = 20; % .* 1e5;
 xn0 = 0;
-mu = 0.5 * [0.1; 0.1]; % .* 1e5;
-kt = 0.01 * [1; 1]; % .* 1e5;
+mu = 0.5 * [1; 1]; % .* 1e5;
+kt = 1 * [1; 1]; % .* 1e5;
 nloop = 2;
 
 %% preload initial condition for Newton method
@@ -58,7 +58,7 @@ xp0 = 0; % if no value defined here, the default value inside is 0
 %% continuation parameters
 
 
-ds = 0.01;
+ds = 0.005;
 maxstep = 50000;
 % omega_0 = 0.81; % 
 % omega_end = 0.87;

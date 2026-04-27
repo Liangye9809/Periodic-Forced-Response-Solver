@@ -12,11 +12,13 @@ for Ndof = 1:3*Nx + Na
     Adof(:, Ndof + 1) = Amax';
 end
 OMEGA = sqrt(omega02) .* omega_cont';
+% OMEGA = omega_cont';
 Adof = [OMEGA, Adof, k_cont'];
 
 
 ind_gap_stick = find(gap_cont == 1 & (slipP_cont + slipM_cont) == 0);
 ind_gap = find(gap_cont == 1);
+ind_slip = find(slipP_cont == 1);
 
 figure
 yyaxis left
@@ -71,15 +73,19 @@ ylabel('Xn');
 % plot(Adof(:, 2), slipP_cont', 'LineWidth', 2, 'LineStyle', '--', 'Color', 'r'), hold on;
 % ylim([0, 1.2]);
 
-
-
+figure
+for i = 1:4
+    plot(Adof(:, 2), Adof(:, i + 2), 'LineWidth', 2), hold on;
+end
+legend('CB1', 'x1', 'x2', 'x3');
+grid on;
 % save Adof_Analytical_matlab_g.mat Adof
 
 %% calculate nonlinear forces
 close all
 % check FUN(x) = 0;
 % i_plot = min(ind_gap_stick);
-i_plot = ind_gap(2);
+i_plot = ind_gap(300);
 x_poss = x_cont(:, i_plot);
 omega_poss = omega_cont(i_plot);
 params.func.fc.w = w_cont(:, i_plot);
@@ -137,9 +143,9 @@ para.JNL_poss = JNL_poss;
 
 
 figure; % displacement
-plot(t_poss, xt_poss(:, 2), 'b-', 'LineWidth', 2), hold on;
-plot(t_poss, xt_poss(:, 3), 'r-', 'LineWidth', 2), hold on;
-plot(t_poss, xt_poss(:, 4), 'k-', 'LineWidth', 2), grid on;
+plot(t_poss, xt_poss(:, 2) + xp(1), 'b-', 'LineWidth', 2), hold on;
+plot(t_poss, xt_poss(:, 3) + xp(2), 'r-', 'LineWidth', 2), hold on;
+plot(t_poss, xt_poss(:, 4) + xp(3), 'k-', 'LineWidth', 2), grid on;
 legend('x1', 'x2', 'xn');
 
 figure; % cycle
@@ -166,6 +172,12 @@ plot(t_poss, -max(mu(1) .* kn .* (xt_poss(:, 4) + xp(3)), 0), 'k-', 'LineWidth',
 plot(t_poss, Ft_poss(end - N + 1:end, 1), 'b-', 'LineWidth', 2);
 legend('mu * Fn', '-mu * Fn', 'T1');
 
+figure; % friction
+plot(t_poss, max(mu(2) .* kn .* (xt_poss(:, 4) + xp(3)), 0), 'k-', 'LineWidth', 2), hold on;
+plot(t_poss, -max(mu(2) .* kn .* (xt_poss(:, 4) + xp(3)), 0), 'k-', 'LineWidth', 2), grid on;
+plot(t_poss, Ft_poss(end - N + 1:end, 2), 'r-', 'LineWidth', 2);
+legend('mu * Fn', '-mu * Fn', 'T2');
+
 figure; % friction state
 a(1:2, :) = flag_poss(1:2, 1, end - N + 1:end);
 subplot(2, 1, 1)
@@ -175,19 +187,23 @@ legend('T1');
 title('friction state');
 
 subplot(2 ,1, 2)
-plot(t_poss, a(2, :)', 'bo', 'MarkerSize', 2, 'MarkerFaceColor', 'b'), grid on;
+plot(t_poss, a(2, :)', 'ro', 'MarkerSize', 2, 'MarkerFaceColor', 'r'), grid on;
 ylim([-1.1, 2.1]);
 legend('T2');
 % save para_gap_to_stick_point.mat para;
 
 %%
+% N = 2^15;
+[E, EH] = HBM.fft_matrices(N, H);
 JNLt_A_11 = E * JNL_poss(1:2 * H + 1, 1:2 * H + 1);
 JNLt_A_13 = E * JNL_poss(1:2 * H + 1, 2 * (2 * H + 1) + 1:end);
 JNLt_A_22 = E * JNL_poss((2 * H + 1) + 1:2 * (2 * H + 1), (2 * H + 1) + 1:2 * (2 * H + 1));
 JNLt_A_23 = E * JNL_poss((2 * H + 1) + 1:2 * (2 * H + 1), 2 * (2 * H + 1) + 1:end);
 
-t = t_poss;
-for i = 1:11
+dt = T / N;
+t = [0:dt:(T - dt)]';
+
+for i = 1:3
     fig = figure; %('PaperOrientation','landscape','PaperUnits','centimeters','PaperPosition', 100 * [0 0 29.7 21], 'PaperSize',[29.7 21] * 100);
     
     fig.WindowState = 'maximized';

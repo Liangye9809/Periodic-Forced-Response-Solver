@@ -11,7 +11,8 @@ for Ndof = 1:3*Nx + Na
     Amax = max(abs(A));
     Adof(:, Ndof + 1) = Amax';
 end
-OMEGA = sqrt(omega02) .* omega_cont';
+% OMEGA = sqrt(omega02) .* omega_cont';
+OMEGA = omega_cont';
 Adof = [OMEGA, Adof, k_cont'];
 
 
@@ -63,7 +64,8 @@ ylabel('Xn');
 % close all
 % check FUN(x) = 0;
 % para_A = load("data/Analytical Jacobian results 1.0/para_gap_to_stick_point.mat");
-para_A = load("data/Analytical Jacobian results 1.1/para_gap_to_stick_point.mat");
+% para_A = load("data/Analytical Jacobian results 1.1/para_gap_to_stick_point.mat");
+para_A = load("data/Analytical Jacobian results 2.0 simple sin/para_gap_to_stick_point.mat");
 x_poss = para_A.para.X(:);
 omega_poss = para_A.para.omega;
 params.func.fc.w = para_A.para.params.func.fc.w;
@@ -146,8 +148,8 @@ legend('mu * Fn', '-mu * Fn', 'T1', 'T2');
 % save para_gap_to_stick_point.mat para;
 %% compare amplitude
 
-Adof_A = load("data/Analytical Jacobian results 1.1/Adof_Analytical_matlab_g.mat");
-Adof_N = load("data/Numerical Jacobian results 1.1/Adof_Numerical_mex_g.mat");
+Adof_A = load("data/Analytical Jacobian results 2.0 simple sin/Adof_Analytical_matlab_g.mat");
+Adof_N = load("data/Numerical Jacobian results 2.0 simple sin/Adof_Numerical_mex_g.mat");
 figure
 for i = 1:4
     subplot(2,2,i)
@@ -163,17 +165,17 @@ end
 
 %% compare iteration
 figure
-Adof_A = load("data/Analytical Jacobian results 1.1/Adof_Analytical_matlab_g.mat");
-Adof_N = load("data/Numerical Jacobian results 1.1/Adof_Numerical_mex_g.mat");
-para_A = load("data/Analytical Jacobian results 1.1/para_gap_to_stick_point.mat");
+Adof_A = load("data/Analytical Jacobian results 2.0 simple sin/Adof_Analytical_matlab_g.mat");
+Adof_N = load("data/Numerical Jacobian results 2.0 simple sin/Adof_Numerical_mex_g.mat");
+para_A = load("data/Analytical Jacobian results 2.0 simple sin/para_gap_to_stick_point.mat");
 plot(Adof_N.Adof(:, 2), Adof_N.Adof(:, 7), 'b*'), hold on, grid on;
 
 plot(Adof_A.Adof(:, 2), Adof_A.Adof(:, 7)', 'ro'), hold on, grid on;
 legend('Numerical', 'Analytical');
 
 %% compare displacement and Jacobian
-para_A = load("data/Analytical Jacobian results 1.1/para_gap_to_stick_point.mat");
-para_N = load('data/Numerical Jacobian results 1.1/para_gap_to_stick_point.mat');
+para_A = load("data/Analytical Jacobian results 2.0 simple sin/para_gap_to_stick_point.mat");
+para_N = load('data/Numerical Jacobian results 2.0 simple sin/para_gap_to_stick_point.mat');
 E = para_A.para.params.func.HBM.E;
 H = para_A.para.params.func.HBM.H;
 N = para_A.para.params.func.HBM.N;
@@ -221,8 +223,10 @@ for i = 1:11
     legend('dTdxt A', 'dTdxt N');
     title(titlename);
     subplot(2,4,5)
-    plot(t, (JNLt_A_11(:, i) - JNLt_N_11(:, i)) ./ norm(JNLt_N_11(:, i)), 'LineWidth', 2), hold on
-    legend('relative difference');
+    % plot(t, (JNLt_A_11(:, i) - JNLt_N_11(:, i)) ./ norm(JNLt_N_11(:, i)), 'LineWidth', 2), hold on
+    plot(t, (JNLt_A_11(:, i) - JNLt_N_11(:, i)) , 'LineWidth', 2), hold on
+    % legend('relative difference');
+    legend('difference');
     grid on
 
     subplot(2,4,2)
@@ -231,8 +235,10 @@ for i = 1:11
     legend('dTdxn A', 'dTdxn N');
     title(titlename);
     subplot(2,4,6)
-    plot(t, (JNLt_A_13(:, i) - JNLt_N_13(:, i)) ./ norm(JNLt_N_13(:, i)), 'LineWidth', 2), hold on
-    legend('relative difference');
+    % plot(t, (JNLt_A_13(:, i) - JNLt_N_13(:, i)) ./ norm(JNLt_N_13(:, i)), 'LineWidth', 2), hold on
+    plot(t, (JNLt_A_13(:, i) - JNLt_N_13(:, i)), 'LineWidth', 2), hold on
+    % legend('relative difference');
+    legend('difference');
     grid on
 
     subplot(2,4,3)
@@ -241,8 +247,10 @@ for i = 1:11
     legend('dTdxn A', 'dTdxn N');
     title(titlename);
     subplot(2,4,7)
-    plot(t, (JNLt_A_22(:, i) - JNLt_N_22(:, i)) ./ norm(JNLt_N_22(:, i)), 'LineWidth', 2), hold on
-    legend('relative difference');
+    % plot(t, (JNLt_A_22(:, i) - JNLt_N_22(:, i)) ./ norm(JNLt_N_22(:, i)), 'LineWidth', 2), hold on
+    plot(t, (JNLt_A_22(:, i) - JNLt_N_22(:, i)), 'LineWidth', 2), hold on
+    % legend('relative difference');
+    legend('difference');
     grid on
 
     subplot(2,4,4)
@@ -251,8 +259,10 @@ for i = 1:11
     legend('dTdxn A', 'dTdxn N');
     title(titlename);
     subplot(2,4,8)
-    plot(t, (JNLt_A_23(:, i) - JNLt_N_23(:, i)) ./ norm(JNLt_N_23(:, i)), 'LineWidth', 2), hold on
-    legend('relative difference');
+    % plot(t, (JNLt_A_23(:, i) - JNLt_N_23(:, i)) ./ norm(JNLt_N_23(:, i)), 'LineWidth', 2), hold on
+    plot(t, (JNLt_A_23(:, i) - JNLt_N_23(:, i)), 'LineWidth', 2), hold on
+    % legend('relative difference');
+    legend('difference');
     grid on
 
     % pintname = string(titlename) + '.png';

@@ -92,10 +92,13 @@ Nondimensionalization
 %% continuation calculation with HBM
 
 tic;
-omega_plot = 4100;
+% omega_plot = 4100;
 
 omega_0 = 0.1;
 omega_end = 1.5;
+
+% omega_0 = 0.2;
+% omega_end = 2.3;
 
 ContinuationCalculation
 
@@ -126,7 +129,7 @@ CaseTime = toc;
 
 %%
 
-HBMPostProcessing;
+% HBMPostProcessing;
 % HBMPostProcessing_Numerical;
 
 
