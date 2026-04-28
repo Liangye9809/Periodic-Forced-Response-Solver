@@ -120,10 +120,13 @@ ContinuationCalculation
 % params.func.HBM.fftfx = 0.5 .* [Xt; Xt2; Xn] .* beta / (alpha^2 * omega02);
 
 % Analytical
-[x_cont, omega_cont, k_cont, w_cont, stick_cont, slipP_cont, slipM_cont, gap_cont] = continuation(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);
+% [x_cont, omega_cont, k_cont, w_cont, stick_cont, slipP_cont, slipM_cont, gap_cont] = continuation(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);
 
 % Numerical
 % [x_cont, omega_cont, k_cont] = continuation(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);
+
+% fixed Numerical
+% [x_cont, omega_cont, k_cont, ~, ~] = continuation(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);
 
 CaseTime = toc;
 
@@ -131,6 +134,6 @@ CaseTime = toc;
 
 % HBMPostProcessing;
 % HBMPostProcessing_Numerical;
-
+% HBMPostProcessing_Numerical_fixed;
 
 

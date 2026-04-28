@@ -78,7 +78,7 @@ end
 xt_poss = params.func.HBM.E * X;
 xct_poss = xt_poss(:, Na + 1:end);
 
-[FUN_poss, w_poss] = HBMFUNC(x_poss, omega_poss, params.func);
+[FUN_poss, w_poss, JL_poss, flag_poss] = HBMFUNC(x_poss, xct_poss, omega_poss, params.func);
 
 % if FUN(x) ~= 0, calculate corresponse value
 if norm(FUN_poss) > params.Newton.epsf
@@ -87,7 +87,7 @@ if norm(FUN_poss) > params.Newton.epsf
     params.cont.omega_0 = omega_poss;
     params.cont.step = 100001;
     params.cont.x0 = x_poss;
-    [x_poss, omega_poss, ~, ~, w_poss, ~] = cont_step(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);
+    [x_poss, omega_poss, ~, ~, w_poss, ~, ~] = cont_step(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);
     params.func.fc.w = w_poss;
 
     for i = 1:Na + 3 * Nx
@@ -99,8 +99,23 @@ if norm(FUN_poss) > params.Newton.epsf
     xct_poss = xt_poss(:, Na + 1:end);
 end
 
-[Ft_poss, w_poss] = g(xct_poss + xp', params.func.fc);
-JNL_poss = finite_diff_jac(@(x) fftgx(x, params.func), x_poss(Na * (2 * H + 1) + 1:end));
+% [Ft_poss, w_poss] = g(xct_poss, params.func.fc);
+
+   EH = params.func.HBM.EH;
+    N = params.func.HBM.N;
+  gxp = params.func.static.preload.gxp;
+   xp = params.func.static.preload.xp;
+   kn = params.func.fc.kn;
+  xn0 = params.func.fc.xn0;
+   mu = params.func.fc.mu;
+   kt = params.func.fc.kt;
+ w_in = params.func.fc.w;
+nloop = params.func.fc.nloop;
+
+[Fti, wi, flagi] = g(xct_poss + xp', kn, xn0, mu, kt, w_in, nloop); 
+Ft_poss = Fti(end - N + 1:end, :);
+
+JNL_poss = finite_diff_jac(@(x) fftgx(x, xct_poss, params.func), x_poss(Na * (2 * H + 1) + 1:end));
 T = 2 * pi / omega_poss;
 dt = T / N;
 t_poss = [0:dt:(T - dt)]';
@@ -149,7 +164,7 @@ legend('mu * Fn', '-mu * Fn', 'T1', 'T2');
 %% compare amplitude
 
 Adof_A = load("data/Analytical Jacobian results 2.0 simple sin/Adof_Analytical_matlab_g.mat");
-Adof_N = load("data/Numerical Jacobian results 2.0 simple sin/Adof_Numerical_mex_g.mat");
+Adof_N = load("data/Fixed Numerical Jacobian results 2.0 simple sin/Adof_Numerical_mex_g.mat");
 figure
 for i = 1:4
     subplot(2,2,i)

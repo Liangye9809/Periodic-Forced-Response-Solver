@@ -17,32 +17,32 @@ function [F, w, flag] = fftgx(x, xct, pfunc) %
     nloop = pfunc.fc.nloop;
 
 %% inputs are xct, pfunc
-    [Fti, wi, flag] = g(xct + xp', kn, xn0, mu, kt, w_in, nloop); 
-    w = wi(1:2, :, end);
-
-    Ft = Fti(N + 1:end, :) - gxp';
-    hndn = EH * Ft;
-    F = hndn(:);
-%% inputs are x, pfunc
-
-    % E = pfunc.HBM.E;
-    % n = size(E, 2); % 2H+1
-    % a = size(x, 1) / n; % number of DOF
-    % X = zeros(n, a);
-    % for i = 1:a
-    %     r1 = n * (i - 1) + 1;
-    %     r2 = n * i;
-    %     X(:,i) = x(r1:r2); % reorder in dofs in column
-    % end
-    % xt = E * X; 
-    % 
-    % 
-    % [Fti, wi, flag] = g(xt + xp', kn, xn0, mu, kt, w_in, nloop); 
+    % [Fti, wi, flag] = g(xct + xp', kn, xn0, mu, kt, w_in, nloop); 
     % w = wi(1:2, :, end);
     % 
     % Ft = Fti(N + 1:end, :) - gxp';
     % hndn = EH * Ft;
     % F = hndn(:);
+%% inputs are x, pfunc
+
+    E = pfunc.HBM.E;
+    n = size(E, 2); % 2H+1
+    a = size(x, 1) / n; % number of DOF
+    X = zeros(n, a);
+    for i = 1:a
+        r1 = n * (i - 1) + 1;
+        r2 = n * i;
+        X(:,i) = x(r1:r2); % reorder in dofs in column
+    end
+    xt = E * X; 
+
+
+    [Fti, wi, flag] = g(xt + xp', kn, xn0, mu, kt, w_in, nloop); 
+    w = wi(1:2, :, end);
+
+    Ft = Fti(end - N + 1:end, :) - gxp';
+    hndn = EH * Ft;
+    F = hndn(:);
 
     
 end

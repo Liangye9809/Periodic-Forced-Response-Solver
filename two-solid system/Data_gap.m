@@ -1,0 +1,113 @@
+%% FEM matrices for test
+% get the FEM matrices
+
+% for fine mesh
+
+% tep = pwd;
+% cd FEM/
+% load('CP4.mat');
+% cd(tep)
+
+% FEM.Fe = zeros(size(FEM.Mee, 1), 1);
+% Fe_idx = [1661, 1667, 31355, 31367] - 1;
+% FEM.Fe(Fe_idx) = 1;
+% FEM.Fc = zeros(size(FEM.Mcc, 1), 1);
+
+%% for 32x32 mesh
+
+FEM.Fe = zeros(size(FEM.Mee, 1), 1);
+Fe_idx = FEM.idx_Fe - 1; % change y direction to x direction
+FEM.Fe(Fe_idx) = 1;
+FEM.Fc = zeros(size(FEM.Mcc, 1), 1);
+
+%%
+% for old mesh
+
+% tep = pwd;
+% cd FEM/two_blades_old/mesh_files/
+% load('CP4.mat');
+% cd(tep)
+% 
+% FEM.Fe = zeros(size(FEM.Mee, 1), 1);
+% Fe_idx = [112, 118, 5764, 5800];
+% FEM.Fe(Fe_idx) = 1;
+% FEM.Fc = zeros(size(FEM.Mcc, 1), 1);
+
+% from old input
+% tep = pwd;
+% cd FEM/
+% load('DATA.mat');
+% FEM = DATA;
+% clear DATA
+% cd(tep)
+% 
+% FEM.Pe = - FEM.Pe;
+%% External  forces
+
+H_F_ext = [0, 0, 1]; % fourier coefficient of f(t)
+
+
+%% HBM parameters
+
+% H = 7; % number of harmonics assumption
+% N = 2^6; % number of time points per force cycle
+% Nx = 64; % number of contact points, means having 4 * 3 = 12 dofs
+Na = 5; % number of CB modes
+xi = 1e-6; 
+
+% calculate the preload forces by predisplacement in normal direction 1 mm
+
+% Xcn0 = zeros(3*Nx, 1);
+% X00 = [0, 0, 0.001]';
+% for i = 1:Nx
+%     Xcn0(3 * i - 2:3 * i) = X00;
+% end
+% FEM.Pe = FEM.Kec * Xcn0;
+% FEM.Pc = FEM.Kcc * Xcn0;
+
+%% for 32x32 mesh
+FEM.Pe = zeros(size(FEM.Kec, 1), 1);
+F_each = 100; % for 32x32 contact mesh, 9 points each side, total 900 N each side
+% F_each = 112.5; % for 10x13 contact mesh, 8 points each side, total 900 N each side
+FEM.Pe(FEM.idx_Pe1) = F_each;
+FEM.Pe(FEM.idx_Pe2) = - F_each;
+FEM.Pc = zeros(size(FEM.Kcc, 1), 1);
+
+%% Newton Method parameters
+
+epsx = 1e-3;
+epsf = 1e-3;
+maxiter = 100;
+
+%% Coulomb friction
+
+kn = 1e9 ./ (Nx/4); % .* 1e5;
+% kn = 3.3e7 ./ (Nx/4); % .* 1e5;
+xn0 = 0;
+mu = [0.1; 0.1]; % .* 1e5;
+kt = [1e6; 1e6] ./ (Nx/4); % .* 1e5;
+nloop = 2;
+
+%% preload initial condition for Newton method
+
+xp0 = 0; % if no value defined here, the default value inside is 0
+
+
+%% continuation parameters
+
+
+ds = 0.5;
+maxstep = 20000;
+% omega_0 = 0.81; % 
+% omega_end = 0.87;
+
+
+
+
+
+
+% x0 = 0;
+
+% tx0 = 0; % always 0 when calculating the first point so default inside the code
+% tomega0 = 1; % is defined by lambda0 and lambda_end
+
