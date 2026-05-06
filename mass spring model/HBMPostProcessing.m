@@ -24,6 +24,77 @@ figure
 subplot(2,2,1)
 yyaxis left
 plot(Adof(:,2), Adof(:,3), 'b-', 'LineWidth', 2), hold on;
+grid on;
+ylabel('CB1');
+
+yyaxis right
+% stem(Adof(:, 2), k_cont'), grid on
+plot(Adof(:, 2), gap_cont', 'LineWidth', 2, 'LineStyle', '-', 'Color', 'r'), hold on;
+plot(Adof(:, 2), slipP_cont', 'LineWidth', 2, 'LineStyle', '--', 'Color', 'k'), hold on;
+ylim([0, 1.1]);
+xlabel('Omega');
+legend('CB1', 'gap appears area', 'slip appears area');
+% title('Numerical Jacobian');
+% title('Analytical Jacobian');
+
+
+% figure % X1
+subplot(2,2,2)
+yyaxis left
+plot(Adof(:, 2), Adof(:, 4), 'b-', 'LineWidth', 2), hold on;
+% plot(Adof(ind_gap_stick, 2), Adof(ind_gap_stick, 4), 'k.', 'LineWidth', 2), hold on;
+grid on;
+ylabel('X1');
+
+yyaxis right
+plot(Adof(:, 2), gap_cont', 'LineWidth', 2, 'LineStyle', '-', 'Color', 'r'), hold on;
+plot(Adof(:, 2), slipP_cont', 'LineWidth', 2, 'LineStyle', '--', 'Color', 'k'), hold on;
+ylim([0, 1.1]);
+xlabel('Omega');
+legend('CB1', 'gap appears area', 'slip appears area');
+
+% figure % X2
+subplot(2,2,3)
+yyaxis left
+plot(Adof(:, 2), Adof(:, 5), 'b-', 'LineWidth', 2), hold on;
+grid on;
+ylabel('X2');
+
+yyaxis right
+plot(Adof(:, 2), gap_cont', 'LineWidth', 2, 'LineStyle', '-', 'Color', 'r'), hold on;
+plot(Adof(:, 2), slipP_cont', 'LineWidth', 2, 'LineStyle', '--', 'Color', 'k'), hold on;
+ylim([0, 1.1]);
+xlabel('Omega');
+legend('CB1', 'gap appears area', 'slip appears area');
+
+% figure % Xn
+subplot(2,2,4)
+yyaxis left
+plot(Adof(:, 2), Adof(:, 6), 'b-', 'LineWidth', 2), hold on;
+grid on;
+ylabel('Xn');
+
+% plot(Adof(ind_gap_stick, 2), Adof(ind_gap_stick, 6), 'k.', 'LineWidth', 2), hold on;
+
+yyaxis right
+plot(Adof(:, 2), gap_cont', 'LineWidth', 2, 'LineStyle', '-', 'Color', 'r'), hold on;
+plot(Adof(:, 2), slipP_cont', 'LineWidth', 2, 'LineStyle', '--', 'Color', 'k'), hold on;
+ylim([0, 1.1]);
+xlabel('Omega');
+legend('CB1', 'gap appears area', 'slip appears area');
+
+
+figure
+for i = 1:4
+    plot(Adof(:, 2), Adof(:, i + 2), 'LineWidth', 2), hold on;
+end
+legend('CB1', 'x1', 'x2', 'x3');
+grid on;
+%%
+figure
+subplot(2,2,1)
+yyaxis left
+plot(Adof(:,2), Adof(:,3), 'b-', 'LineWidth', 2), hold on;
 plot(Adof(927,2), Adof(927,3), 'ro', 'LineWidth', 2), hold on;
 ylim([0, 5]);
 grid on;
@@ -100,11 +171,47 @@ grid on;
 % save Adof_Analytical_matlab_g.mat Adof
 
 %% calculate nonlinear forces
-close all
+% close all
+E = params.func.HBM.E;
+dxdn = [];
+for i = 1:size(x_cont, 2)
+    xct = Fourier_to_Time(x_cont(2 * H + 2:end, i), H, Nx, E);
+    xct = xct + xp';
+    if sum(xct(:, 3) < 0) > 0 % gap appears
+        gapi = find(xct(:, 3) > 0);
+        ip = gapi(1);
+        im = mod(ip - 2, N) + 1;
+        dxdn1 = (xct(ip, 1) - xct(im, 1)) / (xct(ip, 3) - xct(im, 3));
+        % dxdn2 = (xct(ip, 2) - xct(im, 2)) / (xct(ip, 3) - xct(im, 3));
+        % dxdni = [i, dxdn1, dxdn2];
+        if dxdn1 < mu(1) * kn / kt(1)
+            dxdni = [i, dxdn1];
+            dxdn = [dxdn; dxdni];
+        end
+    end
+end
+
+max1 = max(abs(dxdn(:, 2)))
+% max2 = max(dxdn(:, 3));
+
+ind_1 = dxdn(find(dxdn(:, 2) == -max1), 1)
+% ind_2 = dxdn(find(dxdn(:, 3) == max2), 1)
+
+function xct = Fourier_to_Time(Xc, H, Nx, E)
+
+    for i = 1:3 * Nx
+        r1 = (2 * H + 1) * (i - 1) + 1;
+        r2 = (2 * H + 1) * i;
+        X(:,i) = Xc(r1:r2); % reorder in dofs in column
+    end
+    xct = E * X; 
+
+end
+%%
 % check FUN(x) = 0;
 % i_plot = min(ind_gap_stick);
 % i_plot = ind_gap(371);
-i_plot = 927;
+i_plot = 1956;
 x_poss = x_cont(:, i_plot);
 omega_poss = omega_cont(i_plot);
 params.func.fc.w = w_cont(:, i_plot);

@@ -39,13 +39,13 @@ function xct = Fourier_to_Time(Xc, H, Nx, E)
 end
 
 %%
-load("data/Analytical Jacobian results 2.0 simple sin/para_gap_to_stick_point.mat");
+load("data/Analytical Jacobian results 3.0 big diff/para_gap_to_stick_point.mat");
 xp_A = para.params.func.static.preload.xp;
 
-load("data/Numerical Jacobian results 2.0 simple sin/para_gap_to_stick_point.mat");
+load("data/Numerical Jacobian results 3.0 big diff/para_gap_to_stick_point.mat");
 xp_N = para.params.func.static.preload.xp;
 
-load("data/Fixed Numerical Jacobian results 2.0 simple sin/para_gap_to_stick_point.mat");
+load("data/Fixed Numerical Jacobian results 3.0 big diff/para_gap_to_stick_point.mat");
 xp_F = para.params.func.static.preload.xp;
 
 epsAN = norm(xp_A - xp_N) / norm(xp_A)
@@ -56,11 +56,11 @@ close all
 for i = 1:3
     switch i
         case 1
-            load("data/Analytical Jacobian results 2.0 simple sin/para_gap_to_stick_point.mat");
+            load("data/Analytical Jacobian results 3.0 big diff/para_gap_to_stick_point.mat");
         case 2
-            load("data/Numerical Jacobian results 2.0 simple sin/para_gap_to_stick_point.mat");
+            load("data/Numerical Jacobian results 3.0 big diff/para_gap_to_stick_point.mat");
         case 3
-            load("data/Fixed Numerical Jacobian results 2.0 simple sin/para_gap_to_stick_point.mat");
+            load("data/Fixed Numerical Jacobian results 3.0 big diff/para_gap_to_stick_point.mat");
     end
     t_poss = para.t;
     mu = para.params.func.fc.mu;
@@ -79,9 +79,9 @@ for i = 1:3
 end
 %% compare amplitude
 
-Adof_A = load("data/Analytical Jacobian results 2.0 simple sin/Adof_Analytical_matlab_g.mat");
-Adof_N = load("data/Numerical Jacobian results 2.0 simple sin/Adof_Numerical_mex_g.mat");
-Adof_F = load("data/Fixed Numerical Jacobian results 2.0 simple sin/Adof_Numerical_mex_g.mat");
+Adof_A = load("data/Analytical Jacobian results 3.0 big diff/Adof_Analytical_matlab_g.mat");
+Adof_N = load("data/Numerical Jacobian results 3.0 big diff/Adof_Numerical_mex_g.mat");
+Adof_F = load("data/Fixed Numerical Jacobian results 3.0 big diff/Adof_Numerical_mex_g.mat");
 figure
 for i = 1:4
     subplot(2,2,i)
@@ -109,9 +109,9 @@ xlabel('Omega');
 title('Number of iteration comparison');
 
 %% compare displacement and Jacobian
-para_A = load("data/Analytical Jacobian results 2.0 simple sin/para_gap_to_stick_point.mat");
-para_N = load('data/Numerical Jacobian results 2.0 simple sin/para_gap_to_stick_point.mat');
-para_F = load('data/Fixed Numerical Jacobian results 2.0 simple sin/para_gap_to_stick_point.mat');
+para_A = load("data/Analytical Jacobian results 3.0 big diff/para_gap_to_stick_point.mat");
+para_N = load('data/Numerical Jacobian results 3.0 big diff/para_gap_to_stick_point.mat');
+para_F = load('data/Fixed Numerical Jacobian results 3.0 big diff/para_gap_to_stick_point.mat');
 E = para_A.para.params.func.HBM.E;
 H = para_A.para.params.func.HBM.H;
 N = para_A.para.params.func.HBM.N;

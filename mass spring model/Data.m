@@ -5,20 +5,26 @@ FEM.Mcc = eye(3);
 FEM.Mec = zeros(3,3);
 
 
-FEM.Kee = 10 .* diag([2, 2, 0.7]);
-% FEM.Kee(1:3, 4:6) = diag([-1, -2, -3]);
-% FEM.Kee(4:6, 1:3) = diag([-1, -2, -3]);
+% FEM.Kee = 10 .* diag([2, 2, 0.7]);
+% FEM.Kec = 10 .* diag([-1, -1, -0.35]);
+% FEM.Kcc = -FEM.Kec;
+% 
+% FEM.Fe = 2 * [1, 0, 2]';
+% FEM.Fc = [0, 0 ,0]';
+% 
+% FEM.Pe = 20 .* [0, 0, 1]';
+% FEM.Pc = [0, 0 ,0]';
 
-FEM.Kec = 10 .* diag([-1, -1, -0.35]);
 
-FEM.Kcc = 10 .* diag([1, 1, 0.35]);
+FEM.Kee = diag([110, 110, 38.5]);
+FEM.Kec = diag([-100, -100, -35]);
+FEM.Kcc = -FEM.Kec;
 
-FEM.Fe = 2 * [1, 0.5, 2]';
+FEM.Fe = 2 * [50, 0, 15]';
 FEM.Fc = [0, 0 ,0]';
 
-FEM.Pe = 20 .* [0, 0, 1]';
+FEM.Pe = 200 .* [0, 0, 1]';
 FEM.Pc = [0, 0 ,0]';
-
 % xn = - 4 * sin(sin(t)) + 1; % separation to stick
 % xt = 2 * exp(cos(t + 1)) - 3; % separation to stick
 

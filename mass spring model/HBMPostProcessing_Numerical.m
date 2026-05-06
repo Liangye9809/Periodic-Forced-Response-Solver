@@ -65,7 +65,8 @@ ylabel('Xn');
 % check FUN(x) = 0;
 % para_A = load("data/Analytical Jacobian results 1.0/para_gap_to_stick_point.mat");
 % para_A = load("data/Analytical Jacobian results 1.1/para_gap_to_stick_point.mat");
-para_A = load("data/Analytical Jacobian results 2.0 simple sin/para_gap_to_stick_point.mat");
+% para_A = load("data/Analytical Jacobian results 2.0 simple sin/para_gap_to_stick_point.mat");
+para_A = load("data/Analytical Jacobian results 3.0 big diff/para_gap_to_stick_point.mat");
 x_poss = para_A.para.X(:);
 omega_poss = para_A.para.omega;
 params.func.fc.w = para_A.para.params.func.fc.w;
@@ -123,9 +124,9 @@ para.JNL_poss = JNL_poss;
 
 
 figure; % displacement
-plot(t_poss, xt_poss(:, 2), 'b-', 'LineWidth', 2), hold on;
-plot(t_poss, xt_poss(:, 3), 'r-', 'LineWidth', 2), hold on;
-plot(t_poss, xt_poss(:, 4), 'k-', 'LineWidth', 2), grid on;
+plot(t_poss, xt_poss(:, 2) + xp(1), 'b-', 'LineWidth', 2), hold on;
+plot(t_poss, xt_poss(:, 3) + xp(2), 'r-', 'LineWidth', 2), hold on;
+plot(t_poss, xt_poss(:, 4) + xp(3), 'k-', 'LineWidth', 2), grid on;
 legend('x1', 'x2', 'xn');
 
 figure; % cycle

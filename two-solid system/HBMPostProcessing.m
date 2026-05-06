@@ -14,9 +14,9 @@ end
 OMEGA = sqrt(omega02) .* omega_cont';
 Adof = [OMEGA, Adof];
 
-figure
+% figure
 % yyaxis left
-plot(Adof(:,2), Adof(:,3), 'b-', 'LineWidth', 2), hold on;
+plot(Adof(:,2), Adof(:,3), 'r--', 'LineWidth', 2), hold on;
 grid on;
 
 % yyaxis right
