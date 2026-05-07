@@ -96,7 +96,97 @@ Mass-spring model,
 \end_layout
 
 \begin_layout Standard
+FEM.Kee = diag([110,
+ 110,
+ 38.5]);
+\end_layout
 
+\begin_layout Standard
+FEM.Kec = diag([-100,
+ -100,
+ -35]);
+\end_layout
+
+\begin_layout Standard
+FEM.Kcc = -FEM.Kec;
+\end_layout
+
+\begin_layout Standard
+FEM.Fe = 2 * [50,
+ 0,
+ 80]';
+\end_layout
+
+\begin_layout Standard
+FEM.Pe = 200 .* [0,
+ 0,
+ 1]';
+\end_layout
+
+\begin_layout Standard
+kn = 500;
+ % .* 1e5;
+\end_layout
+
+\begin_layout Standard
+xn0 = 0;
+\end_layout
+
+\begin_layout Standard
+mu = 0.9 * [1;
+ 1];
+ % .* 1e5;
+\end_layout
+
+\begin_layout Standard
+kt = 1 * [1;
+ 1];
+ % .* 1e5;
+\end_layout
+
+\begin_layout Standard
+nloop = 2;
+\end_layout
+
+\begin_layout Standard
+Xn = zeros(1,
+ 2 * H + 1);
+\end_layout
+
+\begin_layout Standard
+Xn([1,2,3]) = [1.5,
+ 0,
+ -1];
+\end_layout
+
+\begin_layout Standard
+Xt = zeros(1,
+ 2 * H + 1);
+\end_layout
+
+\begin_layout Standard
+Xt([1,2,3]) = [0,
+ -cos(0),
+ sin(0)];
+\end_layout
+
+\begin_layout Standard
+Xt2 = zeros(1,
+ 2 * H + 1);
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $k_{t}\frac{\dot{x_{t}}}{\dot{x_{n}}}=k_{t}\frac{x_{t}^{+}-x_{t}^{-}}{x_{n}^{+}-x_{n}^{-}}=3131.1$
+\end_inset
+
+,
+ gap near tangent,
+ other block below 100,
+ non-linear not obvious
 \end_layout
 
 \end_body

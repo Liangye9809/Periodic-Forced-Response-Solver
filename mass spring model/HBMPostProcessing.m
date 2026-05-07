@@ -174,11 +174,11 @@ grid on;
 % close all
 E = params.func.HBM.E;
 dxdn = [];
-for i = 1:size(x_cont, 2)
+for i = ind_gap_stick
     xct = Fourier_to_Time(x_cont(2 * H + 2:end, i), H, Nx, E);
     xct = xct + xp';
     if sum(xct(:, 3) < 0) > 0 % gap appears
-        gapi = find(xct(:, 3) > 0);
+        gapi = find(xct(1:end-1, 3) < 0 & xct(2:end, 3) > 0);
         ip = gapi(1);
         im = mod(ip - 2, N) + 1;
         dxdn1 = (xct(ip, 1) - xct(im, 1)) / (xct(ip, 3) - xct(im, 3));
@@ -195,7 +195,7 @@ max1 = max(abs(dxdn(:, 2)))
 % max2 = max(dxdn(:, 3));
 
 ind_1 = dxdn(find(dxdn(:, 2) == -max1), 1)
-% ind_2 = dxdn(find(dxdn(:, 3) == max2), 1)
+ind_2 = dxdn(find(dxdn(:, 2) == max1), 1)
 
 function xct = Fourier_to_Time(Xc, H, Nx, E)
 
@@ -211,7 +211,7 @@ end
 % check FUN(x) = 0;
 % i_plot = min(ind_gap_stick);
 % i_plot = ind_gap(371);
-i_plot = 1956;
+i_plot = 400;
 x_poss = x_cont(:, i_plot);
 omega_poss = omega_cont(i_plot);
 params.func.fc.w = w_cont(:, i_plot);
@@ -265,6 +265,10 @@ para.flag = flag_poss;
 para.x_cont = x_cont;
 para.k_cont = k_cont;
 para.omega_cont = omega_cont;
+para.slipM_cont = slipM_cont;
+para.slipP_cont = slipP_cont;
+para.stick_cont = stick_cont;
+para.gap_cont = gap_cont;
 para.JNL_poss = JNL_poss;
 
 
@@ -330,7 +334,7 @@ JNLt_A_23 = E * JNL_poss((2 * H + 1) + 1:2 * (2 * H + 1), 2 * (2 * H + 1) + 1:en
 dt = T / N;
 t = [0:dt:(T - dt)]';
 
-for i = 1:3
+for i = 1:11
     fig = figure; %('PaperOrientation','landscape','PaperUnits','centimeters','PaperPosition', 100 * [0 0 29.7 21], 'PaperSize',[29.7 21] * 100);
     
     fig.WindowState = 'maximized';

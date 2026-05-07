@@ -16,11 +16,11 @@ FEM.Mec = zeros(3,3);
 % FEM.Pc = [0, 0 ,0]';
 
 
-FEM.Kee = diag([110, 110, 38.5]);
+FEM.Kee = diag([1010, 1010, 353.5]);
 FEM.Kec = diag([-100, -100, -35]);
 FEM.Kcc = -FEM.Kec;
 
-FEM.Fe = 2 * [50, 0, 80]';
+FEM.Fe = 2 * [50, 0, 25]';
 FEM.Fc = [0, 0 ,0]';
 
 FEM.Pe = 200 .* [0, 0, 1]';
@@ -50,9 +50,9 @@ maxiter = 100;
 
 %% Coulomb friction
 
-kn = 500; % .* 1e5;
+kn = 50; % .* 1e5;
 xn0 = 0;
-mu = 0.9 * [1; 1]; % .* 1e5;
+mu = 0.8 * [1; 1]; % .* 1e5;
 kt = 1 * [1; 1]; % .* 1e5;
 nloop = 2;
 

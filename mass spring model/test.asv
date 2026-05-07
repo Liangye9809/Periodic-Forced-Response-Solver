@@ -85,13 +85,10 @@ Adof_F = load("data/Fixed Numerical Jacobian results 3.1 big diff no slip/Adof_N
 figure
 for i = 1:4
     subplot(2,2,i)
-    % yyaxis left
     plot(Adof_N.Adof(:, 2), Adof_N.Adof(:, i + 2), 'b-', 'LineWidth', 2), hold on;
     plot(Adof_A.Adof(:, 2), Adof_A.Adof(:, i + 2), 'k:', 'LineWidth', 2), grid on;
     plot(Adof_F.Adof(:, 2), Adof_F.Adof(:, i + 2), 'r--', 'LineWidth', 2), grid on;
-    plot(Adof_A.Adof(400,2), Adof_A.Adof(400,i + 2), 'ro', 'LineWidth', 2), hold on;
-    % yyaxis left
-
+    plot(Adof_A.Adof(400,2), Adof_A.Adof(400,3), 'ro', 'LineWidth', 2), hold on;
     yname = 'CB1';
     if i > 1
         yname = 'x' + string(i - 1);
@@ -100,7 +97,7 @@ for i = 1:4
     xlabel('Omega');
     tname = 'frequency sweep ' + string(yname);
     title(tname);
-    legend('Numerical', 'Analytical', 'Fixed Numerical', 'gap-stick point');
+    legend('Numerical', 'Analytical', 'Fixed Numerical', 'gap-stick-slip point');
 end
 
 figure; % compare iteration
