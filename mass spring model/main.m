@@ -128,7 +128,7 @@ xn = FEM.Fe(3) .* params.func.HBM.E * Xn';
 figure
 plot(t, xt, 'b-', 'LineWidth', 2), hold on;
 plot(t, xn, 'k-', 'LineWidth', 2), grid on;
-legend('xt', 'xn');
+legend('ft', 'fn');
 % for Na = 1
 Fe = diag(FEM.Fe) * [Xt; Xt2; Xn];
 Fa = CB.CBmods.Phi' * Fe / (alpha * omega02);
@@ -138,13 +138,13 @@ params.func.HBM.fftfa = Fa(:);
 params.func.HBM.fftfx = Fx(:);
 
 % Analytical
-[x_cont, omega_cont, k_cont, w_cont, stick_cont, slipP_cont, slipM_cont, gap_cont] = continuation(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);
+% [x_cont, omega_cont, k_cont, w_cont, stick_cont, slipP_cont, slipM_cont, gap_cont] = continuation(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);
 
 % Numerical (update w file)
 % [x_cont, omega_cont, k_cont] = continuation(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);
 
 % fixed Numerical (test file)
-% [x_cont, omega_cont, k_cont, ~, ~] = continuation(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);
+[x_cont, omega_cont, k_cont, ~, ~] = continuation(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);
 
 CaseTime = toc;
 
