@@ -14,10 +14,13 @@ FEM.Mec = zeros(3,3);
 % 
 % FEM.Pe = 20 .* [0, 0, 1]';
 % FEM.Pc = [0, 0 ,0]';
+k1 = 3.5;
+k2 = 10;
+k3 = 35;
+k4 = 100;
 
-
-FEM.Kee = diag([110, 110, 38.5]);
-FEM.Kec = diag([-100, -100, -35]);
+FEM.Kee = diag([(k2 + k4), (k2 + k4), (k1 + k3)]);
+FEM.Kec = diag([-k4, -k4, -k3]);
 FEM.Kcc = -FEM.Kec;
 
 FEM.Fe = 2 * [50, 0, 80]';
@@ -35,17 +38,17 @@ H_F_ext = [0, 0, 1]; % fourier coefficient of f(t)
 
 %% HBM parameters
 
-H = 5; % number of harmonics assumption
-N = 2^8; % number of time points per force cycle
+H = 100; % number of harmonics assumption
+N = 2^10; % number of time points per force cycle
 Nx = 1; % number of contact points, means having 4 * 3 = 12 dofs
-Na = 1; % number of CB modes
+Na = 3; % number of CB modes
 xi = 0.1; 
 
 
 %% Newton Method parameters
 
-epsx = 1e-3;
-epsf = 1e-3;
+epsx = 1e-6;
+epsf = 1e-6;
 maxiter = 100;
 
 %% Coulomb friction
@@ -64,8 +67,8 @@ xp0 = 0; % if no value defined here, the default value inside is 0
 %% continuation parameters
 
 
-ds = 0.005;
-maxstep = 50000;
+ds = 0.001;
+maxstep = 500000;
 % omega_0 = 0.81; % 
 % omega_end = 0.87;
 

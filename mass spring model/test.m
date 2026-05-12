@@ -1,3 +1,151 @@
+% plot every mode frequncy sweep
+[E, EH] = HBM.fft_matrices(N, H);
+for i = 1:3*Nx + Na
+    x_contNx(:,:,i) = x_cont((2*H+1)*(i-1)+1:(2*H+1)*i,:);
+end
+Adof = omega_cont';
+for Ndof = 1:3*Nx + Na
+    A = E * x_contNx(:,:,Ndof);
+    Amax = max(abs(A));
+    Adof(:, Ndof + 1) = Amax';
+end
+OMEGA = sqrt(omega02) .* omega_cont';
+% OMEGA = omega_cont';
+Adof = [OMEGA, Adof, k_cont'];
+
+
+
+figure
+for i = 1:6
+    subplot(2,3,i)
+    plot(Adof(:, 2), Adof(:, i + 2), 'b-', 'LineWidth', 2), hold on;
+    grid on;
+    if i < 4
+        name = 'CB' + string(i);
+    else
+        name = 'X' + string(i - 3);
+    end
+    ylabel(name);
+    xlabel('Omega');
+end
+
+i_plot = size(x_cont, 2);
+x_poss = x_cont(:, i_plot);
+omega_poss = omega_cont(i_plot);
+params.func.fc.w = w_cont(:, i_plot);
+
+for i = 1:Na + 3 * Nx
+    r1 = (2 * H + 1) * (i - 1) + 1;
+    r2 = (2 * H + 1) * i;
+    X(:,i) = x_poss(r1:r2); % reorder in dofs in column
+end
+xt_poss = params.func.HBM.E * X;
+xct_poss = xt_poss(:, Na + 1:end);
+
+[FUN_poss, w_poss, ~, flag_poss] = HBMFUNC(x_poss, xct_poss + xp', omega_poss, params.func);
+
+% if FUN(x) ~= 0, calculate corresponse value
+if norm(FUN_poss) > params.Newton.epsf
+    warning('norm(FUN_poss) > params.Newton.epsf');
+    params.cont.ds = 0;
+    params.cont.omega_0 = omega_poss;
+    params.cont.step = 100001;
+    params.cont.x0 = x_poss;
+    [x_poss, omega_poss, ~, ~, w_poss, ~, FlagState_poss] = cont_step(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);
+    params.func.fc.w = w_poss;
+
+    for i = 1:Na + 3 * Nx
+        r1 = (2 * H + 1) * (i - 1) + 1;
+        r2 = (2 * H + 1) * i;
+        X(:,i) = x_poss(r1:r2); % reorder in dofs in column
+    end
+    xt_poss = params.func.HBM.E * X; 
+    xct_poss = xt_poss(:, Na + 1:end);
+end
+
+
+[Ft_poss, w_poss, flag_poss] = g(xct_poss + xp', kn, xn0, mu, kt, params.func.fc.w, nloop); 
+JNL_poss = JNL_Analytical(xct_poss, flag_poss(:, :, end - N + 1:end), H, N, kt, kn, mu);
+T = 2 * pi / omega_poss;
+dt = T / N;
+t_poss = [0:dt:(T - dt)]';
+
+para.t = t_poss;
+para.xt = xt_poss;
+para.Ft = Ft_poss;
+para.omega = omega_poss;
+para.xp = xp;
+para.gxp = gxp;
+para.params = params;
+para.X = X;
+para.flag = flag_poss;
+% solution
+para.x_cont = x_cont;
+para.k_cont = k_cont;
+para.omega_cont = omega_cont;
+para.slipM_cont = slipM_cont;
+para.slipP_cont = slipP_cont;
+para.stick_cont = stick_cont;
+para.gap_cont = gap_cont;
+para.JNL_poss = JNL_poss;
+
+
+figure; % displacement of CB
+plot(t_poss, xt_poss(:, 1), 'b-', 'LineWidth', 2), hold on;
+plot(t_poss, xt_poss(:, 2), 'r-', 'LineWidth', 2), hold on;
+plot(t_poss, xt_poss(:, 3), 'k-', 'LineWidth', 2), grid on;
+legend('CB1', 'CB2', 'CB3');
+
+figure; % displacement of contact
+plot(t_poss, xt_poss(:, 4) + xp(1), 'b-', 'LineWidth', 2), hold on;
+plot(t_poss, xt_poss(:, 5) + xp(2), 'r-', 'LineWidth', 2), hold on;
+plot(t_poss, xt_poss(:, 6) + xp(3), 'k-', 'LineWidth', 2), grid on;
+legend('x1', 'x2', 'xn');
+
+figure; % cycle
+% subplot(1,2,1)
+plot(xt_poss(:, 4), Ft_poss(end - N + 1:end, 1), 'b-', 'LineWidth', 2), hold on;
+plot(xt_poss(:, 5), Ft_poss(end - N + 1:end, 2), 'r-', 'LineWidth', 2), hold on;
+grid on;
+xlabel('x');
+ylabel('T');
+legend('x1-T1', 'x2-T2');
+title('hysteresis cycle')
+
+% subplot(1,2,2)
+% plot(xt_poss(:, 3), Ft_poss(end - N + 1:end, 2), 'b-', 'LineWidth', 2), hold on;
+% grid on;
+% xlabel('x2');
+% ylabel('T2');
+% title('hysteresis cycle')
+
+
+figure; % friction
+plot(t_poss, max(mu(1) .* kn .* (xt_poss(:, 6) + xp(3)), 0), 'k-', 'LineWidth', 2), hold on;
+plot(t_poss, -max(mu(1) .* kn .* (xt_poss(:, 6) + xp(3)), 0), 'k-', 'LineWidth', 2), grid on;
+plot(t_poss, Ft_poss(end - N + 1:end, 1), 'b-', 'LineWidth', 2);
+plot(t_poss, Ft_poss(end - N + 1:end, 2), 'r-', 'LineWidth', 2);
+legend('mu * Fn', '-mu * Fn', 'T1', 'T2');
+
+% figure; % friction
+% plot(t_poss, max(mu(2) .* kn .* (xt_poss(:, 4) + xp(3)), 0), 'k-', 'LineWidth', 2), hold on;
+% plot(t_poss, -max(mu(2) .* kn .* (xt_poss(:, 4) + xp(3)), 0), 'k-', 'LineWidth', 2), grid on;
+% plot(t_poss, Ft_poss(end - N + 1:end, 2), 'r-', 'LineWidth', 2);
+% legend('mu * Fn', '-mu * Fn', 'T2');
+
+figure; % friction state
+a(1:2, :) = flag_poss(1:2, 1, end - N + 1:end);
+subplot(2, 1, 1)
+plot(t_poss, a(1, :)', 'bo', 'MarkerSize', 2, 'MarkerFaceColor', 'b'), grid on;
+ylim([-1.1, 2.1]);
+legend('T1');
+title('friction state');
+
+subplot(2 ,1, 2)
+plot(t_poss, a(2, :)', 'ro', 'MarkerSize', 2, 'MarkerFaceColor', 'r'), grid on;
+ylim([-1.1, 2.1]);
+legend('T2');
+%%
 load("data/Analytical Jacobian results 2.0 simple sin/para_gap_to_stick_point.mat");
 n = size(para.x_cont, 2);
 H = para.params.func.HBM.H;
@@ -138,18 +286,27 @@ eps_J1 = norm(para_A.para.JNL_poss - para_N.para.JNL_poss) / norm(para_A.para.JN
 eps_J2 = norm(para_A.para.JNL_poss - para_F.para.JNL_poss) / norm(para_A.para.JNL_poss);
 JNLt_A_11 = E * para_A.para.JNL_poss(1:2 * H + 1, 1:2 * H + 1);
 JNLt_A_13 = E * para_A.para.JNL_poss(1:2 * H + 1, 2 * (2 * H + 1) + 1:end);
+JNLt_A_31 = E * para_A.para.JNL_poss(2 * (2 * H + 1) + 1:end, 1:2 * H + 1);
 JNLt_A_22 = E * para_A.para.JNL_poss((2 * H + 1) + 1:2 * (2 * H + 1), (2 * H + 1) + 1:2 * (2 * H + 1));
 JNLt_A_23 = E * para_A.para.JNL_poss((2 * H + 1) + 1:2 * (2 * H + 1), 2 * (2 * H + 1) + 1:end);
+JNLt_A_32 = E * para_A.para.JNL_poss(2 * (2 * H + 1) + 1:end, (2 * H + 1) + 1:2 * (2 * H + 1));
+JNLt_A_33 = E * para_A.para.JNL_poss(2 * (2 * H + 1) + 1:end, 2 * (2 * H + 1) + 1:end);
 
 JNLt_N_11 = E * para_N.para.JNL_poss(1:2 * H + 1, 1:2 * H + 1);
 JNLt_N_13 = E * para_N.para.JNL_poss(1:2 * H + 1, 2 * (2 * H + 1) + 1:end);
+JNLt_N_31 = E * para_N.para.JNL_poss(2 * (2 * H + 1) + 1:end, 1:2 * H + 1);
 JNLt_N_22 = E * para_N.para.JNL_poss((2 * H + 1) + 1:2 * (2 * H + 1), (2 * H + 1) + 1:2 * (2 * H + 1));
 JNLt_N_23 = E * para_N.para.JNL_poss((2 * H + 1) + 1:2 * (2 * H + 1), 2 * (2 * H + 1) + 1:end);
+JNLt_N_32 = E * para_N.para.JNL_poss(2 * (2 * H + 1) + 1:end, (2 * H + 1) + 1:2 * (2 * H + 1));
+JNLt_N_33 = E * para_N.para.JNL_poss(2 * (2 * H + 1) + 1:end, 2 * (2 * H + 1) + 1:end);
 
 JNLt_F_11 = E * para_F.para.JNL_poss(1:2 * H + 1, 1:2 * H + 1);
 JNLt_F_13 = E * para_F.para.JNL_poss(1:2 * H + 1, 2 * (2 * H + 1) + 1:end);
+JNLt_F_31 = E * para_F.para.JNL_poss(2 * (2 * H + 1) + 1:end, 1:2 * H + 1);
 JNLt_F_22 = E * para_F.para.JNL_poss((2 * H + 1) + 1:2 * (2 * H + 1), (2 * H + 1) + 1:2 * (2 * H + 1));
 JNLt_F_23 = E * para_F.para.JNL_poss((2 * H + 1) + 1:2 * (2 * H + 1), 2 * (2 * H + 1) + 1:end);
+JNLt_F_32 = E * para_F.para.JNL_poss(2 * (2 * H + 1) + 1:end, (2 * H + 1) + 1:2 * (2 * H + 1));
+JNLt_F_33 = E * para_F.para.JNL_poss(2 * (2 * H + 1) + 1:end, 2 * (2 * H + 1) + 1:end);
 
 t = para_A.para.t;
 for i = 1:11
@@ -192,10 +349,10 @@ for i = 1:11
     % grid on
 
     subplot(2,2,3)
-    plot(t, JNLt_A_22(:, i), 'b-', 'LineWidth', 2), hold on;
-    plot(t, JNLt_N_22(:, i), 'k:', 'LineWidth', 2), grid on;
-    plot(t, JNLt_F_22(:, i), 'r--', 'LineWidth', 2), grid on;
-    legend('dT2dxn A', 'dT2dxn N', 'dT2dxn F');
+    plot(t, JNLt_A_31(:, i), 'b-', 'LineWidth', 2), hold on;
+    plot(t, JNLt_N_31(:, i), 'k:', 'LineWidth', 2), grid on;
+    plot(t, JNLt_F_31(:, i), 'r--', 'LineWidth', 2), grid on;
+    legend('dFndxt A', 'dFndxt N', 'dFndxt F');
     title(titlename);
     % subplot(2,4,7)
     % % plot(t, (JNLt_A_22(:, i) - JNLt_N_22(:, i)) ./ norm(JNLt_N_22(:, i)), 'LineWidth', 2), hold on
@@ -205,10 +362,10 @@ for i = 1:11
     % grid on
 
     subplot(2,2,4)
-    plot(t, JNLt_A_23(:, i), 'b-', 'LineWidth', 2), hold on;
-    plot(t, JNLt_N_23(:, i), 'k:', 'LineWidth', 2), grid on;
-    plot(t, JNLt_F_23(:, i), 'r--', 'LineWidth', 2), grid on;
-    legend('dT2dxn A', 'dT2dxn N', 'dT2dxn F');
+    plot(t, JNLt_A_33(:, i), 'b-', 'LineWidth', 2), hold on;
+    plot(t, JNLt_N_33(:, i), 'k:', 'LineWidth', 2), grid on;
+    plot(t, JNLt_F_33(:, i), 'r--', 'LineWidth', 2), grid on;
+    legend('dFndxn A', 'dFndxn N', 'dFndxn F');
     title(titlename);
     % subplot(2,4,8)
     % % plot(t, (JNLt_A_23(:, i) - JNLt_N_23(:, i)) ./ norm(JNLt_N_23(:, i)), 'LineWidth', 2), hold on

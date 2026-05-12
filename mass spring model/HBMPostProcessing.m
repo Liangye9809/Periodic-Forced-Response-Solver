@@ -211,7 +211,7 @@ end
 % check FUN(x) = 0;
 % i_plot = min(ind_gap_stick);
 % i_plot = ind_gap(371);
-i_plot = 400;
+i_plot = size(x_cont, 2);
 x_poss = x_cont(:, i_plot);
 omega_poss = omega_cont(i_plot);
 params.func.fc.w = w_cont(:, i_plot);

@@ -1,0 +1,31 @@
+%% plot Amplitude vs omega
+
+
+[E, EH] = HBM.fft_matrices(N, H);
+for i = 1:3*Nx + Na
+    x_contNx(:,:,i) = x_cont((2*H+1)*(i-1)+1:(2*H+1)*i,:);
+end
+Adof = omega_cont';
+for Ndof = 1:3*Nx + Na
+    A = E * x_contNx(:,:,Ndof);
+    Amax = max(abs(A));
+    Adof(:, Ndof + 1) = Amax';
+end
+Adof = [Adof, k_cont'];
+
+ind_gap_stick = find(gap_cont == 1 & (slipP_cont + slipM_cont) == 0);
+ind_gap = find(gap_cont == 1);
+ind_slip = find(slipP_cont == 1);
+
+figure;
+yyaxis left
+semilogy(Adof(:, 1), Adof(:, 3), 'b-.', 'LineWidth', 2), hold on;
+semilogy(Adof(:, 1), Adof(:, 5), 'r-', 'LineWidth', 2), grid on;
+ylim([0.1, 100]);
+
+yyaxis right
+plot(Adof(:, 1), gap_cont', 'LineWidth', 2, 'LineStyle', '-', 'Color', 'g'), hold on;
+plot(Adof(:, 1), slipP_cont', 'LineWidth', 2, 'LineStyle', '--', 'Color', 'k'), hold on;
+ylim([0, 1.1]);
+xlabel('Omega');
+legend('xt,damper 0.4', 'xn,damper 0.8', 'gap appears area', 'slip appears area');
