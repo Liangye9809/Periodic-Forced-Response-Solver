@@ -24,13 +24,13 @@ epsx = 1e-3;
 epsf = 1e-3;
 maxiter = 100;
 
-kn = 120; 
-xn0 = -10;
+kn = 2.4e3; 
+xn0 = 0;
 mu = 0 * [1; 1]; 
 kt = 30 * [1; 1]; 
 nloop = 2;
 
-ds = 0.05;
+ds = 0.001;
 maxstep = 500000;
 
 xp0 = 0;

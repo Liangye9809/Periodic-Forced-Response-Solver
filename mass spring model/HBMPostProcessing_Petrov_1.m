@@ -36,3 +36,5 @@ legend(legendname);
 % filename = 'data/Analytical Petrov System 1/ky = ' + string(kn) + ', g = ' + string(xn0);
 % save(filename, 'Adof');
 
+filename = 'data\Analytical Petrov System 1\ky = ' + string(kn) + ', g = ' + string(xn0);
+save(filename, 'Adof');
