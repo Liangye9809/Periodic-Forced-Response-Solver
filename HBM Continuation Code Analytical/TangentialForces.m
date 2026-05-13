@@ -5,7 +5,11 @@ function [T, w, Flag] = TangentialForces(xt, wt, kt, mu, FN, xn, xn_pre)
             w = wt;
             Flag = 2; % stick
             if xn_pre <= 0 % previous is gap, means gap to stick
-                dxdti = (xt - wt) / (xn - xn_pre);
+                if (xn - xn_pre) == 0
+                    dxdti = 0;
+                else
+                    dxdti = (xt - wt) / (xn - xn_pre);
+                end
                 w = wt - xn_pre * dxdti; % update w
                 T = kt * (xt - w); % Does it need to be compare with mu*Fn?
             end

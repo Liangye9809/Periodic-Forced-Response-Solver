@@ -28,7 +28,7 @@ clear
 
 % Data
 
-DATA_Petrov
+DATA_Petrov_1
 
 
 %% Craig-Bampton reduction from FEM matrices
@@ -95,7 +95,7 @@ tic;
 % omega_plot = 4100;
 
 omega_0 = 0;
-omega_end = 25;
+omega_end = 20;
 % omega_0 = 0.6;
 % omega_end = 20;
 % omega_0 = 0.2;

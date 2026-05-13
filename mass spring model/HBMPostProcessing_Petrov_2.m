@@ -28,4 +28,4 @@ plot(Adof(:, 1), gap_cont', 'LineWidth', 2, 'LineStyle', '-', 'Color', 'g'), hol
 plot(Adof(:, 1), slipP_cont', 'LineWidth', 2, 'LineStyle', '--', 'Color', 'k'), hold on;
 ylim([0, 1.1]);
 xlabel('Omega');
-legend('xt,damper 0.4', 'xn,damper 0.8', 'gap appears area', 'slip appears area');
+legend('xt,damper 0.2', 'xn,damper 0.4', 'gap appears area', 'slip appears area');
