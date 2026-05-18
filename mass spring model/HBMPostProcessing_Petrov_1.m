@@ -88,7 +88,9 @@ grid on;
 %%
 
 
-i_plot = 2010;
+% i_plot = 287;
+% i_plot = 467;
+i_plot = 320;
 x_poss = x_cont(:, i_plot);
 omega_poss = omega_cont(i_plot);
 params.func.fc.w = w_cont(:, i_plot);
@@ -161,5 +163,7 @@ legend('show');
 
 titlename = 'Omega = ' + string(omega_poss) + ', Amplitude = ' + string(Adof(i_plot, 5));
 title(titlename);
-savename = 'data/Analytical Petrov System 1/ky = 120, g = 10/Omega = ' + string(omega_poss) + ', Amplitude = ' + string(Adof(i_plot, 5)) + '.mat';
-save(savename, 'para');
+% savename = 'data/Analytical Petrov System 1/ky = 120, g = 10/Omega = ' + string(omega_poss) + ', Amplitude = ' + string(Adof(i_plot, 5)) + '.mat';
+% save(savename, 'para');
+
+Fn0 = length(find(Ft_poss(end - N + 1:end, 3) == 0));

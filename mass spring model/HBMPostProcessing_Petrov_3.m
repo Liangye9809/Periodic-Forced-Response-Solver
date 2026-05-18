@@ -22,8 +22,7 @@ figure;
 plot(Adof(:, 1), Adof(:, 5), 'r-', 'LineWidth', 2), hold on;
 plot(Adof(:, 1), Adof(:, 3), 'b-.', 'LineWidth', 2), grid on;
 xlabel('Omega');
-legendname = 'g = ' + string(xn0);
-legend(legendname);
+legend('xn', 'xt');
 % ylim([0.1, 100]);
 
 % yyaxis right
@@ -88,7 +87,7 @@ grid on;
 %%
 
 
-i_plot = 234;
+i_plot = 2010;
 x_poss = x_cont(:, i_plot);
 omega_poss = omega_cont(i_plot);
 params.func.fc.w = w_cont(:, i_plot);
@@ -161,4 +160,5 @@ legend('show');
 
 titlename = 'Omega = ' + string(omega_poss) + ', Amplitude = ' + string(Adof(i_plot, 5));
 title(titlename);
-save(titlena)
+savename = 'data/Analytical Petrov System 1/ky = 120, g = 10/Omega = ' + string(omega_poss) + ', Amplitude = ' + string(Adof(i_plot, 5)) + '.mat';
+save(savename, 'para');
