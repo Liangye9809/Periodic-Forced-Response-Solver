@@ -20,18 +20,18 @@ Nx = 1;
 Na = 1; 
 xi = 0.01; 
 
-epsx = 1e-3;
-epsf = 1e-3;
+epsx = 1e-6;
+epsf = 1e-6;
 maxiter = 100;
 
 kn = 120; 
 xn0 = 0;
-mu = 0.3 * [1; 1]; 
+mu = 15 * [1; 1]; 
 kt = 30 * [1; 1]; 
 nloop = 2;
 
 ds = 0.05;
-maxstep = 500000;
+maxstep = 50000;
 
 xp0 = 0;
 Rx = [0, 0, -800]';

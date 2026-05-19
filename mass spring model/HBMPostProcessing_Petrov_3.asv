@@ -20,12 +20,11 @@ ind_slip = find(slipP_cont == 1);
 figure;
 % yyaxis left
 plot(Adof(:, 1), Adof(:, 5), 'r-', 'LineWidth', 2), hold on;
-plot(Adof(:, 1), Adof(:, 3), 'b-', 'LineWidth', 2), grid on;
+plot(Adof(:, 1), Adof(:, 3), 'b-.', 'LineWidth', 2), grid on;
 xlabel('Omega');
 legend('xn', 'xt');
 % ylim([0.1, 100]);
-titlename = 'mu = ' + string(mu(1)) + ', kt = ' + string(kt(1)) + ', kn = ' + string(kn);
-title(titlename);
+
 % yyaxis right
 % plot(Adof(:, 1), gap_cont', 'LineWidth', 2, 'LineStyle', '-', 'Color', 'g'), hold on;
 % plot(Adof(:, 1), slipP_cont', 'LineWidth', 2, 'LineStyle', '--', 'Color', 'k'), hold on;
@@ -88,7 +87,7 @@ grid on;
 %%
 
 
-i_plot = 2029;
+i_plot = 833;
 x_poss = x_cont(:, i_plot);
 omega_poss = omega_cont(i_plot);
 params.func.fc.w = w_cont(:, i_plot);
@@ -171,17 +170,15 @@ title(titlename);
 
 subplot(2,2,3)
 plot(xt_poss(:, 2) + xp(1), Ft_poss(end - N + 1:end, 1), 'b-', 'LineWidth', 2), grid on;
-% legend('show');
+legend('show');
 xlabel('xt');
 ylabel('T');
 
 subplot(2,2,4)
-plot(t_poss, mu(1) * Ft_poss(end - N + 1:end, 3), 'k-', 'LineWidth', 2, 'DisplayName', 'mu*Fn'), hold on;
-plot(t_poss, -mu(1) * Ft_poss(end - N + 1:end, 3), 'k-', 'LineWidth', 2, 'DisplayName', '-mu*Fn'), grid on;
-plot(t_poss, Ft_poss(end - N + 1:end, 1), 'b-', 'LineWidth', 2, 'DisplayName', 'T');
+plot(xt_poss(:, 2) + xp(1), Ft_poss(end - N + 1:end, 1), 'b-', 'LineWidth', 2), grid on;
 legend('show');
-xlabel('t');
-ylabel('F');
+xlabel('xt');
+ylabel('T');
 % savename = 'data/Analytical Petrov System 1/ky = 120, g = 10/Omega = ' + string(omega_poss) + ', Amplitude = ' + string(Adof(i_plot, 5)) + '.mat';
 % save(savename, 'para');
 
@@ -191,58 +188,4 @@ b(:, 1) = flag_poss(2, 1, end - N + 1:end);
 plot(t_poss, a, 'b.'), grid on;
 ylim([-1.2, 2.2]);
 
-% figure;
-missing = kt(1) * (xct_poss(475, 1) - xct_poss(474, 1)) / (xct_poss(475, 3) - xct_poss(474, 3))
-mu_min = kt(1) * (xct_poss(347, 1) - w_poss(1, 1, N + 346)) / Ft_poss(347 + N, 3)
-
-%%
-[E, EH] = HBM.fft_matrices(N, H);
-JNLt_A_11 = E * JNL_poss(1:2 * H + 1, 1:2 * H + 1);
-JNLt_A_13 = E * JNL_poss(1:2 * H + 1, 2 * (2 * H + 1) + 1:end);
-JNLt_A_22 = E * JNL_poss((2 * H + 1) + 1:2 * (2 * H + 1), (2 * H + 1) + 1:2 * (2 * H + 1));
-JNLt_A_23 = E * JNL_poss((2 * H + 1) + 1:2 * (2 * H + 1), 2 * (2 * H + 1) + 1:end);
-
-dt = T / N;
-t = [0:dt:(T - dt)]';
-
-for i = 1:11
-    fig = figure; %('PaperOrientation','landscape','PaperUnits','centimeters','PaperPosition', 100 * [0 0 29.7 21], 'PaperSize',[29.7 21] * 100);
-    
-    fig.WindowState = 'maximized';
-    if i == 1
-        titlename = 'N = ' + string(N) + ', H = ' + string(H) + ', ' +'cos0';
-    elseif mod(i, 2) == 0
-        titlename = 'N = ' + string(N) + ', H = ' + string(H) + ', ' +'cos' + string(floor(i/2));
-    else
-        titlename = 'N = ' + string(N) + ', H = ' + string(H) + ', ' +'sin' + string(floor(i/2));
-    end
-    title(titlename);
-
-    subplot(2,2,1)
-    plot(t, JNLt_A_11(:, i), 'LineWidth', 2), hold on
-    legend('dTdxt 11');
-    title(titlename);
-    
-
-    subplot(2,2,2)
-    plot(t, JNLt_A_13(:, i), 'LineWidth', 2), hold on
-    legend('dTdxn 13');
-    title(titlename);
-    
-
-    subplot(2,2,3)
-    plot(t, JNLt_A_22(:, i), 'LineWidth', 2), hold on
-    legend('dTdxt 22');
-    title(titlename);
-    
-
-    subplot(2,2,4)
-    plot(t, JNLt_A_23(:, i), 'LineWidth', 2), hold on
-    legend('dTdxn 23');
-    title(titlename);
-    
-    % pintname = string(titlename) + '.png';
-    % set(gcf,'PaperOrientation','landscape');
-    % exportgraphics(gcf, pintname,'ContentType','vector');
-
-end
+figure;

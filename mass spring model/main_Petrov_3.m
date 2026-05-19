@@ -104,9 +104,8 @@ omega_end = 20;
 ContinuationCalculation
 
 
-% ModifiedExternalForces
+ModifiedExternalForces
 % ModifiedPreload
-
 % Analytical
 [x_cont, omega_cont, k_cont, w_cont, stick_cont, slipP_cont, slipM_cont, gap_cont] = continuation(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);
 
