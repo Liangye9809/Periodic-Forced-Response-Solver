@@ -35,4 +35,4 @@
 % params.func.HBM.fftfx = Fx(:);
 
 % params.func.HBM.fftfx([2, 3]) = 100 * [-sin(5.8291); cos(5.8291)];
-params.func.HBM.fftfx([2, 3]) = 100 * [cos(-0.4*pi); -sin(-0.4*pi)];
+params.func.HBM.fftfx([2, 3]) = 500 * [cos(0.1*pi); -sin(0.1*pi)];

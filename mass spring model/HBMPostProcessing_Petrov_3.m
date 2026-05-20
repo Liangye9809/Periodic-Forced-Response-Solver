@@ -13,9 +13,9 @@ for Ndof = 1:3*Nx + Na
 end
 Adof = [Adof, k_cont'];
 
-ind_gap_stick = find(gap_cont == 1 & (slipP_cont + slipM_cont) == 0);
-ind_gap = find(gap_cont == 1);
-ind_slip = find(slipP_cont == 1);
+% ind_gap_stick = find(gap_cont == 1 & (slipP_cont + slipM_cont) == 0);
+% ind_gap = find(gap_cont == 1);
+% ind_slip = find(slipP_cont == 1);
 
 figure;
 % yyaxis left
@@ -29,6 +29,7 @@ title(titlename);
 % yyaxis right
 % plot(Adof(:, 1), gap_cont', 'LineWidth', 2, 'LineStyle', '-', 'Color', 'g'), hold on;
 % plot(Adof(:, 1), slipP_cont', 'LineWidth', 2, 'LineStyle', '--', 'Color', 'k'), hold on;
+% stem(Adof(:, 1), k_cont'), hold on;
 % ylim([0, 1.1]);
 % xlabel('Omega');
 % legend('xt,damper 0.2', 'xn,damper 0.4', 'gap appears area', 'slip appears area');
@@ -49,48 +50,15 @@ set(0, 'DefaultFigureColor', 'w');
 
 
 
-% figure;
-% hold on;
-% 
-% % Plot with colors, line styles, and markers
-% plot(x, y1, '.-',  'LineWidth', 2, 'MarkerSize', 6, 'DisplayName', 'sin(x)'); % Solid
-% 
-% % Add labels, legend, and grid
-% xlabel('x');
-% ylabel('y');
-% legend('show', 'Location', 'best');
-% grid on;
-% hold off;
-
-% figure;
-% plot(Adof(:, 1), Adof(:, 5), 'r-', 'LineWidth', 2), hold on;
-% grid on;
-
-
-
-figure
-hold on;
-load('data/Analytical Petrov System 1/ky = 120, g = 10000000000.mat');
-plot(Adof(:, 1), Adof(:, 5), 'LineWidth', 2, 'DisplayName', 'separated'), hold on;
-
-load('data/Analytical Petrov System 1/ky = 120, full contact.mat');
-plot(Adof(:, 1), Adof(:, 5), 'LineWidth', 2, 'DisplayName', 'full contact'), hold on;
-for i = -10:5:10
-    filemane = 'data/Analytical Petrov System 1/ky = 120, g = ' + string(i) + '.mat';
-    load(filemane);
-    plot(Adof(:, 1), Adof(:, 5), 'LineWidth', 2, 'DisplayName', string(i)), hold on;
-end
-xlabel('Frequency, rad/s');
-ylabel('Maximum displacement');
-legend('show');
-grid on;
 
 %%
 
 
-i_plot = 2029;
+i_plot = 805; % point before second 11.6743
 x_poss = x_cont(:, i_plot);
-omega_poss = omega_cont(i_plot);
+% omega_poss = omega_cont(i_plot);
+omega_poss = 11.6743;
+% omega_poss = 11.8597;
 params.func.fc.w = w_cont(:, i_plot);
 
 for i = 1:Na + 3 * Nx
@@ -157,7 +125,7 @@ plot(t_poss, xt_poss(:, 2) + xp(1), 'b-', 'LineWidth', 2, 'DisplayName', 'xt'), 
 yyaxis right
 plot(t_poss, Ft_poss(end - N + 1:end, 1), 'r-', 'LineWidth', 2, 'DisplayName', 'T'), grid on;
 legend('show');
-titlename = 'Omega = ' + string(omega_poss) + ', Amplitude = ' + string(Adof(i_plot, 5));
+titlename = 'Omega = ' + string(omega_poss) + ', Amplitude = ' + string(max(abs(xct_poss(:, 1))));
 title(titlename);
 
 subplot(2,2,2)
@@ -167,6 +135,7 @@ plot(t_poss, xt_poss(:, 4) + xp(3), 'b-', 'LineWidth', 2, 'DisplayName', 'xn'), 
 yyaxis right
 plot(t_poss, Ft_poss(end - N + 1:end, 3), 'r-', 'LineWidth', 2, 'DisplayName', 'Fn'), grid on;
 legend('show');
+titlename = 'Omega = ' + string(omega_poss) + ', Amplitude = ' + string(max(abs(xct_poss(:, 3))));
 title(titlename);
 
 subplot(2,2,3)
@@ -192,8 +161,8 @@ plot(t_poss, a, 'b.'), grid on;
 ylim([-1.2, 2.2]);
 
 % figure;
-missing = kt(1) * (xct_poss(475, 1) - xct_poss(474, 1)) / (xct_poss(475, 3) - xct_poss(474, 3))
-mu_min = kt(1) * (xct_poss(347, 1) - w_poss(1, 1, N + 346)) / Ft_poss(347 + N, 3)
+% missing = kt(1) * (xct_poss(475, 1) - xct_poss(474, 1)) / (xct_poss(475, 3) - xct_poss(474, 3))
+% mu_min = kt(1) * (xct_poss(347, 1) - w_poss(1, 1, N + 346)) / Ft_poss(347 + N, 3)
 
 %%
 [E, EH] = HBM.fft_matrices(N, H);
@@ -246,3 +215,13 @@ for i = 1:11
     % exportgraphics(gcf, pintname,'ContentType','vector');
 
 end
+
+%%
+figure;
+plot(Adof(:, 1), Adof(:, 3), 'b-', 'LineWidth', 2), hold on;
+plot(Adof(:, 1), Adof(:, 5), 'r-', 'LineWidth', 2), grid on;
+
+plot(Adof(:, 1), Adof(:, 3), 'y--', 'LineWidth', 2), hold on;
+plot(Adof(:, 1), Adof(:, 5), 'g--', 'LineWidth', 2), grid on;
+
+legend('Xt, Analytical', 'Xn, Analytical', 'Xt, Numerical', 'Xn, Numerical')
