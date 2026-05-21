@@ -44,7 +44,7 @@ for k=1:maxiter
     params.func.fc.w = w; % update w
     G = [F 
          tx0'*(x-x0) + tomega0*(omega-omega_0)-ds];
-    errorx = norm(dz) / norm(z);
+    errorx = norm(dz) / (norm(z) + 1e-16);
     errorf = norm(G);
     % format short g
     % disp([k z(1) z(2) lambda errorx  errorf])

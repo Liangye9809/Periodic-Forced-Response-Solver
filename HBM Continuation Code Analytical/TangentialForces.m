@@ -28,7 +28,7 @@ function [T, w, Flag] = TangentialForces(xt, wt, kt, mu, FN, xn, xn_pre)
     if FN > 0 % contact
         T = kt * (xt - wp);
         if xn_pre <= 0 % previous is gap, means gap to stick
-            dxdti = (xt - wt) / (xn - xn_pre);
+            dxdti = (xt - wt) / ((xn - xn_pre) + 1e-16);
             wp = wt - xn_pre * dxdti; % update w
             T = kt * (xt - wp);
         end

@@ -52,13 +52,13 @@ set(0, 'DefaultFigureColor', 'w');
 
 
 %%
+% A_p = load('data/Analytical Petrov System 3/para_H10_ds0.05_N512_stopped_point.mat');
 
-
-i_plot = 805; % point before second 11.6743
+i_plot = 707; % point before second 11.6743
 x_poss = x_cont(:, i_plot);
 % omega_poss = omega_cont(i_plot);
-omega_poss = 11.6743;
-% omega_poss = 11.8597;
+% omega_poss = 11.6743;
+omega_poss = 11.8597;
 params.func.fc.w = w_cont(:, i_plot);
 
 for i = 1:Na + 3 * Nx
@@ -217,11 +217,114 @@ for i = 1:11
 end
 
 %%
+A_p = load('data/Analytical Petrov System 3/para_H10_ds0.05_N512_stopped_point.mat');
+
+% i_plot = 707; % point before second 11.6743
+x_poss = A_p.para.x_cont;
+% omega_poss = omega_cont(i_plot);
+% omega_poss = 11.6743;
+omega_poss = A_p.para.omega;
+params.func.fc.w = w_cont(:, i_plot);
+
+for i = 1:Na + 3 * Nx
+    r1 = (2 * H + 1) * (i - 1) + 1;
+    r2 = (2 * H + 1) * i;
+    X(:,i) = x_poss(r1:r2); % reorder in dofs in column
+end
+xt_poss = params.func.HBM.E * X;
+xct_poss = xt_poss(:, Na + 1:end);
+
+[FUN_poss, w_poss, ~, flag_poss] = HBMFUNC(x_poss, xct_poss + xp', omega_poss, params.func);
+
+% if FUN(x) ~= 0, calculate corresponse value
+if norm(FUN_poss) > params.Newton.epsf
+    warning('norm(FUN_poss) > params.Newton.epsf');
+    params.cont.ds = 0;
+    params.cont.omega_0 = omega_poss;
+    params.cont.step = 100001;
+    params.cont.x0 = x_poss;
+    [x_poss, omega_poss, ~, ~, w_poss, ~, FlagState_poss] = cont_step(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);
+    params.func.fc.w = w_poss;
+
+    for i = 1:Na + 3 * Nx
+        r1 = (2 * H + 1) * (i - 1) + 1;
+        r2 = (2 * H + 1) * i;
+        X(:,i) = x_poss(r1:r2); % reorder in dofs in column
+    end
+    xt_poss = params.func.HBM.E * X; 
+    xct_poss = xt_poss(:, Na + 1:end);
+end
+
+
+[Ft_poss, w_poss, flag_poss] = g(xct_poss + xp', kn, xn0, mu, kt, params.func.fc.w, nloop); 
+JNL_poss = JNL_Analytical(xct_poss, flag_poss(:, :, end - N + 1:end), H, N, kt, kn, mu);
+T = 2 * pi / omega_poss;
+dt = T / N;
+t_poss = [0:dt:(T - dt)]';
+
+para.t = t_poss;
+para.xt = xt_poss;
+para.Ft = Ft_poss;
+para.omega = omega_poss;
+para.xp = xp;
+para.gxp = gxp;
+para.params = params;
+para.X = X;
+para.flag = flag_poss;
+% solution
+para.x_cont = x_cont;
+para.k_cont = k_cont;
+para.omega_cont = omega_cont;
+para.slipM_cont = slipM_cont;
+para.slipP_cont = slipP_cont;
+para.stick_cont = stick_cont;
+para.gap_cont = gap_cont;
+para.JNL_poss = JNL_poss;
+
+
+figure; % displacement
+subplot(2,2,1)
+yyaxis left
+plot(t_poss, xt_poss(:, 2) + xp(1), 'b-', 'LineWidth', 2, 'DisplayName', 'xt'), grid on;
+% figure; % friction
+yyaxis right
+plot(t_poss, Ft_poss(end - N + 1:end, 1), 'r-', 'LineWidth', 2, 'DisplayName', 'T'), grid on;
+legend('show');
+titlename = 'Omega = ' + string(omega_poss) + ', Amplitude = ' + string(max(abs(xct_poss(:, 1))));
+title(titlename);
+
+subplot(2,2,2)
+yyaxis left
+plot(t_poss, xt_poss(:, 4) + xp(3), 'b-', 'LineWidth', 2, 'DisplayName', 'xn'), grid on;
+% figure; % friction
+yyaxis right
+plot(t_poss, Ft_poss(end - N + 1:end, 3), 'r-', 'LineWidth', 2, 'DisplayName', 'Fn'), grid on;
+legend('show');
+titlename = 'Omega = ' + string(omega_poss) + ', Amplitude = ' + string(max(abs(xct_poss(:, 3))));
+title(titlename);
+
+subplot(2,2,3)
+plot(xt_poss(:, 2) + xp(1), Ft_poss(end - N + 1:end, 1), 'b-', 'LineWidth', 2), grid on;
+% legend('show');
+xlabel('xt');
+ylabel('T');
+
+subplot(2,2,4)
+plot(t_poss, mu(1) * Ft_poss(end - N + 1:end, 3), 'k-', 'LineWidth', 2, 'DisplayName', 'mu*Fn'), hold on;
+plot(t_poss, -mu(1) * Ft_poss(end - N + 1:end, 3), 'k-', 'LineWidth', 2, 'DisplayName', '-mu*Fn'), grid on;
+plot(t_poss, Ft_poss(end - N + 1:end, 1), 'b-', 'LineWidth', 2, 'DisplayName', 'T');
+legend('show');
+xlabel('t');
+ylabel('F');
+% savename = 'data/Analytical Petrov System 1/ky = 120, g = 10/Omega = ' + string(omega_poss) + ', Amplitude = ' + string(Adof(i_plot, 5)) + '.mat';
+% save(savename, 'para');
+
 figure;
-plot(Adof(:, 1), Adof(:, 3), 'b-', 'LineWidth', 2), hold on;
-plot(Adof(:, 1), Adof(:, 5), 'r-', 'LineWidth', 2), grid on;
+a(:, 1) = flag_poss(1, 1, end - N + 1:end);
+b(:, 1) = flag_poss(2, 1, end - N + 1:end);
+plot(t_poss, a, 'b.'), grid on;
+ylim([-1.2, 2.2]);
 
-plot(Adof(:, 1), Adof(:, 3), 'y--', 'LineWidth', 2), hold on;
-plot(Adof(:, 1), Adof(:, 5), 'g--', 'LineWidth', 2), grid on;
-
-legend('Xt, Analytical', 'Xn, Analytical', 'Xt, Numerical', 'Xn, Numerical')
+% figure;
+% missing = kt(1) * (xct_poss(475, 1) - xct_poss(474, 1)) / (xct_poss(475, 3) - xct_poss(474, 3))
+% mu_min = kt(1) * (xct_poss(347, 1) - w_poss(1, 1, N + 346)) / Ft_poss(347 + N, 3)
