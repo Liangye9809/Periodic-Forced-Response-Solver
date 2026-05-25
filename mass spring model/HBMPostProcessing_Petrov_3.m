@@ -451,9 +451,9 @@ ylabel('F');
 
 %% Jacobian Comparison
 clear
-para_A = load('data/Analytical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/para_H5_ds0.05_N256_stopped_point.mat');
-para_N = load('data/Numerical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/para_H5_N256_stopped_point.mat');
-para_F = load('data/Fixed Numerical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/para_H5_N256_stopped_point.mat');
+para_A = load('data/Analytical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/para_H5_ds0.05_N512_stopped_point.mat');
+para_N = load('data/Numerical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/para_H5_N512_stopped_point.mat');
+para_F = load('data/Fixed Numerical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/para_H5_N512_stopped_point.mat');
 E = para_A.para.params.func.HBM.E;
 H = para_A.para.params.func.HBM.H;
 N = para_A.para.params.func.HBM.N;

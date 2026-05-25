@@ -382,8 +382,6 @@ end
 
 
 %%
-j = 1;
-for i = ind_gap_stick
-    disp([j, i])
-    j = j + 1;
-end
+figure;
+plot(Adof(:, 1), Adof(:, 5), 'k--', 'LineWidth', 2), hold on;
+plot(Adof(:, 1), Adof(:, 3), 'k--', 'LineWidth', 2), grid on;
