@@ -55,12 +55,14 @@ set(0, 'DefaultFigureColor', 'w');
 % A_p = load('data/Analytical Petrov System 3/para_H10_ds0.05_N512_stopped_point.mat');
 
 i_plot = 1883; % point before second 11.6743
-x_poss = x_cont(:, i_plot);
+% x_poss = x_cont(:, i_plot);
+x_poss = x_cont(:, end);
 % omega_poss = omega_cont(i_plot);
-% omega_poss = 11.6743;
-omega_poss = 11.857;
-params.func.fc.w = w_cont(:, i_plot);
-
+omega_poss = omega_cont(end);
+% omega_poss = 11.857;
+% omega_poss = 10.93466;
+% params.func.fc.w = w_cont(:, i_plot);
+params.func.fc.w = w_cont(:, end);
 for i = 1:Na + 3 * Nx
     r1 = (2 * H + 1) * (i - 1) + 1;
     r2 = (2 * H + 1) * i;
@@ -219,7 +221,9 @@ end
 
 %% correct Numerical
 clear
-A_p = load('data/Analytical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/para_H5_ds0.05_N256_stopped_point.mat');
+% A_p = load('data/Analytical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/para_H5_ds0.05_N256_stopped_point.mat');
+% A_p = load('data/Analytical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/para_H5_ds0.05_N128_stopped_point.mat');
+A_p = load('data/Analytical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/para_H5_ds0.05_N128_stopped_point_backward.mat');
 
 % i_plot = 707; % point before second 11.6743
 x_poss = A_p.para.X(:);
@@ -342,7 +346,9 @@ ylim([-1.2, 2.2]);
 
 %% wrong Numerical
 clear
-A_p = load('data/Analytical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/para_H5_ds0.05_N512_stopped_point.mat');
+% A_p = load('data/Analytical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/para_H5_ds0.05_N512_stopped_point.mat');
+% A_p = load('data/Analytical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/para_H5_ds0.05_N128_stopped_point.mat');
+A_p = load('data/Analytical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/para_H5_ds0.05_N128_stopped_point_backward.mat');
 
 % i_plot = 707; % point before second 11.6743
 x_poss = A_p.para.X(:);
@@ -391,7 +397,10 @@ end
 
 
 [Ft_poss, w_poss] = g(xct_poss + xp', params.func.fc);
+
 JNL_poss = finite_diff_jac(@(x) fftgx(x, params.func), x_poss((2 * H + 1) * Na + 1:end));
+
+[JNL_time, Fi, xi] = finite_diff_jac_F(@(x) gFx(x, params.func), x_poss((2 * H + 1) * Na + 1:end));
 
 T = 2 * pi / omega_poss;
 dt = T / N;
@@ -449,11 +458,101 @@ ylabel('F');
 % savename = 'data/Analytical Petrov System 1/ky = 120, g = 10/Omega = ' + string(omega_poss) + ', Amplitude = ' + string(Adof(i_plot, 5)) + '.mat';
 % save(savename, 'para');
 
+% % plot Fi⁺ and JNL in time
+% for i = 1:11 % JNL in time
+%     figure;
+%     if i == 1
+%         titlename = 'N = ' + string(N) + ', H = ' + string(H) + ', ' +'cos0';
+%     elseif mod(i, 2) == 0
+%         titlename = 'N = ' + string(N) + ', H = ' + string(H) + ', ' +'cos' + string(floor(i/2));
+%     else
+%         titlename = 'N = ' + string(N) + ', H = ' + string(H) + ', ' +'sin' + string(floor(i/2));
+%     end
+%     subplot(2,2,1)
+%     plot(t_poss, JNL_time(1:128, i), 'k:', 'LineWidth', 2), grid on, hold on;
+%     title(titlename);
+%     subplot(2,2,2)
+%     plot(t_poss, JNL_time(1:128, i + 22), 'k:', 'LineWidth', 2), grid on, hold on;
+%     title(titlename);
+%     subplot(2,2,3)
+%     plot(t_poss, JNL_time(257:end, i), 'k:', 'LineWidth', 2), grid on, hold on;
+%     title(titlename);
+%     subplot(2,2,4)
+%     plot(t_poss, JNL_time(257:end, i + 22), 'k:', 'LineWidth', 2), grid on, hold on;
+%     title(titlename);
+% 
+% end
+
+
+% % Fi
+% figure;
+% plot(t_poss, Fi(1:128, 1), '.'), hold on, grid on;
+% for i = 1:11
+%     plot(t_poss, Fi(1:128, i + 1), '.'), hold on, grid on;
+% end
+% figure;
+% plot(t_poss, Fi(1:128, 1), '.'), hold on, grid on;
+% for i = 1:11
+%     plot(t_poss, Fi(1:128, i + 23), '.'), hold on, grid on;
+% end
+% figure;
+% plot(t_poss, Fi(257:end, 1), '.'), hold on, grid on;
+% for i = 1:11
+%     plot(t_poss, Fi(257:end, i + 23), '.'), hold on, grid on;
+% end
+
+figure;
+subplot(2,2,1)
+plot(t_poss, Fi(1:128, 1), 'b.', 'DisplayName','T1 original'), hold on, grid on;
+plot(t_poss, Fi(1:128, 25), 'r.', 'DisplayName','T1 dcos1', 'MarkerSize', 3), hold on, grid on;
+legend('show');
+subplot(2,2,2)
+plot(t_poss, Fi(1:128, 25) - Fi(1:128, 1), 'b.', 'DisplayName','diff'), hold on, grid on;
+legend('show');
+subplot(2,2,3)
+plot(t_poss, xi(1:128, 1), 'b.', 'DisplayName','xt original'), hold on, grid on;
+plot(t_poss, xi(1:128, 25), 'r.', 'DisplayName','xt dcos1', 'MarkerSize', 3), hold on, grid on;
+legend('show');
+subplot(2,2,4)
+plot(t_poss, xi(1:128, 25) - xi(1:128, 1), 'b.', 'DisplayName','diff'), hold on, grid on;
+legend('show');
+
+figure;
+subplot(2,2,1)
+plot(t_poss, Fi(257:end, 1), 'b.', 'DisplayName','Fn original'), hold on, grid on;
+plot(t_poss, Fi(257:end, 25), 'r.', 'DisplayName','Fn dcos1', 'MarkerSize', 3), hold on, grid on;
+legend('show');
+subplot(2,2,2)
+plot(t_poss, Fi(257:end, 25) - Fi(257:end, 1), 'b.', 'DisplayName','diff'), hold on, grid on;
+legend('show');
+subplot(2,2,3)
+plot(t_poss, xi(257:end, 1), 'b.', 'DisplayName','xn original'), hold on, grid on;
+plot(t_poss, xi(257:end, 25), 'r.', 'DisplayName','xn dcos1', 'MarkerSize', 3), hold on, grid on;
+legend('show');
+subplot(2,2,4)
+plot(t_poss, xi(257:end, 25) - xi(257:end, 1), 'b.', 'DisplayName','diff'), hold on, grid on;
+legend('show');
+
+
+figure;
+titlename = 'N = ' + string(N) + ', H = ' + string(H) + ', ' +'cos1';
+subplot(2,2,1)
+plot(t_poss, JNL_time(1:128, 2), 'k:', 'LineWidth', 2), grid on, hold on;
+title(titlename);
+subplot(2,2,2)
+plot(t_poss, JNL_time(1:128, 2 + 22), 'k:', 'LineWidth', 2), grid on, hold on;
+title(titlename);
+subplot(2,2,3)
+plot(t_poss, JNL_time(257:end, 2), 'k:', 'LineWidth', 2), grid on, hold on;
+title(titlename);
+subplot(2,2,4)
+plot(t_poss, JNL_time(257:end, 2 + 22), 'k:', 'LineWidth', 2), grid on, hold on;
+title(titlename);
 %% Jacobian Comparison
 clear
-para_A = load('data/Analytical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/para_H5_ds0.05_N512_stopped_point.mat');
-para_N = load('data/Numerical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/para_H5_N512_stopped_point.mat');
-para_F = load('data/Fixed Numerical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/para_H5_N512_stopped_point.mat');
+para_A = load('data/Analytical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/para_H5_ds0.05_N128_stopped_point_backward.mat');
+para_N = load('data/Numerical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/para_H5_ds0.05_N128_stopped_point_backward.mat');
+para_F = load('data/Fixed Numerical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/para_H5_ds0.05_N128_stopped_point_backward.mat');
 E = para_A.para.params.func.HBM.E;
 H = para_A.para.params.func.HBM.H;
 N = para_A.para.params.func.HBM.N;
@@ -471,6 +570,38 @@ for i = 1:4
     ylabel(yname);
     legend('Numerical', 'Analytical', 'Fixed Numerical');
 end
+
+figure; % displacement & forces & cycle
+subplot(2,3,1)
+plot(para_N.para.t, para_N.para.xt(:, 2), 'k:', 'LineWidth', 2, 'DisplayName', 'Numerical'), hold on;
+plot(para_A.para.t, para_A.para.xt(:, 2), 'b-', 'LineWidth', 2, 'DisplayName', 'Analytical'), grid on;
+plot(para_F.para.t, para_F.para.xt(:, 2), 'r--', 'LineWidth', 2, 'DisplayName', 'Fixed Numerical'), legend('show');
+title('Displacement x1');
+subplot(2,3,2)
+plot(para_N.para.t, para_N.para.xt(:, 4), 'k:', 'LineWidth', 2, 'DisplayName', 'Numerical'), hold on;
+plot(para_A.para.t, para_A.para.xt(:, 4), 'b-', 'LineWidth', 2, 'DisplayName', 'Analytical'), grid on;
+plot(para_F.para.t, para_F.para.xt(:, 4), 'r--', 'LineWidth', 2, 'DisplayName', 'Fixed Numerical'), legend('show');
+title('Displacement xn');
+subplot(2,3,3)
+plot(para_N.para.xt(:, 2), para_N.para.Ft(end - N + 1:end, 1), 'k:', 'LineWidth', 2, 'DisplayName', 'Numerical'), hold on;
+plot(para_A.para.xt(:, 2), para_A.para.Ft(end - N + 1:end, 1), 'b-', 'LineWidth', 2, 'DisplayName', 'Analytical'), grid on;
+plot(para_F.para.xt(:, 2), para_F.para.Ft(end - N + 1:end, 1), 'r--', 'LineWidth', 2, 'DisplayName', 'Fixed Numerical'), legend('show');
+title('Ft VS x1');
+subplot(2,3,4)
+plot(para_N.para.t, para_N.para.Ft(end - N + 1:end, 1), 'k:', 'LineWidth', 2, 'DisplayName', 'Numerical'), hold on;
+plot(para_A.para.t, para_A.para.Ft(end - N + 1:end, 1), 'b-', 'LineWidth', 2, 'DisplayName', 'Analytical'), grid on;
+plot(para_F.para.t, para_F.para.Ft(end - N + 1:end, 1), 'r--', 'LineWidth', 2, 'DisplayName', 'Fixed Numerical'), legend('show');
+title('Ft');
+subplot(2,3,5)
+plot(para_N.para.t, para_N.para.Ft(end - N + 1:end, 1), 'k*', 'LineWidth', 2, 'DisplayName', 'Numerical'), hold on;
+plot(para_A.para.t, para_A.para.Ft(end - N + 1:end, 1), 'bo', 'LineWidth', 2, 'DisplayName', 'Analytical'), grid on;
+plot(para_F.para.t, para_F.para.Ft(end - N + 1:end, 1), 'r+', 'LineWidth', 2, 'DisplayName', 'Fixed Numerical'), legend('show');
+title('Ft');
+subplot(2,3,6)
+plot(para_N.para.t, para_N.para.Ft(end - N + 1:end, 3), 'k:', 'LineWidth', 2, 'DisplayName', 'Numerical'), hold on;
+plot(para_A.para.t, para_A.para.Ft(end - N + 1:end, 3), 'b-', 'LineWidth', 2, 'DisplayName', 'Analytical'), grid on;
+plot(para_F.para.t, para_F.para.Ft(end - N + 1:end, 3), 'r--', 'LineWidth', 2, 'DisplayName', 'Fixed Numerical'), legend('show');
+title('Fn');
 
 eps_J1 = norm(para_A.para.JNL_poss - para_N.para.JNL_poss) / norm(para_A.para.JNL_poss);
 eps_J2 = norm(para_A.para.JNL_poss - para_F.para.JNL_poss) / norm(para_A.para.JNL_poss);
@@ -499,7 +630,7 @@ JNLt_F_32 = E * para_F.para.JNL_poss(2 * (2 * H + 1) + 1:end, (2 * H + 1) + 1:2 
 JNLt_F_33 = E * para_F.para.JNL_poss(2 * (2 * H + 1) + 1:end, 2 * (2 * H + 1) + 1:end);
 
 t = para_A.para.t;
-for i = 1:11
+for i = 1:5
     fig = figure; %('PaperOrientation','landscape','PaperUnits','centimeters','PaperPosition', 100 * [0 0 29.7 21], 'PaperSize',[29.7 21] * 100);
     
     fig.WindowState = 'maximized';

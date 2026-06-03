@@ -384,42 +384,17 @@ end
 %%
 clear
 % Analytical forward
-A_f = load('/home/liangye-liu/data/non-linear problem/Periodic-Forced-Response-Solver/mass spring model/data/Analytical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/Adof_H5_ds0.05_N128_eps1e-6.mat');
+A_f = load('/home/liangye-liu/data/non-linear problem/Periodic-Forced-Response-Solver/mass spring model/data/Analytical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/Adof_H5_ds0.05_N127_eps1e-6.mat');
 % Analytical backward
-A_b = load('/home/liangye-liu/data/non-linear problem/Periodic-Forced-Response-Solver/mass spring model/data/Analytical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/Adof_H5_ds0.05_N128_eps1e-6_backwards.mat');
+A_b = load('/home/liangye-liu/data/non-linear problem/Periodic-Forced-Response-Solver/mass spring model/data/Analytical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/Adof_H5_ds0.05_N127_eps1e-6_backwards.mat');
 % Numerical forward
-N_f = load('/home/liangye-liu/data/non-linear problem/Periodic-Forced-Response-Solver/mass spring model/data/Numerical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/Adof_H5_ds0.05_N128_eps1e-6.mat');
+N_f = load('/home/liangye-liu/data/non-linear problem/Periodic-Forced-Response-Solver/mass spring model/data/Numerical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/Adof_H5_ds0.05_N127_eps1e-6.mat');
 % Numerical backward
-N_b = load('/home/liangye-liu/data/non-linear problem/Periodic-Forced-Response-Solver/mass spring model/data/Numerical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/Adof_H5_ds0.05_N128_eps1e-6_backwards.mat');
+N_b = load('/home/liangye-liu/data/non-linear problem/Periodic-Forced-Response-Solver/mass spring model/data/Numerical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/Adof_H5_ds0.05_N127_eps1e-6_backwards.mat');
 % Correct forward
-F_f = load('/home/liangye-liu/data/non-linear problem/Periodic-Forced-Response-Solver/mass spring model/data/Fixed Numerical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/Adof_H5_ds0.05_N128_eps1e-6.mat');
+F_f = load('/home/liangye-liu/data/non-linear problem/Periodic-Forced-Response-Solver/mass spring model/data/Fixed Numerical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/Adof_H5_ds0.05_N127_eps1e-6.mat');
 % Correct backward
-F_b = load('/home/liangye-liu/data/non-linear problem/Periodic-Forced-Response-Solver/mass spring model/data/Fixed Numerical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/Adof_H5_ds0.05_N128_eps1e-6_backwards.mat');
-
-figure; % forward
-plot(A_f.Adof(:, 1), A_f.Adof(:, 5), 'b-', 'LineWidth', 2), hold on;
-plot(A_f.Adof(:, 1), A_f.Adof(:, 3), 'b-', 'LineWidth', 2), grid on;
-
-plot(F_f.Adof(:, 1), F_f.Adof(:, 5), 'r--', 'LineWidth', 2), hold on;
-plot(F_f.Adof(:, 1), F_f.Adof(:, 3), 'r--', 'LineWidth', 2), grid on;
-
-plot(N_f.Adof(:, 1), N_f.Adof(:, 5), 'ko', 'MarkerSize', 2), hold on;
-plot(N_f.Adof(:, 1), N_f.Adof(:, 3), 'ko', 'MarkerSize', 2), grid on;
-
-xlim([4 ,16]);
-ylim([0 ,40]);
-title('H = 5, N = 128, ds = 0.05, forward');
-
-figure; % backward
-plot(A_b.Adof(:, 1), A_b.Adof(:, 5), 'b-', 'LineWidth', 2), hold on;
-plot(A_b.Adof(:, 1), A_b.Adof(:, 3), 'b-', 'LineWidth', 2), grid on;
-
-plot(F_b.Adof(:, 1), F_b.Adof(:, 5), 'r--', 'LineWidth', 2), hold on;
-plot(F_b.Adof(:, 1), F_b.Adof(:, 3), 'r--', 'LineWidth', 2), grid on;
-
-plot(N_b.Adof(:, 1), N_b.Adof(:, 5), 'ko', 'MarkerSize', 2), hold on;
-plot(N_b.Adof(:, 1), N_b.Adof(:, 3), 'ko', 'MarkerSize', 2), grid on;
-
-xlim([4 ,16]);
-ylim([0 ,40]);
-title('H = 5, N = 128, ds = 0.05, backward');
+F_
+figure;
+plot(Adof(:, 1), Adof(:, 5), 'b-.', 'LineWidth', 2), hold on;
+plot(Adof(:, 1), Adof(:, 3), 'b-.', 'LineWidth', 2), grid on;

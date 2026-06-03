@@ -176,10 +176,6 @@ Xt2 = zeros(1,
 \end_layout
 
 \begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
 \begin_inset Formula $k_{t}\frac{\dot{x_{t}}}{\dot{x_{n}}}=k_{t}\frac{x_{t}^{+}-x_{t}^{-}}{x_{n}^{+}-x_{n}^{-}}=3131.1$
 \end_inset
 
