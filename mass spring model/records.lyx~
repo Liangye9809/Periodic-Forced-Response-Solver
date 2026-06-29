@@ -185,5 +185,12 @@ Xt2 = zeros(1,
  non-linear not obvious
 \end_layout
 
+\begin_layout Standard
+\begin_inset Formula $\frac{\partial x_{i}}{\partial X_{I}}=\frac{\partial(u_{i}+X_{i})}{\partial X_{I}}=\frac{\partial u_{i}}{\partial X_{I}}+\delta_{iI}$
+\end_inset
+
+
+\end_layout
+
 \end_body
 \end_document

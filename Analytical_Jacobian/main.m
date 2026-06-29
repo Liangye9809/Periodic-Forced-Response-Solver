@@ -11,13 +11,18 @@ H = 10;
 dt = 2 * pi / N;
 t = (0:(N-1)) * 2 * pi / N;
 t = t';
-% xn = ones(N, 1);
+% xn = 2*ones(N, 1);
 xn = - 4 * sin(sin(t)) + 1; % separation to stick
 xt = 2 * exp(cos(t + 1)) - 3; % separation to stick
 % xn = 2 * exp(cos(t)) - 0.5; % slip to stick
 % xn = 2 * exp(cos(t)) - 0.75; % separation to slip
 % xt = 2 * sin(sin(t)); % slip to stick
 % xt = sin(sin(t)); % pure stick
+
+% value to show w in different cases
+% xn = 3 + cos(t);
+% xt = sin(t);
+
 x = [xt, xn];
 
 
@@ -25,7 +30,7 @@ x = [xt, xn];
 kt = 1;
 kn = 2;
 mu = 0.5;
-w =  -1;
+w =  0;
 xn0 = 0; % normal pre-displacement
 
 nloop = 2;
@@ -54,10 +59,18 @@ function dX = dXinFourier(X, H)
 
 end
 
-eps1 = norm(JNL_W - JNL_A) / norm(JNL_W)
-eps2 = norm(JNL_W - JNL_A_2) / norm(JNL_W)
-eps3 = norm(JNL_A_2 - JNL_A) / norm(JNL_A_2)
-%% print
+% eps1 = norm(JNL_W - JNL_A) / norm(JNL_W)
+% eps2 = norm(JNL_W - JNL_A_2) / norm(JNL_W)
+% eps3 = norm(JNL_A_2 - JNL_A) / norm(JNL_A_2)
+
+% print
+set(0, 'DefaultTextInterpreter', 'latex')
+set(0, 'DefaultLegendInterpreter', 'latex')
+set(0, 'DefaultAxesTickLabelInterpreter', 'latex')
+set(0, 'DefaultAxesFontSize',16)
+set(0, 'DefaultFigurePosition', [500, 500, 600, 450]);
+set(0, 'DefaultFigureColor', 'w');
+
 T = t; xplot = x;
 for i = 1:nloop - 1
     Tend = T(end);
@@ -89,18 +102,33 @@ plot(t, Mftplot(:,3), '.'), grid on;
 title('contact condition');
 ylim([-1.2, 1.2]);
 
-figure;
+figure; % ('Units','centimeters','Position',[2, 2, 6, 4.5]);
 % subplot(3,1,1)
 wp = xplot(:, 1) + mu * kn / kt * max(xplot(:, 2), 0);
 wm = xplot(:, 1) - mu * kn / kt * max(xplot(:, 2), 0);
-plot(T, wp, 'k--', 'LineWidth', 2), hold on;
-plot(T, wm, 'r--', 'LineWidth', 2), hold on;
-plot(T, wt, 'b-', 'LineWidth', 2), hold on;
+w_max = min(wp);
+w_min = max(wm);
+plot(T, wp, 'k--', 'LineWidth', 2, 'DisplayName', '$w^+$'), hold on;
+plot(T, wm, 'r--', 'LineWidth', 2, 'DisplayName', '$w^-$'), hold on;
+plot(T, wt, 'b-', 'LineWidth', 2, 'DisplayName', 'wt'), hold on;
 grid on;
-plot(t, x, 'LineWidth', 2), hold on;
-legend('w+', 'w-', 'wt', "x1", "xn");
-title('displacement');
+% plot(t, x, 'LineWidth', 2), hold on;
+% plot(T, [x(:,1); x(:,1)], 'LineWidth', 2, 'DisplayName', 'x1'), hold on;
+% plot(T, [x(:,2); x(:,2)], 'LineWidth', 2, 'DisplayName', 'xn'), hold on;
+% plot(T, w_max * ones(size(T)), 'b-', 'LineWidth', 2, 'HandleVisibility','off');
+% plot(T, w_min * ones(size(T)), 'b-', 'LineWidth', 2, 'HandleVisibility','off');
+legend show;
+% annotation('doublearrow', [0.25, 0.25], [(w_min + 5)/10, (w_max + 5)/10]);
+% quiver(5, 0, 0, w_max, 0, 'MaxHeadSize', 0.5, 'LineWidth', 1.5, 'Color', 'b', 'HandleVisibility','off');
+% quiver(5, 0, 0, w_min, 0, 'MaxHeadSize', 0.5, 'LineWidth', 1.5, 'Color', 'b', 'HandleVisibility','off');
+% ylim([-3, 3]);
+xlim([0, 14]);
+% text(5.5,0,'$w_0$','Interpreter','latex', 'Color','b', 'FontSize', 16);
+% title('displacement');
+xlabel('Time');
+ylabel('Displacement');
 
+%%
 figure;
 % subplot(3,1,2)
 plot(xplot(:, 1), Ft(:, 1), 'LineWidth', 2);
@@ -169,4 +197,12 @@ for i = 1:3
 end
 
 
+%%
+x = 4;
+y1 = 0.91;
+y2 = 1.09;
 
+quiver(x,y1,0,y2-y1,...
+    0,...
+    'MaxHeadSize',0.3,...
+    'LineWidth',1.5)

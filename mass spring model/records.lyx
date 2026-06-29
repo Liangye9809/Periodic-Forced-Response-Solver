@@ -192,5 +192,12 @@ Xt2 = zeros(1,
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset Formula $\frac{T_{1}-T_{0}}{h}=k_{t}\frac{x_{t}⁺-w}{h}=k_{t}\frac{x_{t}⁺-x_{t}⁻}{h}=2*10⁹$
+\end_inset
+
+
+\end_layout
+
 \end_body
 \end_document

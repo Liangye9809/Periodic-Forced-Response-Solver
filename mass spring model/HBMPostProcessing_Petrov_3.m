@@ -19,12 +19,12 @@ Adof = [Adof, k_cont'];
 
 figure;
 % yyaxis left
-plot(Adof(:, 1), Adof(:, 5), 'r-', 'LineWidth', 2), hold on;
-plot(Adof(:, 1), Adof(:, 3), 'b-', 'LineWidth', 2), grid on;
+plot(Adof(:, 1), Adof(:, 5), 'r.', 'LineWidth', 2), hold on;
+plot(Adof(:, 1), Adof(:, 3), 'b.', 'LineWidth', 2), grid on;
 xlabel('Omega');
 legend('xn', 'xt');
 % ylim([0.1, 100]);
-titlename = 'mu = ' + string(mu(1)) + ', kt = ' + string(kt(1)) + ', kn = ' + string(kn);
+titlename = 'mu = ' + string(mu(1)) + ', kt = ' + string(kt(1)) + ', kn = ' + string(kn) + ', max(xt) = ' + string(max(Adof(:, 3)));
 title(titlename);
 % yyaxis right
 % plot(Adof(:, 1), gap_cont', 'LineWidth', 2, 'LineStyle', '-', 'Color', 'g'), hold on;
@@ -54,15 +54,15 @@ set(0, 'DefaultFigureColor', 'w');
 %%
 % A_p = load('data/Analytical Petrov System 3/para_H10_ds0.05_N512_stopped_point.mat');
 
-i_plot = 1883; % point before second 11.6743
-% x_poss = x_cont(:, i_plot);
-x_poss = x_cont(:, end);
+i_plot = 115; % point before second 11.6743
+x_poss = x_cont(:, i_plot);
+% x_poss = x_cont(:, end);
 % omega_poss = omega_cont(i_plot);
-omega_poss = omega_cont(end);
-% omega_poss = 11.857;
-% omega_poss = 10.93466;
-% params.func.fc.w = w_cont(:, i_plot);
-params.func.fc.w = w_cont(:, end);
+% omega_poss = omega_cont(end);
+% omega_poss = 11.48;
+omega_poss = 11.96;
+params.func.fc.w = w_cont(:, i_plot);
+% params.func.fc.w = w_cont(:, end);
 for i = 1:Na + 3 * Nx
     r1 = (2 * H + 1) * (i - 1) + 1;
     r2 = (2 * H + 1) * i;
@@ -223,7 +223,7 @@ end
 clear
 % A_p = load('data/Analytical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/para_H5_ds0.05_N256_stopped_point.mat');
 % A_p = load('data/Analytical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/para_H5_ds0.05_N128_stopped_point.mat');
-A_p = load('data/Analytical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/para_H5_ds0.05_N128_stopped_point_backward.mat');
+A_p = load('data/Analytical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/para_H5_ds0.09_N128_stopped_point_backward_mu10.mat');
 
 % i_plot = 707; % point before second 11.6743
 x_poss = A_p.para.X(:);
@@ -348,7 +348,7 @@ ylim([-1.2, 2.2]);
 clear
 % A_p = load('data/Analytical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/para_H5_ds0.05_N512_stopped_point.mat');
 % A_p = load('data/Analytical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/para_H5_ds0.05_N128_stopped_point.mat');
-A_p = load('data/Analytical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/para_H5_ds0.05_N128_stopped_point_backward.mat');
+A_p = load('data/Analytical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/para_H5_ds0.09_N128_stopped_point_backward_mu10.mat');
 
 % i_plot = 707; % point before second 11.6743
 x_poss = A_p.para.X(:);
@@ -550,9 +550,9 @@ plot(t_poss, JNL_time(257:end, 2 + 22), 'k:', 'LineWidth', 2), grid on, hold on;
 title(titlename);
 %% Jacobian Comparison
 clear
-para_A = load('data/Analytical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/para_H5_ds0.05_N128_stopped_point_backward.mat');
-para_N = load('data/Numerical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/para_H5_ds0.05_N128_stopped_point_backward.mat');
-para_F = load('data/Fixed Numerical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/para_H5_ds0.05_N128_stopped_point_backward.mat');
+para_A = load('data/Analytical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/para_H5_ds0.09_N128_stopped_point_backward_mu10.mat');
+para_N = load('data/Numerical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/para_H5_ds0.09_N128_stopped_point_backward_mu10.mat');
+para_F = load('data/Fixed Numerical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/para_H5_ds0.09_N128_stopped_point_backward_mu10.mat');
 E = para_A.para.params.func.HBM.E;
 H = para_A.para.params.func.HBM.H;
 N = para_A.para.params.func.HBM.N;

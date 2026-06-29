@@ -384,17 +384,18 @@ end
 %%
 clear
 % Analytical forward
-A_f = load('/home/liangye-liu/data/non-linear problem/Periodic-Forced-Response-Solver/mass spring model/data/Analytical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/Adof_H5_ds0.05_N128_eps1e-6.mat');
+A_f = load('/home/liangye-liu/data/non-linear problem/Periodic-Forced-Response-Solver/mass spring model/data/Analytical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/Adof_H5_ds0.09_N128_eps1e-6_forward_mu10.mat');
 % Analytical backward
-A_b = load('/home/liangye-liu/data/non-linear problem/Periodic-Forced-Response-Solver/mass spring model/data/Analytical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/Adof_H5_ds0.05_N128_eps1e-6_backwards.mat');
+A_b = load('/home/liangye-liu/data/non-linear problem/Periodic-Forced-Response-Solver/mass spring model/data/Analytical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/Adof_H5_ds0.09_N128_eps1e-6_backward_mu10.mat');
 % Numerical forward
-N_f = load('/home/liangye-liu/data/non-linear problem/Periodic-Forced-Response-Solver/mass spring model/data/Numerical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/Adof_H5_ds0.05_N128_eps1e-6.mat');
+N_f = load('/home/liangye-liu/data/non-linear problem/Periodic-Forced-Response-Solver/mass spring model/data/Numerical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/Adof_H5_ds0.09_N128_eps1e-6_forward_mu10.mat');
 % Numerical backward
-N_b = load('/home/liangye-liu/data/non-linear problem/Periodic-Forced-Response-Solver/mass spring model/data/Numerical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/Adof_H5_ds0.05_N128_eps1e-6_backwards.mat');
+N_b = load('/home/liangye-liu/data/non-linear problem/Periodic-Forced-Response-Solver/mass spring model/data/Numerical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/Adof_H5_ds0.09_N128_eps1e-6_backward_mu10.mat');
+
 % Correct forward
-F_f = load('/home/liangye-liu/data/non-linear problem/Periodic-Forced-Response-Solver/mass spring model/data/Fixed Numerical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/Adof_H5_ds0.05_N128_eps1e-6.mat');
+F_f = load('/home/liangye-liu/data/non-linear problem/Periodic-Forced-Response-Solver/mass spring model/data/Fixed Numerical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/Adof_H5_ds0.09_N128_eps1e-6_forward_mu10.mat');
 % Correct backward
-F_b = load('/home/liangye-liu/data/non-linear problem/Periodic-Forced-Response-Solver/mass spring model/data/Fixed Numerical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/Adof_H5_ds0.05_N128_eps1e-6_backwards.mat');
+F_b = load('/home/liangye-liu/data/non-linear problem/Periodic-Forced-Response-Solver/mass spring model/data/Fixed Numerical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/Adof_H5_ds0.09_N128_eps1e-6_backward_mu10.mat');
 
 figure; % forward
 plot(A_f.Adof(:, 1), A_f.Adof(:, 5), 'b-', 'LineWidth', 2), hold on;
@@ -405,10 +406,16 @@ plot(F_f.Adof(:, 1), F_f.Adof(:, 3), 'r--', 'LineWidth', 2), grid on;
 
 plot(N_f.Adof(:, 1), N_f.Adof(:, 5), 'ko', 'MarkerSize', 2), hold on;
 plot(N_f.Adof(:, 1), N_f.Adof(:, 3), 'ko', 'MarkerSize', 2), grid on;
+plot(N_f.Adof(end, 1), N_f.Adof(end, 3), 'ko', 'MarkerSize', 4), grid on;
+plot(N_f.Adof(end, 1), N_f.Adof(end, 5), 'ko', 'MarkerSize', 4), grid on;
+plot([N_f.Adof(end, 1), N_f.Adof(end, 1)], [0, 40], 'k--', 'LineWidth', 2), grid on;
+% str = 'Omega_fail = ' + string(N_f.Adof(end, 1));
+% text(N_f.Adof(end, 1), 20, str);
 
 xlim([4 ,16]);
 ylim([0 ,40]);
-title('H = 5, N = 128, ds = 0.05, forward');
+titlename = 'H = 5, N = 128, ds = 0.09, forward, Omega_fail = ' + string(N_f.Adof(end, 1));
+title(titlename);
 
 figure; % backward
 plot(A_b.Adof(:, 1), A_b.Adof(:, 5), 'b-', 'LineWidth', 2), hold on;
@@ -419,7 +426,13 @@ plot(F_b.Adof(:, 1), F_b.Adof(:, 3), 'r--', 'LineWidth', 2), grid on;
 
 plot(N_b.Adof(:, 1), N_b.Adof(:, 5), 'ko', 'MarkerSize', 2), hold on;
 plot(N_b.Adof(:, 1), N_b.Adof(:, 3), 'ko', 'MarkerSize', 2), grid on;
+plot(N_b.Adof(end, 1), N_b.Adof(end, 3), 'ko', 'MarkerSize', 4), grid on;
+plot(N_b.Adof(end, 1), N_b.Adof(end, 5), 'ko', 'MarkerSize', 4), grid on;
+plot([N_b.Adof(end, 1), N_b.Adof(end, 1)], [0, 40], 'k--', 'LineWidth', 2), grid on;
+% str = 'Omega_fail = ' + string(N_b.Adof(end, 1));
+% text(N_f.Adof(end, 1), 20, str);
 
 xlim([4 ,16]);
 ylim([0 ,40]);
-title('H = 5, N = 128, ds = 0.05, backward');
+titlename = 'H = 5, N = 128, ds = 0.09, backward, Omega_fail = ' + string(N_b.Adof(end, 1));
+title(titlename);
