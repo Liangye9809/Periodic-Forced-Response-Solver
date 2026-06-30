@@ -300,5 +300,115 @@ for i = 1:3
 
 end
 
+%% compare 3 Jacobians in time
+clear
+J_AN = load('P_gap_to_stick_Analytical_and_Numerical.mat');
+J_F  = load('P_gap_to_stick_Fixed_Numerical.mat');
 
+JNLt_N = J_AN.P.JNLt_N;
+JNLt_A = J_AN.P.JNLt_A;
+JNLt_F = J_F.P.JNLt_N;
+N = J_F.P.N;
+H = J_F.P.H;
+t = (0:(N-1)) * 2 * pi / N;
+t = t';
+dTdxt_time_NUM = JNLt_N(1:N, 1:2*H+1);   dNdxt_time_NUM = JNLt_N(N + 1:end, 1:2*H+1);
+dTdxn_time_NUM = JNLt_N(1:N, 2*H+2:end); dNdxn_time_NUM = JNLt_N(N + 1:end, 2*H+2:end);
 
+dTdxt_time_AN = JNLt_A(1:N, 1:2*H+1);   dNdxt_time_AN = JNLt_A(N + 1:end, 1:2*H+1);
+dTdxn_time_AN = JNLt_A(1:N, 2*H+2:end); dNdxn_time_AN = JNLt_A(N + 1:end, 2*H+2:end);
+
+dTdxt_time_F = JNLt_F(1:N, 1:2*H+1);   dNdxt_time_F = JNLt_F(N + 1:end, 1:2*H+1);
+dTdxn_time_F = JNLt_F(1:N, 2*H+2:end); dNdxn_time_F = JNLt_F(N + 1:end, 2*H+2:end);
+
+for i = 1:3
+    fig = figure; %('PaperOrientation','landscape','PaperUnits','centimeters','PaperPosition', 100 * [0 0 29.7 21], 'PaperSize',[29.7 21] * 100);
+    
+    fig.WindowState = 'maximized';
+    
+    % set(fig,'PaperUnits','centimeters');
+    % set(fig,'PaperSize',[29.7 21]);
+    % set(fig,'PaperPosition',[0 0 29.7 21]);
+    
+    subplot(2,2,1)
+    plot(t, dTdxt_time_AN(:, i),'k-', 'LineWidth', 2, 'DisplayName', 'Analytical'), hold on   
+    plot(t, dTdxt_time_NUM(:, i),'g-.', 'LineWidth', 2, 'DisplayName', 'Numerical'), grid on
+    plot(t, dTdxt_time_F(:, i),'r--', 'LineWidth', 2, 'DisplayName', 'Corrected Numerical')
+    legend show;
+    if i == 1
+        titlename = 'c}^0}$';
+        ylim([-1, 1]);
+    elseif mod(i, 2) == 0
+        titlename = 'c}^' + string(floor(i/2)) + '}$';
+    else
+        titlename = 's}^' + string(floor(i/2)) + '}$';
+    end
+    % titlename = 'N = ' + string(N) + ', H = ' + string(H) + ', ' + string(titlename);
+    titlename = '$\frac{\partial f_t(t)}{\partial \mathbf{X}_{t' + string(titlename);
+    title(titlename);
+    xticks([0:pi/2:2*pi]);
+    xticklabels({'$0$','$\frac{\pi}{2}$','$\pi$','$\frac{3\pi}{2}$','$2\pi$'})
+    set(gca,'TickLabelInterpreter','latex');
+
+    subplot(2,2,2)
+    plot(t, dTdxn_time_AN(:, i),'k-',  'LineWidth', 2, 'DisplayName', 'Analytical'), hold on    
+    plot(t, dTdxn_time_NUM(:, i),'g-.', 'LineWidth', 2, 'DisplayName', 'Numerical'), grid on
+    plot(t, dTdxn_time_F(:, i),'r--',  'LineWidth', 2, 'DisplayName', 'Corrected Numerical')
+    legend show;
+    if i == 1
+        titlename = 'c}^0}$';
+    elseif mod(i, 2) == 0
+        titlename = 'c}^' + string(floor(i/2)) + '}$';
+    else
+        titlename = 's}^' + string(floor(i/2)) + '}$';
+    end
+    % titlename = 'N = ' + string(N) + ', H = ' + string(H) + ', ' + string(titlename);
+    titlename = '$\frac{\partial f_t(t)}{\partial \mathbf{X}_{n' + string(titlename);
+    title(titlename);
+    xticks([0:pi/2:2*pi]);
+    xticklabels({'$0$','$\frac{\pi}{2}$','$\pi$','$\frac{3\pi}{2}$','$2\pi$'})
+    set(gca,'TickLabelInterpreter','latex');
+
+    subplot(2,2,3)
+    plot(t, dNdxt_time_AN(:, i),'k-',  'LineWidth', 2, 'DisplayName', 'Analytical'), hold on    
+    plot(t, dNdxt_time_NUM(:, i),'g-.', 'LineWidth', 2, 'DisplayName', 'Numerical'), grid on
+    plot(t, dNdxt_time_F(:, i),'r--',  'LineWidth', 2, 'DisplayName', 'Corrected Numerical')
+    legend show;
+    if i == 1
+        titlename = 'c}^0}$';
+    elseif mod(i, 2) == 0
+        titlename = 'c}^' + string(floor(i/2)) + '}$';
+    else
+        titlename = 's}^' + string(floor(i/2)) + '}$';
+    end
+    % titlename = 'N = ' + string(N) + ', H = ' + string(H) + ', ' + string(titlename);
+    titlename = '$\frac{\partial f_n(t)}{\partial \mathbf{X}_{t' + string(titlename);
+    title(titlename);
+    xticks([0:pi/2:2*pi]);
+    xticklabels({'$0$','$\frac{\pi}{2}$','$\pi$','$\frac{3\pi}{2}$','$2\pi$'})
+    set(gca,'TickLabelInterpreter','latex');
+
+    subplot(2,2,4)
+    plot(t, dNdxn_time_AN(:, i),'k-',  'LineWidth', 2, 'DisplayName', 'Analytical'), hold on    
+    plot(t, dNdxn_time_NUM(:, i),'g-.', 'LineWidth', 2, 'DisplayName', 'Numerical'), grid on
+    plot(t, dNdxn_time_F(:, i),'r--',  'LineWidth', 2, 'DisplayName', 'Corrected Numerical')
+    legend show;
+    if i == 1
+        titlename = 'c}^0}$';
+    elseif mod(i, 2) == 0
+        titlename = 'c}^' + string(floor(i/2)) + '}$';
+    else
+        titlename = 's}^' + string(floor(i/2)) + '}$';
+    end
+    % titlename = 'N = ' + string(N) + ', H = ' + string(H) + ', ' + string(titlename);
+    titlename = '$\frac{\partial f_n(t)}{\partial \mathbf{X}_{n' + string(titlename);
+    title(titlename);
+    xticks([0:pi/2:2*pi]);
+    xticklabels({'$0$','$\frac{\pi}{2}$','$\pi$','$\frac{3\pi}{2}$','$2\pi$'})
+    set(gca,'TickLabelInterpreter','latex');
+
+    % pintname = string(titlename) + '.png';
+    % set(gcf,'PaperOrientation','landscape');
+    % exportgraphics(gcf, pintname,'ContentType','vector');
+
+end
