@@ -6,21 +6,21 @@ eps = [];
 h = 10^(-7);
 order = 1;
 h_con = [];
-N = 2^6;
-H = 4;
+N = 2048;
+H = 10;
 dt = 2 * pi / N;
 t = (0:(N-1)) * 2 * pi / N;
 t = t';
-xn = ones(N, 1);
-% xn = - 4 * sin(sin(t)) + 1; % separation to stick
-% xt = 2 * exp(cos(t + 1)) - 3; % separation to stick
+% xn = ones(N, 1);
+xn = - 4 * sin(sin(t)) + 1; % separation to stick
+xt = 2 * exp(cos(t + 1)) - 3; % separation to stick
 % xn = 2 * exp(cos(t)) - 0.5; % slip to stick
 % xn = 2 * exp(cos(t)) - 0.75; % separation to slip
 % xt = 2 * sin(sin(t)); % slip to stick
 
 % xt = 1.05  * sin(2 .* exp(cos(t))); % tangent case1
 % xt = 1.00 * sin(sin(t)) ./ sin(1); % tangent case2
-xt = 0.5 * sin(sin(t)) ./ sin(1) + 0.5; % tangent case3 only one side
+% xt = 0.5 * sin(sin(t)) ./ sin(1) + 0.5; % tangent case3 only one side
 x = [xt, xn];
 
 % figure; % displacement
@@ -229,7 +229,7 @@ dTdxt_time_AN = JNLt_A(1:N, 1:2*H+1);
 dTdxn_time_AN = JNLt_A(1:N, 2*H+2:end);
 
 % num = 18;
-for i = 1:1:1
+for i = 1:3
     fig = figure; %('PaperOrientation','landscape','PaperUnits','centimeters','PaperPosition', 100 * [0 0 29.7 21], 'PaperSize',[29.7 21] * 100);
     
     fig.WindowState = 'maximized';
