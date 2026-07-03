@@ -107,13 +107,13 @@ ContinuationCalculation
 ModifiedExternalForces
 % ModifiedPreload
 % Analytical
-[x_cont, omega_cont, k_cont, w_cont, stick_cont, slipP_cont, slipM_cont, gap_cont] = continuation(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);
+% [x_cont, omega_cont, k_cont, w_cont, stick_cont, slipP_cont, slipM_cont, gap_cont] = continuation(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);
 
 % Numerical (update w file)
 % [x_cont, omega_cont, k_cont] = continuation(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);
 
 % fixed Numerical (test file)
-% [x_cont, omega_cont, k_cont, ~, ~] = continuation(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);
+[x_cont, omega_cont, k_cont, ~, ~] = continuation(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);
 
 CaseTime = toc;
 

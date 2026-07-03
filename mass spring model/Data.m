@@ -16,17 +16,17 @@ FEM.Mec = zeros(3,3);
 % FEM.Pc = [0, 0 ,0]';
 k1 = 3.5;
 k2 = 10;
-k3 = 35;
-k4 = 100;
+k3 = 3.5;
+k4 = 10;
 
 FEM.Kee = diag([(k2 + k4), (k2 + k4), (k1 + k3)]);
 FEM.Kec = diag([-k4, -k4, -k3]);
 FEM.Kcc = -FEM.Kec;
 
-FEM.Fe = 2 * [50, 0, 80]';
+FEM.Fe = 1 * [2, 1, 4]';
 FEM.Fc = [0, 0 ,0]';
 
-FEM.Pe = 200 .* [0, 0, 1]';
+FEM.Pe = 20 .* [0, 0, 1]';
 FEM.Pc = [0, 0 ,0]';
 % xn = - 4 * sin(sin(t)) + 1; % separation to stick
 % xt = 2 * exp(cos(t + 1)) - 3; % separation to stick
@@ -38,10 +38,10 @@ H_F_ext = [0, 0, 1]; % fourier coefficient of f(t)
 
 %% HBM parameters
 
-H = 100; % number of harmonics assumption
-N = 2^10; % number of time points per force cycle
+H = 5; % number of harmonics assumption
+N = 2^8; % number of time points per force cycle
 Nx = 1; % number of contact points, means having 4 * 3 = 12 dofs
-Na = 3; % number of CB modes
+Na = 1; % number of CB modes
 xi = 0.1; 
 
 
@@ -53,9 +53,9 @@ maxiter = 100;
 
 %% Coulomb friction
 
-kn = 500; % .* 1e5;
+kn = 20; % .* 1e5;
 xn0 = 0;
-mu = 0.9 * [1; 1]; % .* 1e5;
+mu = 0.5 * [1; 1]; % .* 1e5;
 kt = 1 * [1; 1]; % .* 1e5;
 nloop = 2;
 
@@ -67,7 +67,7 @@ xp0 = 0; % if no value defined here, the default value inside is 0
 %% continuation parameters
 
 
-ds = 0.001;
+ds = 0.01;
 maxstep = 500000;
 % omega_0 = 0.81; % 
 % omega_end = 0.87;

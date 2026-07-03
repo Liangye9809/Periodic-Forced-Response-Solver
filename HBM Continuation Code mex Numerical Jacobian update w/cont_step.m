@@ -1,4 +1,4 @@
-function [x, omega, tx, tomega, w, k] = cont_step(func, jacob, deromega, params)
+function [x, omega, tx, tomega, w, k, stop] = cont_step(func, jacob, deromega, params)
      x0 = params.cont.x0;
 omega_0 = params.cont.omega_0;
      ds = params.cont.ds;
@@ -11,7 +11,7 @@ maxiter = params.Newton.maxiter;
       x = x0 + ds*tx0;
   omega = omega_0 + ds*tomega0;
       z = [x; omega];
-
+stop = 0;
 Nx = params.func.HBM.Nx;
 H  = params.func.HBM.H;
 Na = params.func.HBM.Na;
@@ -29,7 +29,7 @@ params.func.fc.w = w;
 params.func.fc.w = w; % update w
 G = [F 
      tx0'*(x-x0) + tomega0*(omega-omega_0)-ds];
-for k=1:maxiter
+for k = 1:maxiter
     JG = [jacob(x, omega, params.func) deromega(x, omega, params.func)
           tx0' tomega0];
     % A = [jacob(x, omega, params.func) deromega(x, omega, params.func)];
@@ -62,6 +62,11 @@ for k=1:maxiter
         disp([params.cont.step  z(1) z(2) omega  errorx  errorf   k])
         % w = FUNCstruct.w; % update w
         return
+    end
+    if k == maxiter
+        tx = 0;
+        tomega = 0;
+        stop = 1;
     end
 end
 

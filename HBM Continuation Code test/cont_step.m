@@ -1,4 +1,4 @@
-function [x, omega, tx, tomega, w, k, ifslip] = cont_step(func, jacob, deromega, params)
+function [x, omega, tx, tomega, w, k, ifslip, stop] = cont_step(func, jacob, deromega, params)
      x0 = params.cont.x0;
 omega_0 = params.cont.omega_0;
      ds = params.cont.ds;
@@ -15,7 +15,7 @@ Nx = params.func.HBM.Nx;
 H  = params.func.HBM.H;
 Na = params.func.HBM.Na;
 E  = params.func.HBM.E;
-
+stop = 0;
 
 ifslip = zeros(Nx, 1);
 %% calculate (min(w+) - max(w-)) / 2
@@ -78,6 +78,11 @@ for k = 1:maxiter
         %%
 
         return
+    end
+    if k == maxiter
+        tx = 0;
+        tomega = 0;
+        stop = 1;
     end
 end
 

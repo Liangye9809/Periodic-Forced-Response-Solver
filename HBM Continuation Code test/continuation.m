@@ -9,7 +9,7 @@ function [x_cont, omega_cont, k_cont, w_cont, ss_cont] = continuation(FUNC, JACO
     params.cont.step = 1;
     disp('continuation information');
     disp('step:   x1   x2   lambda  errorx  errorf     kmax');
-    [x, omega, tx, tomega, w, k, ss] = cont_step(FUNC, JACOB, JLAMBDA, params);
+    [x, omega, tx, tomega, w, k, ss, stop] = cont_step(FUNC, JACOB, JLAMBDA, params);
     params.func.fc.w = w; % update w
     x_cont = x;
     k_cont = k;
@@ -28,7 +28,11 @@ function [x_cont, omega_cont, k_cont, w_cont, ss_cont] = continuation(FUNC, JACO
     maxstep = params.cont.maxstep;
     for n = 2:maxstep
         params.cont.step = n;
-        [x, omega, tx, tomega, w, k, ss] = cont_step(FUNC, JACOB, JLAMBDA, params);
+        [x, omega, tx, tomega, w, k, ss, stop] = cont_step(FUNC, JACOB, JLAMBDA, params);
+        if stop == 1
+            warning('iteration reaches the maximum step, continuation not converge');
+            break;
+        end
         params.func.fc.w = w; % update w
         params.cont.x0 = x;
         params.cont.omega_0 = omega;
@@ -45,7 +49,11 @@ function [x_cont, omega_cont, k_cont, w_cont, ss_cont] = continuation(FUNC, JACO
             params.cont.tomega0 = sign(omega_end - omega_0) * 1;
             params.cont.omega_0 = omega_end;
             params.cont.step = n + 1;
-            [x, omega, tx, tomega, w, k, ss] = cont_step(FUNC, JACOB, JLAMBDA, params);
+            [x, omega, tx, tomega, w, k, ss, stop] = cont_step(FUNC, JACOB, JLAMBDA, params);
+            if stop == 1
+                warning('iteration reaches the maximum step, continuation not converge');
+                break;
+            end
             params.func.fc.w = w; % update w
             x_cont = [x_cont, x];
             omega_cont = [omega_cont, omega];

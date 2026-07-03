@@ -20,7 +20,7 @@ ind_slip = find(slipP_cont == 1);
 figure;
 % yyaxis left
 plot(Adof(:, 1), Adof(:, 5), 'r-', 'LineWidth', 2), hold on;
-plot(Adof(:, 1), Adof(:, 3), 'b-.', 'LineWidth', 2), grid on;
+plot(Adof(:, 1), Adof(:, 3), 'b-', 'LineWidth', 2), grid on;
 xlabel('Omega');
 legendname = 'g = ' + string(xn0);
 legend(legendname);

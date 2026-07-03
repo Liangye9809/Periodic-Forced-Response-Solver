@@ -41,10 +41,10 @@ t = t';
 % xn = - 4 * sin(sin(t)) + 1; % separation to stick
 % xt = 2 * exp(cos(t + 1)) - 3; % separation to stick
 % simple x
-% xn = - 10 * cos(t) + 3; % separation to stick
-% xt = - sin(t); % separation to stick
-xn = - 1 * cos(t) + 0.5; % separation to stick % (kt = 1, kn = 500, mu = 0.8)
-xt = 2 * cos(t + pi/6); % separation to stick
+xn = - 10 * cos(t) + 3; % separation to stick
+xt = - sin(t); % separation to stick
+% xn = - 1 * cos(t) + 0.5; % separation to stick % (kt = 1, kn = 500, mu = 0.8)
+% xt = 2 * cos(t + pi/6); % separation to stick
 x = [xt, xn];
 
 figure; % displacement
@@ -56,8 +56,8 @@ xticklabels({'$0$','$\frac{\pi}{2}$','$\pi$','$\frac{3\pi}{2}$','$2\pi$'})
 set(gca,'TickLabelInterpreter','latex');
 
 kt = 1;
-kn = 500;
-mu = 0.8;
+kn = 2;
+mu = 0.5;
 w =  0;
 xn0 = 0; % normal pre-displacement
 
