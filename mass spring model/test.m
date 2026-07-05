@@ -438,12 +438,14 @@ titlename = 'H = 5, N = 128, ds = 0.09, backward, Omega_fail = ' + string(N_b.Ad
 title(titlename);
 
 %%
+clear
 % P_N = load('Numerical_2DOF_nonPetrov.mat');
 % P_F = load('Numerical_Fixed_2DOF_nonPetrov.mat');
 P_N = load('Numeriacl_N64_whole_converge.mat');
 P_F = load('Numerical_Fixed_N64.mat');
+% P_N = load('Numerical_Fixed_N256.mat');
 H = P_N.P.H; Nx = 1; Na = 1;
-[E, EH] = HBM.fft_matrices(2^12, H);
+[E, EH] = HBM.fft_matrices(2^13, H);
 for i = 1:3*Nx + Na
     x_contNx_N(:,:,i) = P_N.P.x_cont((2*H+1)*(i-1)+1:(2*H+1)*i,:);
     x_contNx_F(:,:,i) = P_F.P.x_cont((2*H+1)*(i-1)+1:(2*H+1)*i,:);
@@ -465,23 +467,36 @@ end
 
 % Adof_F = P_F.P.Adof;
 % Adof_N = P_N.P.Adof;
-for i = 1:4
+for i = 2:2:4
     figure;
-    plot(Adof_F(:, 1), Adof_F(:, i + 1), 'b-','DisplayName', 'Fixed Numerical','LineWidth', 2), hold on;
+    plot(Adof_F(:, 1), Adof_F(:, i + 1), 'b-','DisplayName', 'Corrected Numerical','LineWidth', 2), hold on;
     plot(Adof_N(:, 1), Adof_N(:, i + 1), 'r-','DisplayName', 'Original Numerical','LineWidth', 2), grid on;
+    % plot(Adof_F(:, 1), Adof_F(:, i + 1), 'b-','DisplayName', 'Corrected Numerical N64','LineWidth', 2), hold on;
+    % plot(Adof_N(:, 1), Adof_N(:, i + 1), 'r-','DisplayName', 'Corrected Numerical N256','LineWidth', 2), grid on;
     legend show;
     % xlim([P_F.P.omega1, P_F.P.omega2]);
-    titlename = 'dof' + string(i);
+    if i == 2
+        titlename = 'xt';
+    else
+        titlename = 'xn';
+    end
+    % titlename = 'dof' + string(i);
     title(titlename);
 end
 
-for i = 1:4
+for i = 2:2:4
     figure;
     plot(P_F.P.Adof(:,1)',P_F.P.x_cont((2*H+1)*(i-1)+1:(2*H+1)*(i-1)+3,:), 'LineWidth', 2, 'LineStyle','-'), hold on;
     plot(P_N.P.Adof(:,1)',P_N.P.x_cont((2*H+1)*(i-1)+1:(2*H+1)*(i-1)+3,:), 'LineWidth', 1, 'LineStyle','-'), grid on;
-    legend('Xc0_Fixed','Xc1_Fixed','Xs1_Fixed','Xc0_Original','Xc1_Original','Xs1_Original')
+    legend('$X_{c}^{0}$ Corrected','$X_{c}^{1}$ Corrected','$X_{s}^{1}$ Corrected','$X_{c}^{0}$ Original','$X_{c}^{1}$ Original','$X_{s}^{1}$ Original')
+    % legend('$X_{c}^{0}$ Corrected N64','$X_{c}^{1}$ Corrected N64','$X_{s}^{1}$ Corrected N64','$X_{c}^{0}$ Corrected N256','$X_{c}^{1}$ Original N256','$X_{s}^{1}$ Original N256')
     % xlim([P_F.P.omega1, P_F.P.omega2]);
-    titlename = 'dof' + string(i);
+    if i == 2
+        titlename = 'xt';
+    else
+        titlename = 'xn';
+    end
+    % titlename = 'dof' + string(i);
     title(titlename);
 end
 
