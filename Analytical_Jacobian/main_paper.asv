@@ -3,10 +3,10 @@ clear
 clc
 % close all
 eps = [];
-h = 10^(-3);
+h = 10^(-7);
 order = 1;
 h_con = [];
-N = 2^15;
+N = 2^8;
 H = 1;
 dt = 2 * pi / N;
 t = (0:(N-1)) * 2 * pi / N;
@@ -415,11 +415,5 @@ end
 %%
 P.JNLt_N = JNLt_N;
 P.JNLt_A = JNLt_A;
-P.JNL_N = JNL_N;
-P.JNL_A = JNL_A;
-P.N = N;
-P.H = H;
-P.t = t;
-P.xt = xt;
-P.X = X;
-P.h = h;
+P.JNLt_N = JNLt_N;
+P.JNLt_N = JNLt_N;

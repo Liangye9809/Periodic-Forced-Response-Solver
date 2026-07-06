@@ -443,14 +443,17 @@ clear
 % P_F = load('Numerical_Fixed_2DOF_nonPetrov.mat');
 P_N = load('Numeriacl_N64_whole_converge.mat');
 P_F = load('Numerical_Fixed_N64.mat');
-% P_N = load('Numerical_Fixed_N256.mat');
-H = P_N.P.H; Nx = 1; Na = 1;
+% P_F = load('Analytical_N64.mat');
+% P_N = load('pick point/para_H5_ds0.05_N64_Analytical.mat');
+H = 5; Nx = 1; Na = 1;
 [E, EH] = HBM.fft_matrices(2^13, H);
 for i = 1:3*Nx + Na
     x_contNx_N(:,:,i) = P_N.P.x_cont((2*H+1)*(i-1)+1:(2*H+1)*i,:);
+    % x_contNx_N(:,:,i) = P_N.para.x_cont((2*H+1)*(i-1)+1:(2*H+1)*i,:);
     x_contNx_F(:,:,i) = P_F.P.x_cont((2*H+1)*(i-1)+1:(2*H+1)*i,:);
 end
 Adof_N = P_N.P.Adof(:, 1);
+% Adof_N = P_N.para.omega_cont';
 Adof_F = P_F.P.Adof(:, 1);
 for Ndof = 1:3*Nx + Na
     A_N = E * x_contNx_N(:,:,Ndof);
@@ -470,6 +473,7 @@ end
 for i = 2:2:4
     figure;
     plot(Adof_F(:, 1), Adof_F(:, i + 1), 'b-','DisplayName', 'Corrected Numerical','LineWidth', 2), hold on;
+    % plot(Adof_N(end, 1), Adof_N(end, i + 1), 'ro','DisplayName', 'pick point','LineWidth', 2), grid on;
     plot(Adof_N(:, 1), Adof_N(:, i + 1), 'r-','DisplayName', 'Original Numerical','LineWidth', 2), grid on;
     % plot(Adof_F(:, 1), Adof_F(:, i + 1), 'b-','DisplayName', 'Corrected Numerical N64','LineWidth', 2), hold on;
     % plot(Adof_N(:, 1), Adof_N(:, i + 1), 'r-','DisplayName', 'Corrected Numerical N256','LineWidth', 2), grid on;
@@ -510,3 +514,18 @@ P.epsf = epsf;
 P.x_cont = x_cont;
 P.omega_cont = omega_cont;
 P.k_cont = k_cont;
+
+%%
+[E, EH] = HBM.fft_matrices(8000, 5);
+for i = 1:4
+    x_contNx(:,:,i) = para_A.para.x_cont((2*H+1)*(i-1)+1:(2*H+1)*i,:);
+end
+Adof = para_A.para.omega_cont';
+for Ndof = 1:4
+    A = E * x_contNx(:,:,Ndof);
+    Amax = max(abs(A));
+    Adof(:, Ndof + 1) = Amax';
+end
+figure
+plot(Adof(:, 1), Adof(:, 3), 'b-', 'LineWidth', 2, 'DisplayName', '$x_t$'), hold on;
+plot(Adof(:, 1), Adof(:, 5), 'r-', 'LineWidth', 2, 'DisplayName', '$x_n$'), hold on;

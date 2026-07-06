@@ -54,13 +54,13 @@ set(0, 'DefaultFigureColor', 'w');
 %%
 % A_p = load('data/Analytical Petrov System 3/para_H10_ds0.05_N512_stopped_point.mat');
 
-i_plot = 115; % point before second 11.6743
+i_plot = 2622; % point before second 11.6743
 x_poss = x_cont(:, i_plot);
 % x_poss = x_cont(:, end);
-% omega_poss = omega_cont(i_plot);
+omega_poss = omega_cont(i_plot);
 % omega_poss = omega_cont(end);
 % omega_poss = 11.48;
-omega_poss = 11.96;
+% omega_poss = 11.96;
 params.func.fc.w = w_cont(:, i_plot);
 % params.func.fc.w = w_cont(:, end);
 for i = 1:Na + 3 * Nx
@@ -550,9 +550,9 @@ plot(t_poss, JNL_time(257:end, 2 + 22), 'k:', 'LineWidth', 2), grid on, hold on;
 title(titlename);
 %% Jacobian Comparison
 clear
-para_A = load('data/Analytical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/para_H5_ds0.09_N128_stopped_point_backward_mu10.mat');
-para_N = load('data/Numerical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/para_H5_ds0.09_N128_stopped_point_backward_mu10.mat');
-para_F = load('data/Fixed Numerical Petrov System 3/kt = 30, mu = 8, k = 40, f = 100sin(t)/para_H5_ds0.09_N128_stopped_point_backward_mu10.mat');
+para_A = load("data/Compare jagged 2DOF Petrov/pick point/para_H5_ds0.05_N64_Analytical.mat");
+para_N = load("data/Compare jagged 2DOF Petrov/pick point/para_H5_ds0.05_N64_Numerical.mat");
+para_F = load("data/Compare jagged 2DOF Petrov/pick point/para_H5_ds0.05_N64_Numerical_Corrected.mat");
 E = para_A.para.params.func.HBM.E;
 H = para_A.para.params.func.HBM.H;
 N = para_A.para.params.func.HBM.N;
