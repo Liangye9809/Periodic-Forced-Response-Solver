@@ -1,6 +1,6 @@
 %% plot Amplitude vs omega
 
-
+N = 2^13;
 [E, EH] = HBM.fft_matrices(N, H);
 for i = 1:3*Nx + Na
     x_contNx(:,:,i) = x_cont((2*H+1)*(i-1)+1:(2*H+1)*i,:);
@@ -13,9 +13,9 @@ for Ndof = 1:3*Nx + Na
 end
 Adof = [Adof, k_cont'];
 
-ind_gap_stick = find(gap_cont == 1 & (slipP_cont + slipM_cont) == 0);
-ind_gap = find(gap_cont == 1);
-ind_slip = find(slipP_cont == 1);
+% ind_gap_stick = find(gap_cont == 1 & (slipP_cont + slipM_cont) == 0);
+% ind_gap = find(gap_cont == 1);
+% ind_slip = find(slipP_cont == 1);
 
 figure;
 % yyaxis left
