@@ -28,7 +28,7 @@ figure;
 % yyaxis left
 subplot(1, 2, 1)
 plot(Adof(:, 1), Adof(:, 5), 'b-', 'LineWidth', 2), hold on;
-plot(Adof([1042,1063],1),Adof([1042,1063],5), 'ro'), grid on;
+% plot(Adof([1042,1063],1),Adof([1042,1063],5), 'ro'), grid on;
 xlabel('Omega');
 % legend('$x_{n}$ Analytical N64','pick point')
 titlename = 'N' + string(64) + ', H' + string(H) + ', $\epsilon$ = 1e-6, $F=' + string(CB.CB_F.Fx(end)) + '\sin(t)$';
@@ -52,9 +52,14 @@ plot(omega_cont, x_cont((2*H+1)*(4-1)+1:(2*H+1)*(4-1)+7,:), 'LineWidth', 2);
 legend('$X_{c}^{0}$','$X_{c}^{1}$','$X_{s}^{1}$',...
     '$X_{c}^{2}$','$X_{s}^{2}$','$X_{c}^{3}$','$X_{s}^{3}$')
 figure
-stem(x_cont((2*H+1)*(4-1)+1:(2*H+1)*(5-1),1042)), hold on
-stem(x_cont((2*H+1)*(4-1)+1:(2*H+1)*(5-1),1063)), grid on
+semilogy(abs(x_cont((2*H+1)*(4-1)+1:(2*H+1)*(5-1),1042)), 'LineWidth', 2), hold on
+semilogy(abs(x_cont((2*H+1)*(4-1)+1:(2*H+1)*(5-1),1063)), 'LineWidth', 2), grid on
+title('Fourier modes of 2 cases with same $\Omega$')
 
+figure
+stem(x_cont((2*H+1)*(4-1)+1:(2*H+1)*(5-1),1042), 'LineWidth', 2), hold on
+stem(x_cont((2*H+1)*(4-1)+1:(2*H+1)*(5-1),1063), 'LineWidth', 2), grid on
+title('Fourier modes of 2 cases with same $\Omega$')
 %% xn with different pre gap
 
 figure

@@ -27,7 +27,6 @@ function [F, w, flag] = fftgx(xct, pfunc) % x(t) = E*X
     
     Fti(end - N + 1:end, 3:3:end) = Fnt;
     Ft = Fti(end - N + 1:end, :) - gxp'; % the last periods
-    
     hndn = EH * Ft;
     F = hndn(:);
     
