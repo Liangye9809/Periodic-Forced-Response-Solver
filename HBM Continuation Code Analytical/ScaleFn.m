@@ -9,7 +9,7 @@ function Fnt_out = ScaleFn(Fnt_in, xn)
         for j = 1:size(trans_contact, 1)
             i_m = trans_contact(j);
             i_p = mod(i_m, N) + 1; % next point
-            c = xn(i_m, i) / (xn(i_m, i) - xn(i_p, i));
+            c = 0.5 * (1 + xn(i_m, i) / (xn(i_m, i) - xn(i_p, i)));
             Fnt_out(i_m, i) = Fnt_in(i_m, i) * c;
         end
 
@@ -17,7 +17,7 @@ function Fnt_out = ScaleFn(Fnt_in, xn)
         for j = 1:size(trans_gap, 1)
             i_m = trans_gap(j);
             i_p = mod(i_m, N) + 1; % next point
-            c = 1 + xn(i_m, i) / (xn(i_p, i) - xn(i_m, i));
+            c = 0.5 * (2 - xn(i_m, i) / (xn(i_m, i) - xn(i_p, i)));
             Fnt_out(i_p, i) = Fnt_in(i_p, i) * c;
         end
 

@@ -21,13 +21,15 @@ function [F, w, flag] = fftgx(xct, pfunc) % x(t) = E*X
     [Fti, wi, flag] = g(xct, kn, xn0, mu, kt, w_in, nloop); 
     w = wi(1:2, :, end);
 
-    Fnt = ScaleFn(Fti(end - N + 1:end, 3:3:end), xct(:, 3:3:end)); % pass only normal displacements and normal forces
+    % Fnt = ScaleFn(Fti(end - N + 1:end, 3:3:end), xct(:, 3:3:end)); % pass only normal displacements and normal forces
     
-    TestF = [Fti(end - N + 1:end, 3:3:end), Fnt];
+    % TestF = [Fti(end - N + 1:end, 3:3:end), Fnt, Fnt ./ Fti(end - N + 1:end, 3:3:end)];
     
-    Fti(end - N + 1:end, 3:3:end) = Fnt;
+    % Fti(end - N + 1:end, 3:3:end) = Fnt;
     Ft = Fti(end - N + 1:end, :) - gxp'; % the last periods
     
+    % TestF = [TestF, Fnt ./ Fti(end - N + 1:end, 3:3:end)];
+
     hndn = EH * Ft;
     F = hndn(:);
     
