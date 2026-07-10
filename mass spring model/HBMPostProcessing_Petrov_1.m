@@ -1,7 +1,7 @@
 %% plot Amplitude vs omega
 
-N = 2^13;
-[E, EH] = HBM.fft_matrices(N, H);
+Np = 2^13;
+[E, EH] = HBM.fft_matrices(Np, H);
 for i = 1:3*Nx + Na
     x_contNx(:,:,i) = x_cont((2*H+1)*(i-1)+1:(2*H+1)*i,:);
 end
@@ -20,9 +20,12 @@ Adof = [Adof, k_cont'];
 figure;
 % yyaxis left
 plot(Adof(:, 1), Adof(:, 5), 'r-', 'LineWidth', 2), hold on;
-plot(Adof(:, 1), Adof(:, 3), 'b-', 'LineWidth', 2), grid on;
+% plot(Adof(:, 1), Adof(:, 3), 'b-', 'LineWidth', 2), grid on;
 xlabel('Omega');
-legendname = 'g = ' + string(xn0);
+titlename = 'Numerical N' + string(N) + ', H' + string(H) + ', $\epsilon$ ' + string(epsf) + ...
+    ', $F=' + string(CB.CB_F.Fx(end)) + '\sin(t)$, ds' + string(ds);
+title(titlename);
+legendname = 'g = ' + string(Rx(end) / (40 + kn));
 legend(legendname);
 % ylim([0.1, 100]);
 

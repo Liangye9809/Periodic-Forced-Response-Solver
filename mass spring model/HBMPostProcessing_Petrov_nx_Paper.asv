@@ -26,7 +26,7 @@ Adof = [Adof, k_cont'];
 figure;
 % yyaxis left
 plot(Adof(:, 1), Adof(:, 5), 'r-', 'LineWidth', 2), hold on;
-plot(Adof(:, 1), Adof(:, 3), 'b-', 'LineWidth', 2), grid on;
+% plot(Adof(:, 1), Adof(:, 3), 'b-', 'LineWidth', 2), grid on;
 xlabel('Omega');
 titlename = 'Numerical N' + string(N) + ', H' + string(H) + ', $\epsilon$ ' + string(epsf) + ...
     ', $F=' + string(CB.CB_F.Fx(end)) + '\sin(t)$, ds' + string(ds);
@@ -57,12 +57,11 @@ legend(legendname);
 % figure;
 % for i = 1:3
 %     plot(omega_cont, x_cont())
-H = 10
+
 figure % Fourier Coefficients
-plot(P.omega_cont, P.x_cont((2*H+1)*(4-1)+1:(2*H+1)*(4-1)+7,:), 'LineWidth', 2);
+plot(omega_cont, x_cont((2*H+1)*(4-1)+1:(2*H+1)*(4-1)+7,:), 'LineWidth', 2);
 legend('$X_{c}^{0}$','$X_{c}^{1}$','$X_{s}^{1}$',...
     '$X_{c}^{2}$','$X_{s}^{2}$','$X_{c}^{3}$','$X_{s}^{3}$')
-title(titlename);
 % figure
 % semilogy(abs(x_cont((2*H+1)*(4-1)+1:(2*H+1)*(5-1),1042)), 'LineWidth', 2), hold on
 % semilogy(abs(x_cont((2*H+1)*(4-1)+1:(2*H+1)*(5-1),1063)), 'LineWidth', 2), grid on
@@ -73,16 +72,15 @@ title(titlename);
 % stem(x_cont((2*H+1)*(4-1)+1:(2*H+1)*(5-1),1063), 'LineWidth', 2), grid on
 % title('Fourier modes of 2 cases with same $\Omega$')
 
-P.x_cont = x_cont;
-P.Adof = Adof;
+P.x_cont = xcont;
 P.N = N;
 P.H = H;
 P.k_cont = k_cont;
 P.omega_cont = omega_cont;
 P.epsx = epsx;
-P.epsf = epsf;
+P.epsy = epsy;
 P.ds = ds;
-P.Rx = Rx;
+P.Rx = Rx(end);
 %% xn with different pre gap
 
 figure
