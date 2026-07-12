@@ -41,8 +41,10 @@ function [F, w, flag] = fftgx(x, xct, pfunc) %
     w = wi(1:2, :, end);
 
     xct_ = xt + xp';
-    Fnt = ScaleFn(Fti(end - N + 1:end, 3:3:end), xct_(:, 3:3:end)); % pass only normal displacements and normal forces
-    Fti(end - N + 1:end, 3:3:end) = Fnt;
+    % Fnt = ScaleFn(Fti(end - N + 1:end, 3:3:end), xct_(:, 3:3:end)); % pass only normal displacements and normal forces
+    % Fti(end - N + 1:end, 3:3:end) = Fnt;
+
+    Fti(end - N + 1:end, :) = ScaleFt(Fti(end - N + 1:end, :), xct_, flag(:, :, end - N + 1:end), wi(:, :, end - N + 1:end)); % pass all the displacements and forces
     
     Ft = Fti(end - N + 1:end, :) - gxp';
     hndn = EH * Ft;

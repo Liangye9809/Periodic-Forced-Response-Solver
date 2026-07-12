@@ -57,11 +57,21 @@ legend(legendname);
 % figure;
 % for i = 1:3
 %     plot(omega_cont, x_cont())
-H = 10
+
 figure % Fourier Coefficients
-plot(P.omega_cont, P.x_cont((2*H+1)*(4-1)+1:(2*H+1)*(4-1)+7,:), 'LineWidth', 2);
+plot(omega_cont, x_cont((2*H+1)*(4-1)+1:(2*H+1)*(4-1)+7,:), 'LineWidth', 2);
 legend('$X_{c}^{0}$','$X_{c}^{1}$','$X_{s}^{1}$',...
     '$X_{c}^{2}$','$X_{s}^{2}$','$X_{c}^{3}$','$X_{s}^{3}$')
+titlename = 'Numerical N' + string(N) + ', H' + string(H) + ', $\epsilon$ ' + string(epsf) + ...
+    ', $F=' + string(CB.CB_F.Fx(end)) + '\sin(t)$, ds' + string(ds) + ' xn';
+title(titlename);
+
+figure
+plot(omega_cont, x_cont((2*H+1)*(2-1)+1:(2*H+1)*(2-1)+7,:), 'LineWidth', 2);
+legend('$X_{c}^{0}$','$X_{c}^{1}$','$X_{s}^{1}$',...
+    '$X_{c}^{2}$','$X_{s}^{2}$','$X_{c}^{3}$','$X_{s}^{3}$')
+titlename = 'Numerical N' + string(N) + ', H' + string(H) + ', $\epsilon$ ' + string(epsf) + ...
+    ', $F=' + string(CB.CB_F.Fx(end)) + '\sin(t)$, ds' + string(ds) + ' xt';
 title(titlename);
 % figure
 % semilogy(abs(x_cont((2*H+1)*(4-1)+1:(2*H+1)*(5-1),1042)), 'LineWidth', 2), hold on
