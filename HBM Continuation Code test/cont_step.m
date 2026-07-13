@@ -1,4 +1,4 @@
-function [x, omega, tx, tomega, w, k, ifslip, stop] = cont_step(func, jacob, deromega, params)
+function [x, omega, tx, tomega, w, k, FlagState, stop] = cont_step(func, jacob, deromega, params)
      x0 = params.cont.x0;
 omega_0 = params.cont.omega_0;
      ds = params.cont.ds;
@@ -17,7 +17,7 @@ Na = params.func.HBM.Na;
 E  = params.func.HBM.E;
 stop = 0;
 
-ifslip = zeros(Nx, 1);
+FlagState = zeros(Nx, 4);
 %% calculate (min(w+) - max(w-)) / 2
 xc  = x((2 * H + 1) * Na + 1:end);
 pfunc = params.func;
@@ -72,9 +72,9 @@ for k = 1:maxiter
         % w = FUNCstruct.w; % update w
 
         %% output slip state
-        xc = x((2 * H + 1) * Na + 1:end);
-        pfunc = params.func;
-        ifslip = get_slip_state(xc, pfunc);
+        % xc = x((2 * H + 1) * Na + 1:end);
+        % pfunc = params.func;
+        FlagState = get_slip_state(flag);
         %%
 
         return
@@ -140,103 +140,77 @@ function w = get_w_middle(xc, pfunc)
         
 end
 
-function ifslip = get_slip_state(X, p)
-    E = p.HBM.E;
-    Nx = p.HBM.Nx;
-    N = p.HBM.N;
-    H = p.HBM.H;
-
-    kn = p.fc.kn;
-    kt = p.fc.kt;
-    xn0 = p.fc.xn0;
-    mu = p.fc.mu;
-    w_in = p.fc.w;
-    nloop = p.fc.nloop;
-    xp = p.static.preload.xp;
-    
-    xt = zeros(N, 3 * Nx);
-    Xi = zeros(2 * H + 1, 1);
-    
-
-    for i = 1:3 * Nx
-        Xi = X((2 * H + 1) * (i - 1) + 1:(2 * H + 1) * i);
-        xt(:, i) = E * Xi;
-
-    end
-
-    [~, ~, Mft] = g_in_cont(xt + xp', kn, xn0, mu, kt, w_in, nloop);
-
-    ifslip = zeros(Nx, 1);
+function FlagState = get_slip_state(flag)
+    Nx = size(flag, 2);
+    FlagState = zeros(Nx, 4);
     for i = 1:Nx
-        if sum(ismember([1, -1], Mft([2, 4], i, :))) > 0
-            ifslip(i) = 1;
-        end
+        FlagState(i, :) = ismember([2, 1, -1, 0], flag(:, i, :));
     end
 
 end
 
-function [Ft, wt, Mft] = g_in_cont(xt, kn, xn0, mu, kt, w_in, nloop) % xt, each rows correspond each time, columns are different dofs
+% function [Ft, wt, Mft] = g_in_cont(xt, kn, xn0, mu, kt, w_in, nloop) % xt, each rows correspond each time, columns are different dofs
+% 
+%     [N, M] = size(xt);
+%     Nx = M / 3;
+% 
+%     Ft = zeros(nloop * N, M);
+%     wt = zeros(2, Nx, nloop * N);
+% 
+%     Mft = zeros(5, Nx, N * nloop);
+% 
+%     for j = 1:nloop
+%         for i = 1:N
+%             [Ft((j - 1) * N + i, :), wtemp, Mf] = gf_in_cont(xt(i, :), kn, xn0, mu, kt, w_in);
+%             w_in = wtemp; 
+%             wt(:, :, (j - 1) * N + i) = wtemp;
+%             Mft(:, :, (j - 1) * N + i) = Mf;
+%         end
+%     end
+% 
+% 
+% end
 
-    [N, M] = size(xt);
-    Nx = M / 3;
+% function [F, w, Mf] = gf_in_cont(x, kn, xn0, mu, kt, w_in) % x is a 3*Np dof row vector, represent 2*Np tangential directions and 1*Np normal direction
+% 
+%     Nx = size(kn, 2); % contact number
+%     F = zeros(size(x));
+%     w = w_in;
+%     Mf = zeros(5, Nx); % condition of friction matix
+%     for i = 1:Nx
+%         indx1 = 3 * (i - 1) + 1;
+%         indx2 = 3 * (i - 1) + 2;
+%         indx3 = 3 * (i - 1) + 3;
+%         F(indx3) = NormalForces_in_cont(x(indx3), kn(i), xn0(i));
+%         if F(indx3) > 0
+%             Mf(5, i) = 1;
+%         end
+%         [F(indx1), w(1, i), Mf(1:2, i)] = TangentialForces_in_cont(x(indx1), w(1, i), kt(1, i), mu(1, i), F(indx3));
+%         [F(indx2), w(2, i), Mf(3:4, i)] = TangentialForces_in_cont(x(indx2), w(2, i), kt(2, i), mu(2, i), F(indx3));
+%     end
+% 
+% end
 
-    Ft = zeros(nloop * N, M);
-    wt = zeros(2, Nx, nloop * N);
+% function [T, w, C] = TangentialForces_in_cont(xt, wt, kt, mu, FN)
+%     if FN > 0
+%         T = kt * (xt - wt);
+%         if abs(T) <= mu * FN
+%             w = wt;
+%             C = [1; 0]; % stick
+%         else
+%             sg = sign(T);
+%             T = sg * mu * FN;
+%             w = xt - sg * mu * FN / kt;
+%             C = sg * [0; 1]; % 100% slip
+%         end
+%     else
+%         T = zeros(size(xt));
+%         w = xt;
+%         C = [0; 0]; % gap, no stick nor slip
+%     end
+% end
 
-    Mft = zeros(5, Nx, N * nloop);
-
-    for j = 1:nloop
-        for i = 1:N
-            [Ft((j - 1) * N + i, :), wtemp, Mf] = gf_in_cont(xt(i, :), kn, xn0, mu, kt, w_in);
-            w_in = wtemp; 
-            wt(:, :, (j - 1) * N + i) = wtemp;
-            Mft(:, :, (j - 1) * N + i) = Mf;
-        end
-    end
-
-    
-end
-
-function [F, w, Mf] = gf_in_cont(x, kn, xn0, mu, kt, w_in) % x is a 3*Np dof row vector, represent 2*Np tangential directions and 1*Np normal direction
-
-    Nx = size(kn, 2); % contact number
-    F = zeros(size(x));
-    w = w_in;
-    Mf = zeros(5, Nx); % condition of friction matix
-    for i = 1:Nx
-        indx1 = 3 * (i - 1) + 1;
-        indx2 = 3 * (i - 1) + 2;
-        indx3 = 3 * (i - 1) + 3;
-        F(indx3) = NormalForces_in_cont(x(indx3), kn(i), xn0(i));
-        if F(indx3) > 0
-            Mf(5, i) = 1;
-        end
-        [F(indx1), w(1, i), Mf(1:2, i)] = TangentialForces_in_cont(x(indx1), w(1, i), kt(1, i), mu(1, i), F(indx3));
-        [F(indx2), w(2, i), Mf(3:4, i)] = TangentialForces_in_cont(x(indx2), w(2, i), kt(2, i), mu(2, i), F(indx3));
-    end
-
-end
-
-function [T, w, C] = TangentialForces_in_cont(xt, wt, kt, mu, FN)
-    if FN > 0
-        T = kt * (xt - wt);
-        if abs(T) <= mu * FN
-            w = wt;
-            C = [1; 0]; % stick
-        else
-            sg = sign(T);
-            T = sg * mu * FN;
-            w = xt - sg * mu * FN / kt;
-            C = sg * [0; 1]; % 100% slip
-        end
-    else
-        T = zeros(size(xt));
-        w = xt;
-        C = [0; 0]; % gap, no stick nor slip
-    end
-end
-
-function FN = NormalForces_in_cont(xn, kn, xn0)
-    u = xn - xn0;
-    FN = max(0, kn .* u);
-end
+% function FN = NormalForces_in_cont(xn, kn, xn0)
+%     u = xn - xn0;
+%     FN = max(0, kn .* u);
+% end

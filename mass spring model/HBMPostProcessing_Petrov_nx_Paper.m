@@ -20,19 +20,27 @@ for Ndof = 1:3*Nx + Na
 end
 Adof = [Adof, k_cont'];
 
-% ind_gap_stick = find(gap_cont == 1 & (slipP_cont + slipM_cont) == 0);
-% ind_gap = find(gap_cont == 1);
-% ind_slip = find(slipP_cont == 1);
+ind_gap_stick = find(gap_cont == 1 & (slipP_cont + slipM_cont) == 0);
+ind_gap = find(gap_cont == 1);
+ind_slip = find(slipP_cont == 1);
 figure;
 % yyaxis left
-plot(Adof(:, 1), Adof(:, 5), 'r-', 'LineWidth', 2), hold on;
-plot(Adof(:, 1), Adof(:, 3), 'b-', 'LineWidth', 2), grid on;
+plot(Adof(:, 1), Adof(:, 5), 'r-', 'LineWidth', 2, 'DisplayName', 'kn'), hold on;
+plot(Adof(:, 1), Adof(:, 3), 'b-', 'LineWidth', 2, 'DisplayName', 'kt'), grid on;
+plot(Adof(ind_slip, 1), Adof(ind_slip, 3), 'ko', 'DisplayName', 'slip points');
+% yyaxis right
+% stem(Adof(:, 2), k_cont'), grid on
+% plot(Adof(:, 1), gap_cont', 'LineWidth', 2, 'LineStyle', '-', 'Color', 'r'), hold on;
+% plot(Adof(:, 1), slipP_cont', 'LineWidth', 2, 'LineStyle', '--', 'Color', 'k'), hold on;
+% ylim([0, 1.1]);
+
+% legend('CB1', 'gap appears area', 'slip appears area');
 xlabel('Omega');
 titlename = 'Numerical N' + string(N) + ', H' + string(H) + ', $\epsilon$ ' + string(epsf) + ...
     ', $F=' + string(CB.CB_F.Fx(end)) + '\sin(t)$, ds' + string(ds);
 title(titlename);
-legendname = 'g = ' + string(Rx(end) / (40 + kn));
-legend(legendname);
+% legendname = 'g = ' + string(Rx(end) / (40 + kn));
+% legend(legendname);
 
 % figure;
 % % yyaxis left
@@ -93,6 +101,10 @@ P.epsx = epsx;
 P.epsf = epsf;
 P.ds = ds;
 P.Rx = Rx;
+P.slipM_cont = slipM_cont;
+P.slipP_cont = slipP_cont;
+P.gap_cont = gap_cont;
+P.stick_cont = stick_cont;
 %% xn with different pre gap
 
 figure
@@ -119,8 +131,9 @@ N = 64;
 % indx = [409, 410, 411];% stright H5, N64, ds = 0.05, eps 1e-6
 % indx = [1041,1054,1067]; % for H5, N64, ds = 0.05, eps 1e-10
 % indx = [1042,1056,1069]; % for H10, N64, ds = 0.05, eps 1e-6
-indx = [1042,1063]; % for H10, N64, ds = 0.05, eps 1e-6
-figure
+% indx = [1042,1063]; % for H10, N64, ds = 0.05, eps 1e-6
+indx = 2548;
+% figure
 for j = 1:size(indx, 2)
     i_plot = indx(j); % point before second 11.6743
     x_poss = x_cont(:, i_plot);
@@ -155,12 +168,13 @@ for j = 1:size(indx, 2)
         xct_poss = xt_poss(:, Na + 1:end);
     end
     [Ft_poss, w_poss, flag_poss] = g(xct_poss + xp', kn, xn0, mu, kt, params.func.fc.w, nloop); 
-    JNL_poss = JNL_Analytical(xct_poss, flag_poss(:, :, end - N + 1:end), H, N, kt, kn, mu);
+    % JNL_poss = JNL_Analytical(xct_poss, flag_poss(:, :, end - N + 1:end), H, N, kt, kn, mu);
     T = 2 * pi / omega_poss;
     dt = T / N;
     t = [0:dt:(T - dt)]';
 
-    subplot(2,size(indx,2),j) % displacement
+    figure(100)
+    subplot(2,size(indx,2),j) % displacement xn
     plot(t, xct_poss(:, 3), 'b-', 'LineWidth', 2, 'DisplayName', '$x_n$'), grid on;
     legend show
     titlename = 'Omega = ' + string(omega_poss) + ', $max(|x_n|)=$ ' + string(max(abs(xct_poss(:, 3))));
@@ -168,6 +182,28 @@ for j = 1:size(indx, 2)
     subplot(2,size(indx,2),j+size(indx,2)) % Force
     plot(t, Ft_poss(end - N + 1:end, 3), 'b-', 'LineWidth', 2, 'DisplayName', '$F_n$'), grid on;
     legend show
+    
+    figure(101)
+    subplot(2,size(indx,2),j) % displacement xt
+    plot(t, xct_poss(:, 1), 'b-', 'LineWidth', 2, 'DisplayName', '$x_t$'), grid on;
+    legend show
+    titlename = 'Omega = ' + string(omega_poss) + ', $max(|x_t|)=$ ' + string(max(abs(xct_poss(:, 1))));
+    title(titlename);
+    subplot(2,size(indx,2),j+size(indx,2)) % Force
+    plot(t, Ft_poss(end - N + 1:end, 1), 'b-', 'LineWidth', 2, 'DisplayName', '$F_t$'), grid on;
+    legend show
+
+    figure(102) % cycles
+    subplot(2,size(indx,2),j) % 
+    plot(xct_poss(:, 1), Ft_poss(end - N + 1:end, 1), 'b-', 'LineWidth', 2, 'DisplayName', '$x_t-F_t$'), grid on;
+    legend show
+    titlename = 'Omega = ' + string(omega_poss) + ', $max(|x_t|)=$ ' + string(max(abs(xct_poss(:, 1))));
+    title(titlename);
+    subplot(2,size(indx,2),j+size(indx,2)) % Force
+    plot(t,  mu(1) .* kn .* max((xct_poss(:, 3) + xp(3)), 0), 'k-', 'LineWidth', 2), hold on;
+    plot(t, -mu(2) .* kn .* max((xct_poss(:, 3) + xp(3)), 0), 'k-', 'LineWidth', 2), grid on;
+    plot(t, Ft_poss(end - N + 1:end, 1), 'b-', 'LineWidth', 2);
+    legend('mu * Fn', '-mu * Fn', 'T1');legend show
 end
     
 
