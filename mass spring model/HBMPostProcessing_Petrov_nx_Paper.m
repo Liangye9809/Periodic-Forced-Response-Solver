@@ -132,7 +132,7 @@ N = 64;
 % indx = [1041,1054,1067]; % for H5, N64, ds = 0.05, eps 1e-10
 % indx = [1042,1056,1069]; % for H10, N64, ds = 0.05, eps 1e-6
 % indx = [1042,1063]; % for H10, N64, ds = 0.05, eps 1e-6
-indx = 2548;
+indx = 2644;
 % figure
 for j = 1:size(indx, 2)
     i_plot = indx(j); % point before second 11.6743
@@ -205,8 +205,9 @@ for j = 1:size(indx, 2)
     plot(t, Ft_poss(end - N + 1:end, 1), 'b-', 'LineWidth', 2);
     legend('mu * Fn', '-mu * Fn', 'T1');legend show
 end
-    
-
+    testFlag(:, 1) = flag_poss(1,1,:);
+    figure
+    plot(t, testFlag(end - N + 1:end), 'o');
 %% plot points in step region (Analytical Jacobian)
 % indx = [1042,1047,1055,1062,1068]; % for H5, N64, ds = 0.05, eps 1e-6
 N = 64;
