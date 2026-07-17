@@ -132,7 +132,7 @@ N = 64;
 % indx = [1041,1054,1067]; % for H5, N64, ds = 0.05, eps 1e-10
 % indx = [1042,1056,1069]; % for H10, N64, ds = 0.05, eps 1e-6
 % indx = [1042,1063]; % for H10, N64, ds = 0.05, eps 1e-6
-indx = 2644;
+indx = 1948;
 % figure
 for j = 1:size(indx, 2)
     i_plot = indx(j); % point before second 11.6743
@@ -277,3 +277,7 @@ for j = 1:size(indx, 2)
     legend show
 end
     
+%%
+figure(501)
+plot(P.Adof(:, 1), P.Adof(:, 3), 'LineWidth', 2, 'DisplayName', 'kt'), grid on, hold on;
+% legend('Scale stick, slip, gap', 'scale gap fn ft', 'scale gap fn', 'unscale');

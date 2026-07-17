@@ -132,7 +132,7 @@ N = 64;
 % indx = [1041,1054,1067]; % for H5, N64, ds = 0.05, eps 1e-10
 % indx = [1042,1056,1069]; % for H10, N64, ds = 0.05, eps 1e-6
 % indx = [1042,1063]; % for H10, N64, ds = 0.05, eps 1e-6
-indx = 2548;
+indx = 1948;
 % figure
 for j = 1:size(indx, 2)
     i_plot = indx(j); % point before second 11.6743
@@ -183,7 +183,7 @@ for j = 1:size(indx, 2)
     plot(t, Ft_poss(end - N + 1:end, 3), 'b-', 'LineWidth', 2, 'DisplayName', '$F_n$'), grid on;
     legend show
     
-    figure(200)
+    figure(101)
     subplot(2,size(indx,2),j) % displacement xt
     plot(t, xct_poss(:, 1), 'b-', 'LineWidth', 2, 'DisplayName', '$x_t$'), grid on;
     legend show
@@ -192,9 +192,22 @@ for j = 1:size(indx, 2)
     subplot(2,size(indx,2),j+size(indx,2)) % Force
     plot(t, Ft_poss(end - N + 1:end, 1), 'b-', 'LineWidth', 2, 'DisplayName', '$F_t$'), grid on;
     legend show
-end
-    
 
+    figure(102) % cycles
+    subplot(2,size(indx,2),j) % 
+    plot(xct_poss(:, 1), Ft_poss(end - N + 1:end, 1), 'b-', 'LineWidth', 2, 'DisplayName', '$x_t-F_t$'), grid on;
+    legend show
+    titlename = 'Omega = ' + string(omega_poss) + ', $max(|x_t|)=$ ' + string(max(abs(xct_poss(:, 1))));
+    title(titlename);
+    subplot(2,size(indx,2),j+size(indx,2)) % Force
+    plot(t,  mu(1) .* kn .* max((xct_poss(:, 3) + xp(3)), 0), 'k-', 'LineWidth', 2), hold on;
+    plot(t, -mu(2) .* kn .* max((xct_poss(:, 3) + xp(3)), 0), 'k-', 'LineWidth', 2), grid on;
+    plot(t, Ft_poss(end - N + 1:end, 1), 'b-', 'LineWidth', 2);
+    legend('mu * Fn', '-mu * Fn', 'T1');legend show
+end
+    testFlag(:, 1) = flag_poss(1,1,:);
+    figure
+    plot(t, testFlag(end - N + 1:end), 'o');
 %% plot points in step region (Analytical Jacobian)
 % indx = [1042,1047,1055,1062,1068]; % for H5, N64, ds = 0.05, eps 1e-6
 N = 64;

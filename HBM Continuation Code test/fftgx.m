@@ -40,12 +40,18 @@ function [F, w, flag] = fftgx(x, xct, pfunc) %
     [Fti, wi, flag] = g(xt + xp', kn, xn0, mu, kt, w_in, nloop); 
     w = wi(1:2, :, end);
 
-    xct_ = xt + xp';
-    % Fnt = ScaleFn(Fti(end - N + 1:end, 3:3:end), xct_(:, 3:3:end)); % pass only normal displacements and normal forces
-    % Fti(end - N + 1:end, 3:3:end) = Fnt;
-
-    Fti(end - N + 1:end, :) = ScaleFt(Fti(end - N + 1:end, :), xct_, flag(:, :, end - N + 1:end), wi(:, :, end - N + 1:end)); % pass all the displacements and forces
+    flag_ = flag(:, :, end - N + 1:end);
+    if sum(ismember([-1, 1, 0], flag_)) > 0
+        xct_ = xt + xp';
+        % Fnt = ScaleFn(Fti(end - N + 1:end, 3:3:end), xct_(:, 3:3:end)); % pass only normal displacements and normal forces
+        % Fti(end - N + 1:end, 3:3:end) = Fnt;
+        
+        % first slip and stick transition
+        Fti(end - N + 1:end, :) = FFtFactor(Fti(end - N + 1:end, :), xct_, flag_, kt, kn, mu);
     
+        % second gap and contact transition
+        Fti(end - N + 1:end, :) = ScaleFt(Fti(end - N + 1:end, :), xct_); % pass all the displacements and forces
+    end
     Ft = Fti(end - N + 1:end, :) - gxp';
     hndn = EH * Ft;
     F = hndn(:);
