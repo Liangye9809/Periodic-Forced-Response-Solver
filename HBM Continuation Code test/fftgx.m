@@ -48,7 +48,7 @@ function [F, w, flag] = fftgx(x, xct, pfunc) %
         % Fti(end - N + 1:end, 3:3:end) = Fnt;
         
         % first slip and stick transition
-        [Fti(end - N + 1:end, :), M_fstar] = FFtFactor(Fti(end - N + 1:end, :), xct_, flag_, kt, kn, mu);
+        [Fti(end - N + 1:end, :), M_fstar] = FFtFactor(Fti(end - N + 1:end, :), xct_, flag_, kt, kn, mu, EH);
     
         % second gap and contact transition
         Fti(end - N + 1:end, :) = ScaleFt(Fti(end - N + 1:end, :), xct_); % pass all the displacements and forces

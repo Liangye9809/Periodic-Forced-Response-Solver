@@ -529,3 +529,18 @@ end
 figure
 plot(Adof(:, 1), Adof(:, 3), 'b-', 'LineWidth', 2, 'DisplayName', '$x_t$'), hold on;
 plot(Adof(:, 1), Adof(:, 5), 'r-', 'LineWidth', 2, 'DisplayName', '$x_n$'), hold on;
+%%
+N = para.params.func.HBM.N;
+H = para.params.func.HBM.H;
+ft_in = para.Ft(end - N + 1:end, :);
+xt = para.xt(:, 2:4);
+flag = 2 * ones(2, 1, 128);
+flag(1, 1, 50) = 1;
+flag(1, 1, 51:60) = 0;
+flag(1, 1, 61) = -1;
+kt = para.params.func.fc.kt;
+kn = para.params.func.fc.kn;
+mu = para.params.func.fc.mu;
+EH = para.params.func.HBM.EH;
+
+[ft_out, M_fstar] = FFtFactor(ft_in, xt, flag, kt, kn, mu, EH);
