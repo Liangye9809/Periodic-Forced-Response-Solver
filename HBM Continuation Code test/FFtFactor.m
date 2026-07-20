@@ -23,7 +23,7 @@ function [Ft_out, v_fstar] = FFtFactor_perT(Ft_in, xt, xn, flag, kt, kn, mu, EH)
     % slip and stick transiton
     diffs = [diff(flag); flag(1) - flag(end)];
     ind = ismember(diffs, [1, -1, 3, -3]); % possible slip - stick transition
-    trans_ss = find(ind == 1);
+    trans_ss = find(ind == 1); % transition position
     for j = 1:size(trans_ss, 1)
         i_m = trans_ss(j);
         i_p = mod(i_m, N) + 1; % next point

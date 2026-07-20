@@ -132,7 +132,7 @@ N = 64;
 % indx = [1041,1054,1067]; % for H5, N64, ds = 0.05, eps 1e-10
 % indx = [1042,1056,1069]; % for H10, N64, ds = 0.05, eps 1e-6
 % indx = [1042,1063]; % for H10, N64, ds = 0.05, eps 1e-6
-indx = 1948;
+indx = 362:367;
 % figure
 for j = 1:size(indx, 2)
     i_plot = indx(j); % point before second 11.6743
@@ -175,22 +175,22 @@ for j = 1:size(indx, 2)
 
     figure(100)
     subplot(2,size(indx,2),j) % displacement xn
-    plot(t, xct_poss(:, 3), 'b-', 'LineWidth', 2, 'DisplayName', '$x_n$'), grid on;
+    plot(t, xct_poss(:, 3), 'bo-', 'LineWidth', 2, 'DisplayName', '$x_n$'), grid on;
     legend show
     titlename = 'Omega = ' + string(omega_poss) + ', $max(|x_n|)=$ ' + string(max(abs(xct_poss(:, 3))));
     title(titlename);
     subplot(2,size(indx,2),j+size(indx,2)) % Force
-    plot(t, Ft_poss(end - N + 1:end, 3), 'b-', 'LineWidth', 2, 'DisplayName', '$F_n$'), grid on;
+    plot(t, Ft_poss(end - N + 1:end, 3), 'bo-', 'LineWidth', 2, 'DisplayName', '$F_n$'), grid on;
     legend show
     
     figure(101)
     subplot(2,size(indx,2),j) % displacement xt
-    plot(t, xct_poss(:, 1), 'b-', 'LineWidth', 2, 'DisplayName', '$x_t$'), grid on;
+    plot(t, xct_poss(:, 1), 'bo-', 'LineWidth', 2, 'DisplayName', '$x_t$'), grid on;
     legend show
     titlename = 'Omega = ' + string(omega_poss) + ', $max(|x_t|)=$ ' + string(max(abs(xct_poss(:, 1))));
     title(titlename);
     subplot(2,size(indx,2),j+size(indx,2)) % Force
-    plot(t, Ft_poss(end - N + 1:end, 1), 'b-', 'LineWidth', 2, 'DisplayName', '$F_t$'), grid on;
+    plot(t, Ft_poss(end - N + 1:end, 1), 'bo-', 'LineWidth', 2, 'DisplayName', '$F_t$'), grid on;
     legend show
 
     figure(102) % cycles
@@ -202,12 +202,21 @@ for j = 1:size(indx, 2)
     subplot(2,size(indx,2),j+size(indx,2)) % Force
     plot(t,  mu(1) .* kn .* max((xct_poss(:, 3) + xp(3)), 0), 'k-', 'LineWidth', 2), hold on;
     plot(t, -mu(2) .* kn .* max((xct_poss(:, 3) + xp(3)), 0), 'k-', 'LineWidth', 2), grid on;
-    plot(t, Ft_poss(end - N + 1:end, 1), 'b-', 'LineWidth', 2);
+    plot(t, Ft_poss(end - N + 1:end, 1), 'bo-', 'LineWidth', 2);
     legend('mu * Fn', '-mu * Fn', 'T1');legend show
+
+    figure(103)
+    subplot(1,size(indx,2),j) % flag
+    FlagTemp(:, 1) = flag_poss(1,1,end - N + 1:end);
+    plot(t, FlagTemp, 'b.'), grid on;
+    slip_m = sum(FlagTemp(find(FlagTemp == -1)));
+    slip_p = sum(FlagTemp(find(FlagTemp == 1)))
+    titlename = 'Omega = ' + string(omega_poss) + ', friction state';
+    title(titlename);
+    
+    
 end
-    testFlag(:, 1) = flag_poss(1,1,:);
-    figure
-    plot(t, testFlag(end - N + 1:end), 'o');
+    
 %% plot points in step region (Analytical Jacobian)
 % indx = [1042,1047,1055,1062,1068]; % for H5, N64, ds = 0.05, eps 1e-6
 N = 64;
@@ -277,3 +286,13 @@ for j = 1:size(indx, 2)
     legend show
 end
     
+%%
+figure(501)
+ind_gap_stick = find(P.gap_cont == 1 & (P.slipP_cont + P.slipM_cont) == 0);
+ind_gap = find(P.gap_cont == 1);
+ind_slip = find(P.slipP_cont == 1);
+
+% yyaxis left
+plot(P.Adof(:, 1), P.Adof(:, 5), 'r-', 'LineWidth', 2, 'DisplayName', 'kn'), hold on;
+plot(P.Adof(:, 1), P.Adof(:, 3), 'b-', 'LineWidth', 2, 'DisplayName', 'kt'), grid on;
+plot(P.Adof(ind_slip, 1), P.Adof(ind_slip, 3), 'ko', 'DisplayName', 'slip points');
