@@ -95,7 +95,7 @@ tic;
 % omega_plot = 4100;
 
 omega_0 = 5;
-omega_end = 16;
+omega_end = 9;
 % omega_0 = 0.6;
 % omega_end = 20;
 % omega_0 = 0.2;

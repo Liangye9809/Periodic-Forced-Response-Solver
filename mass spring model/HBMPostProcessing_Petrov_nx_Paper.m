@@ -67,7 +67,7 @@ title(titlename);
 %     plot(omega_cont, x_cont())
 
 figure % Fourier Coefficients
-plot(omega_cont, x_cont((2*H+1)*(4-1)+1:(2*H+1)*(4-1)+7,:), 'LineWidth', 2);
+plot(omega_cont, x_cont((2*H+1)*(4-1)+1:(2*H+1)*(4-1)+3,:), 'LineWidth', 2);
 legend('$X_{c}^{0}$','$X_{c}^{1}$','$X_{s}^{1}$',...
     '$X_{c}^{2}$','$X_{s}^{2}$','$X_{c}^{3}$','$X_{s}^{3}$')
 titlename = 'Numerical N' + string(N) + ', H' + string(H) + ', $\epsilon$ ' + string(epsf) + ...
@@ -75,7 +75,7 @@ titlename = 'Numerical N' + string(N) + ', H' + string(H) + ', $\epsilon$ ' + st
 title(titlename);
 
 figure
-plot(omega_cont, x_cont((2*H+1)*(2-1)+1:(2*H+1)*(2-1)+7,:), 'LineWidth', 2);
+plot(omega_cont, x_cont((2*H+1)*(2-1)+1:(2*H+1)*(2-1)+3,:), 'LineWidth', 2);
 legend('$X_{c}^{0}$','$X_{c}^{1}$','$X_{s}^{1}$',...
     '$X_{c}^{2}$','$X_{s}^{2}$','$X_{c}^{3}$','$X_{s}^{3}$')
 titlename = 'Numerical N' + string(N) + ', H' + string(H) + ', $\epsilon$ ' + string(epsf) + ...
