@@ -49,6 +49,9 @@ function [x_cont, omega_cont, k_cont, w_cont, stick_cont, slipP_cont, slipM_cont
         slipP_cont = [slipP_cont, FlagState(:, 2)];
         slipM_cont = [slipM_cont, FlagState(:, 3)];
           gap_cont = [  gap_cont, FlagState(:, 4)];
+          if n == maxstep
+              stop = 1;
+          end
         if sign(omega_end - omega_0) * (omega + ds*tomega - omega_end) > 0 % the final point
             params.cont.ds = 0;
             params.cont.tx0 = zeros(size(tx));

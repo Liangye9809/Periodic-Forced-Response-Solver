@@ -36,8 +36,8 @@ function [v_df, v_fstar] = FFtFactor_perT(Ft_in, xt, xn, flag, kt, kn, mu, EH) %
             f2_m = sign(f1_m) * mu * kn * xn(i_m);
             % [Ft_out(i_m), Ft_out(i_p), f_star, dt_star] = scaleSlipStick(f1_m, f1_p, f2_m, f2_p, N);
             [v_df, f_star, dt_star] = scaleSlipStick(f1_m, f1_p, f2_m, f2_p, N, EH, i_m, i_p);
-            v_fstar_j = get_vecoter_fstar(f_star, EH, i_m, dt_star);
-            v_fstar = v_fstar + v_fstar_j;
+            % v_fstar_j = get_vecoter_fstar(f_star, EH, i_m, dt_star);
+            % v_fstar = v_fstar + v_fstar_j;
         end
         % if flag1(i_p) == 2 % slip to stick
         %     f1_m = Ft_in(i_m, 3 * i - 2); % Ft-
@@ -72,8 +72,10 @@ function [v_df, f_star, dt_star] = scaleSlipStick(f1_m, f1_p, f2_m, f2_p, N, EH,
     % v_ip = zeros(N, 1);
     % v_ip(i_p) = 1;
     v_df = zeros(N, 1);
-    v_df(i_m) = 0.5 * (fdt - 1) * f1_m;
-    v_df(i_p) = - 0.5 * fdt * f2_p;
+    % v_df(i_m) = 0.5 * (fdt - 1) * f1_m;
+    % v_df(i_p) = - 0.5 * fdt * f2_p;
+    v_df(i_m) = 0.5 * (1 - fdt) * (f_star - f1_m);
+    v_df(i_p) = 0.5 * fdt * (f_star - f2_p);
 end
 
 function v_fstar = get_vecoter_fstar(f_star, EH, i_m, dt_star)

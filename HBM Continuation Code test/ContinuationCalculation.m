@@ -62,13 +62,17 @@ if size(x0,1) == 1
     x0 = x0 * ones((Na + 3 * Nx)*(2 * H + 1), 1);
 end
 
-tx0 = zeros(size(x0));
+if ~exist('tx0', 'var')
+    tx0 = zeros(size(x0));
+end
 
 % define tlambda0 direction by lambda_end - lambda0
-if omega_end - omega_0 < 0
-    tomega0 = -1;
-else
-    tomega0 = 1;
+if ~exist('tomega0', 'var')
+    if omega_end - omega_0 < 0
+        tomega0 = -1;
+    else
+        tomega0 = 1;
+    end
 end
 params.cont = struct('ds', ds, 'maxstep', maxstep, 'omega_0', omega_0, 'omega_end', omega_end, ...
                      'x0', x0, 'tx0', tx0, 'tomega0', tomega0);

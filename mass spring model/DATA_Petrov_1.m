@@ -8,7 +8,7 @@ CB.CB_MK.Kxx = diag([40, 40, 40]);
 
 CB.CB_F.Fa = 0;
 % CB.CB_F.Fx = [0, 0, 1]';
-CB.CB_F.Fx = [100, 0, 100]';
+CB.CB_F.Fx = [0, 0, 100]';
 CB.CBmods = [];
 
 H_F_ext = [0, 0, 1];
@@ -31,7 +31,7 @@ kt = 30 * [1; 1];
 nloop = 2;
 
 ds = 0.05;
-% maxstep = 1883;
+% maxstep = 1852;
 maxstep = 10000;
 
 xp0 = 0;
