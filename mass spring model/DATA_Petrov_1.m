@@ -8,14 +8,14 @@ CB.CB_MK.Kxx = diag([40, 40, 40]);
 
 CB.CB_F.Fa = 0;
 % CB.CB_F.Fx = [0, 0, 1]';
-CB.CB_F.Fx = [0, 0, 100]';
+CB.CB_F.Fx = [100, 0, 100]';
 CB.CBmods = [];
 
 H_F_ext = [0, 0, 1];
 
 
-H = 5; 
-N = 2^5; 
+H = 10; 
+N = 2^6; 
 Nx = 1; 
 Na = 1; 
 xi = 0.01; 

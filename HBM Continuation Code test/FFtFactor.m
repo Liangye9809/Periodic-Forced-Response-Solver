@@ -1,12 +1,9 @@
-% function [ft_out, M_fstar] = FFtFactor(ft_in, xt, flag, kt, kn, mu, EH)
-function [M_f, M_fstar] = FFtFactor(ft_in, xt, flag, kt, kn, mu, EH)
-
+function [ft_out, M_fstar] = FFtFactor(ft_in, xt, flag, kt, kn, mu, EH)
     ft_out = ft_in;
     [N, N_3xc] = size(xt);
     n = size(EH, 1);
     H = (n - 1) / 2;
     M_fstar = zeros(2 * H + 1, N_3xc);
-    M_f = zeros(2 * H + 1, N_3xc);
     Nx = N_3xc / 3;
     for i = 1:Nx
         flagT1(:, 1) = flag(1, i, :);
@@ -14,16 +11,14 @@ function [M_f, M_fstar] = FFtFactor(ft_in, xt, flag, kt, kn, mu, EH)
         xn = xt(:, 3 * i);
         xt1 = xt(:, 3 * i - 2);
         xt2 = xt(:, 3 * i - 1);
-        [M_f(:, 3 * i - 2), M_fstar(:, 3 * i - 2)] = FFtFactor_perT(ft_in(:, 3 * i - 2), xt1, xn, flagT1, kt(1, i), kn(i), mu(1, i), EH);
-        [M_f(:, 3 * i - 1), M_fstar(:, 3 * i - 1)] = FFtFactor_perT(ft_in(:, 3 * i - 1), xt2, xn, flagT2, kt(2, i), kn(i), mu(2, i), EH);
+        [ft_out(:, 3 * i - 2), M_fstar(:, 3 * i - 2)] = FFtFactor_perT(ft_in(:, 3 * i - 2), xt1, xn, flagT1, kt(1, i), kn(i), mu(1, i), EH);
+        [ft_out(:, 3 * i - 1), M_fstar(:, 3 * i - 1)] = FFtFactor_perT(ft_in(:, 3 * i - 1), xt2, xn, flagT2, kt(2, i), kn(i), mu(2, i), EH);
     end
 end
 
-% function [Ft_out, v_fstar] = FFtFactor_perT(Ft_in, xt, xn, flag, kt, kn, mu, EH) % all the dofs of xt, and Ft
-function [v_f, v_fstar] = FFtFactor_perT(Ft_in, xt, xn, flag, kt, kn, mu, EH) % all the dofs of xt, and Ft
+function [Ft_out, v_fstar] = FFtFactor_perT(Ft_in, xt, xn, flag, kt, kn, mu, EH) % all the dofs of xt, and Ft
     Ft_out = Ft_in;
     v_fstar = 0;
-    v_f = 0;
     N = size(xt, 1);
     % slip and stick transiton
     diffs = [diff(flag); flag(1) - flag(end)];
@@ -37,8 +32,7 @@ function [v_f, v_fstar] = FFtFactor_perT(Ft_in, xt, xn, flag, kt, kn, mu, EH) % 
             f1_p = f1_m + kt * (xt(i_p) - xt(i_m));
             f2_p = Ft_in(i_p); % Ft+
             f2_m = sign(f1_m) * mu * kn * xn(i_m);
-            % [Ft_out(i_m), Ft_out(i_p), f_star, dt_star] = scaleSlipStick(f1_m, f1_p, f2_m, f2_p, N);
-            [v_f, f_star, dt_star] = scaleSlipStick(f1_m, f1_p, f2_m, f2_p, N, EH, i_m, i_p);
+            [Ft_out(i_m), Ft_out(i_p), f_star, dt_star] = scaleSlipStick(f1_m, f1_p, f2_m, f2_p, N);
             v_fstar_j = get_vecoter_fstar(f_star, EH, i_m, dt_star);
             v_fstar = v_fstar + v_fstar_j;
         end
@@ -55,26 +49,14 @@ function [v_f, v_fstar] = FFtFactor_perT(Ft_in, xt, xn, flag, kt, kn, mu, EH) % 
 
 end
 
-% function [Ft_m, Ft_p, f_star, dt_star] = scaleSlipStick(f1_m, f1_p, f2_m, f2_p, N)
-%     fdt = (f2_m - f1_m) / (f1_p - f1_m + f2_m - f2_p);
-%     f_star = f1_m + (f1_p - f1_m) * fdt;
-%     % Ft_m = f1_m * 0.5 * (1 + fdt) + 0.5 * (1 - fdt) * f_star;
-%     % Ft_p = f2_p * 0.5 * (2 - fdt) + 0.5 * fdt * f_star;
-%     Ft_m = f1_m * 0.5 * (1 + fdt);
-%     Ft_p = f2_p * 0.5 * (2 - fdt);
-%     dt_star = fdt * 2 * pi / N;
-% end
-
-function [v_f, f_star, dt_star] = scaleSlipStick(f1_m, f1_p, f2_m, f2_p, N, EH, i_m, i_p)
+function [Ft_m, Ft_p, f_star, dt_star] = scaleSlipStick(f1_m, f1_p, f2_m, f2_p, N)
     fdt = (f2_m - f1_m) / (f1_p - f1_m + f2_m - f2_p);
     f_star = f1_m + (f1_p - f1_m) * fdt;
+    Ft_m = f1_m * 0.5 * (1 + fdt) + 0.5 * (1 - fdt) * f_star;
+    Ft_p = f2_p * 0.5 * (2 - fdt) + 0.5 * fdt * f_star;
+    % Ft_m = f1_m * 0.5 * (1 + fdt);
+    % Ft_p = f2_p * 0.5 * (2 - fdt);
     dt_star = fdt * 2 * pi / N;
-
-    v_im = zeros(N, 1);
-    v_im(i_m) = 1;
-    v_ip = zeros(N, 1);
-    v_ip(i_p) = 1;
-    v_f = EH * v_im * f1_m + EH * v_ip * f2_p;
 end
 
 function v_fstar = get_vecoter_fstar(f_star, EH, i_m, dt_star)
