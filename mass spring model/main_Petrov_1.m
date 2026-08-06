@@ -98,7 +98,7 @@ omega_0 = 5;
 % load('omega_0.mat');
 % load('x0.mat');
 % load('w.mat');
-omega_end = 14;
+omega_end = 16;
 % omega_0 = 0.6;
 % omega_end = 20;
 % omega_0 = 0.2;

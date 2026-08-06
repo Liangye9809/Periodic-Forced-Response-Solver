@@ -1,0 +1,21 @@
+function [FUNC, w, JL, flag] = HBMFUNC(x, xct, Omega, pfunc) % x = [a¹0,a¹1,b¹1,a¹2,b¹2,...,a¹H,b¹H,  a²0,a²1,b²1,a²2,b²2,...,a²H,b²H,...]'
+    fftfa = pfunc.HBM.fftfa;
+    fftfx = pfunc.HBM.fftfx;
+    F = [fftfa; fftfx];
+    Na = pfunc.HBM.Na; % DOF of elastic part
+    % Nx = pfunc.HBM.Nx;
+    H = pfunc.HBM.H;
+    JL = Jlinear(Omega, pfunc); % get from outside
+    
+    xc = x((2 * H + 1) * Na + 1:end);
+    G = zeros(size(x));
+
+    % [Gc, w, flag] = fftgx(xct, pfunc);
+    [Gc, w, flag] = fftgx(xc, xct, pfunc);
+    
+    G((2 * H + 1) * Na + 1:end) = Gc;
+
+    FUNC = JL * x + G - F;
+    
+end
+

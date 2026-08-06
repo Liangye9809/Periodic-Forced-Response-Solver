@@ -19,10 +19,10 @@ stop = 0;
 
 FlagState = zeros(Nx, 4);
 %% calculate (min(w+) - max(w-)) / 2
-% xc  = x((2 * H + 1) * Na + 1:end);
-% pfunc = params.func;
-% w = get_w_middle(xc, pfunc);
-% params.func.fc.w = w;
+xc  = x((2 * H + 1) * Na + 1:end);
+pfunc = params.func;
+w = get_w_middle(xc, pfunc);
+params.func.fc.w = w;
 %%
 xct = Fourier_to_Time(x(Na * (2 * H + 1) + 1:end), H, Nx, E);
 [F, w, JL, flag] = func(x, xct, omega, params.func);
@@ -31,7 +31,7 @@ params.func.fc.w = w; % update w
 G = [F 
      tx0' * (x - x0) + tomega0 * (omega - omega_0) - ds];
 for k = 1:maxiter
-    JG = [jacob(x, xct, params.func, JL, flag) deromega(x, omega, params.func)
+    JG = [jacob(x, xct, params.func, JL, flag, omega) deromega(x, omega, params.func)
           tx0' tomega0];
     % A = [jacob(x, omega, params.func) deromega(x, omega, params.func)];
     % e_ = svd(A);
@@ -60,7 +60,7 @@ for k = 1:maxiter
         % t = null([jacob(x, omega, params.func) deromega(x, omega, params.func)]);
         % t = [-(jacob(x, omega, params.func) \ deromega(x, omega, params.func)); 1];
         % t = t / norm(t);
-        A = [jacob(x, xct, params.func, JL, flag) deromega(x, omega, params.func)];
+        A = [jacob(x, xct, params.func, JL, flag, omega) deromega(x, omega, params.func)];
         [Q, R] = qr(A');
         t = Q(:, end);
 

@@ -9,7 +9,7 @@
 % end
 
 
-function [Ft, wt, flag] = g(xt, kn, xn0, mu, kt, w_in, nloop) % xt, each rows correspond each time, columns are different dofs
+function [Ft, wt, flag] = g(xt, kn, xn0, mu, kt, w_in, nloop, dxt) % xt, each rows correspond each time, columns are different dofs
 
     [N, M] = size(xt);
     Nx = M / 3;
@@ -24,7 +24,8 @@ function [Ft, wt, flag] = g(xt, kn, xn0, mu, kt, w_in, nloop) % xt, each rows co
     for j = 1:nloop
         for i = 1:N
             ipre = mod(i - 2, N) + 1;
-            [Ft((j - 1) * N + i, :), wtemp, flagi] = gf(xt(i, :), kn, xn0, mu, kt, w_in, xnt(ipre, :));
+            [Ft((j - 1) * N + i, :), wtemp, flagi] = gf(xt(i, :), kn, xn0, mu, kt, w_in, xnt(ipre, :), ...
+                dxt(i, :), dxt(ipre, :), flag(:, :, (j - 1) * N + ipre), N);
             w_in = wtemp; 
             wt(:, :, (j - 1) * N + i) = wtemp;
             flag(:, :, (j - 1) * N + i) = flagi;

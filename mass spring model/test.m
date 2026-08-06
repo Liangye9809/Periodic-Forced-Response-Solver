@@ -544,3 +544,32 @@ mu = para.params.func.fc.mu;
 EH = para.params.func.HBM.EH;
 
 [ft_out, M_fstar] = FFtFactor(ft_in, xt, flag, kt, kn, mu, EH);
+
+%% 
+t = [0:N-1]' * 2*pi/N;
+dy = cos(t) - 2 * sin(2*t) + 3 * cos(3*t);
+X = [0, 0, 1, 1, 0, 0, 1]';
+dX = X_to_dX(X, 1);
+function dX = X_to_dX(X, Omega)
+    n = size(X, 1);
+    H = (n - 1) / 2;
+    dX = zeros(size(X));
+    for i = 1:H
+        dX(2 * i, :) = i * Omega * X(2 * i + 1, :);
+        dX(2 * i + 1, :) = - i * Omega * X(2 * i, :);
+    end
+end
+
+%%
+figure
+plot([0:127]', ([xt(:,1);xt(:,1)] + xp(1)) - mu(1) * kn / kt(1) * ([xt(:,3);xt(:,3)] + xp(3)), 'k-'), hold on
+plot([0:127]', ([xt(:,1);xt(:,1)] + xp(1)) + mu(1) * kn / kt(1) * ([xt(:,3);xt(:,3)] + xp(3)), 'k-'), hold on
+w_(:,1) = wi(1,1,:);
+plot([0:127]', w_, 'r-');
+legend('$w^+$','$w^-$','$w$')
+
+figure
+plot([0:127]', mu(1) * Fti(:, 3), 'k-'), hold on;
+plot([0:127]', - mu(1) * Fti(:, 3), 'k-'), hold on;
+plot([0:127]', Fti(:, 1), 'r-');
+legend('$+\mu Fn$','$-\mu Fn$','$Ft$')

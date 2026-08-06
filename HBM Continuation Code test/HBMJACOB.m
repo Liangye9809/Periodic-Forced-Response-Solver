@@ -1,4 +1,4 @@
-function J = HBMJACOB(x, xct, pfunc, JL, flag)
+function J = HBMJACOB(x, xct, pfunc, JL, flag, Omega)
     Na = pfunc.HBM.Na;
     H = pfunc.HBM.H;
     N = pfunc.HBM.N;
@@ -14,7 +14,8 @@ function J = HBMJACOB(x, xct, pfunc, JL, flag)
 
     % numerical jacobien
     xc = x(Na * (2 * H + 1) + 1:end);
-    dGdx = finite_diff_jac(@(x) fftgx(x, xct, pfunc), xc);
+    % dGdx = finite_diff_jac(@(x) fftgx(x, xct, pfunc), xc);
+    dGdx = finite_diff_jac(@(x) fftgx(x, xct, pfunc, Omega), xc);
 
 
     JNL((2 * H + 1) * Na + 1:end, (2 * H + 1) * Na + 1:end) = dGdx;

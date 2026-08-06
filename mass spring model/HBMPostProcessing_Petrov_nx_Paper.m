@@ -20,14 +20,14 @@ for Ndof = 1:3*Nx + Na
 end
 Adof = [Adof, k_cont'];
 
-ind_gap_stick = find(gap_cont == 1 & (slipP_cont + slipM_cont) == 0);
-ind_gap = find(gap_cont == 1);
-ind_slip = find(slipP_cont == 1);
+% ind_gap_stick = find(gap_cont == 1 & (slipP_cont + slipM_cont) == 0);
+% ind_gap = find(gap_cont == 1);
+% ind_slip = find(slipP_cont == 1);
 figure;
 % yyaxis left
 plot(Adof(:, 1), Adof(:, 5), 'r-', 'LineWidth', 2, 'DisplayName', 'kn'), hold on;
 plot(Adof(:, 1), Adof(:, 3), 'b-', 'LineWidth', 2, 'DisplayName', 'kt'), grid on;
-plot(Adof(ind_slip, 1), Adof(ind_slip, 3), 'ko', 'DisplayName', 'slip points');
+% plot(Adof(ind_slip, 1), Adof(ind_slip, 3), 'ko', 'DisplayName', 'slip points');
 % yyaxis right
 % stem(Adof(:, 2), k_cont'), grid on
 % plot(Adof(:, 1), gap_cont', 'LineWidth', 2, 'LineStyle', '-', 'Color', 'r'), hold on;
@@ -91,20 +91,20 @@ title(titlename);
 % stem(x_cont((2*H+1)*(4-1)+1:(2*H+1)*(5-1),1063), 'LineWidth', 2), grid on
 % title('Fourier modes of 2 cases with same $\Omega$')
 
-P.x_cont = x_cont;
-P.Adof = Adof;
-P.N = N;
-P.H = H;
-P.k_cont = k_cont;
-P.omega_cont = omega_cont;
-P.epsx = epsx;
-P.epsf = epsf;
-P.ds = ds;
-P.Rx = Rx;
-P.slipM_cont = slipM_cont;
-P.slipP_cont = slipP_cont;
-P.gap_cont = gap_cont;
-P.stick_cont = stick_cont;
+% P.x_cont = x_cont;
+% P.Adof = Adof;
+% P.N = N;
+% P.H = H;
+% P.k_cont = k_cont;
+% P.omega_cont = omega_cont;
+% P.epsx = epsx;
+% P.epsf = epsf;
+% P.ds = ds;
+% P.Rx = Rx;
+% P.slipM_cont = slipM_cont;
+% P.slipP_cont = slipP_cont;
+% P.gap_cont = gap_cont;
+% P.stick_cont = stick_cont;
 %% xn with different pre gap
 
 figure
@@ -293,6 +293,6 @@ ind_gap = find(P.gap_cont == 1);
 ind_slip = find(P.slipP_cont == 1);
 
 % yyaxis left
-plot(P.Adof(:, 1), P.Adof(:, 5), 'r-', 'LineWidth', 2, 'DisplayName', 'kn'), hold on;
-plot(P.Adof(:, 1), P.Adof(:, 3), 'b-', 'LineWidth', 2, 'DisplayName', 'kt'), grid on;
-plot(P.Adof(ind_slip, 1), P.Adof(ind_slip, 3), 'ko', 'DisplayName', 'slip points');
+% plot(P.Adof(:, 1), P.Adof(:, 5), 'r-', 'LineWidth', 2, 'DisplayName', 'kn'), hold on;
+plot(P.Adof(:, 1), P.Adof(:, 3), 'b-', 'LineWidth', 2, 'DisplayName', 'kt'), hold on, grid on;
+% plot(P.Adof(ind_slip, 1), P.Adof(ind_slip, 3), 'ko', 'DisplayName', 'slip points');

@@ -2,7 +2,7 @@
 % x = [a¹0,a¹1,b¹1,a¹2,b¹2,...,a¹H,b¹H,  a²0,a²1,b²1,a²2,b²2,...,a²H,b²H,...]'
 
 %% original structure
-function [F, w, flag] = fftgx(x, xct, pfunc) % 
+function [F, w, flag] = fftgx(x, xct, pfunc, Omega) % 
 
 
        EH = pfunc.HBM.EH;
@@ -36,8 +36,10 @@ function [F, w, flag] = fftgx(x, xct, pfunc) %
     end
     xt = E * X; 
 
+    dX = X_to_dX(X, Omega);
+    dxt = E * dX;
 
-    [Fti, wi, flag] = g(xt + xp', kn, xn0, mu, kt, w_in, nloop); 
+    [Fti, wi, flag] = g(xt + xp', kn, xn0, mu, kt, w_in, nloop, dxt); 
     w = wi(1:2, :, end);
 
     flag_ = flag(:, :, end - N + 1:end);
@@ -73,3 +75,14 @@ function [F, w, flag] = fftgx(x, xct, pfunc) %
 end
 
 
+function dX = X_to_dX(X, Omega)
+    n = size(X, 1);
+    H = (n - 1) / 2;
+    dX = zeros(size(X));
+    for i = 1:H
+        % dX(2 * i, :) = i * Omega * X(2 * i + 1, :);
+        % dX(2 * i + 1, :) = - i * Omega * X(2 * i, :);
+        dX(2 * i, :) = i * 1 * X(2 * i + 1, :);
+        dX(2 * i + 1, :) = - i * 1 * X(2 * i, :);
+    end
+end
