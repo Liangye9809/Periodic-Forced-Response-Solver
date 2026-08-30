@@ -27,12 +27,12 @@ function [Ft_out, v_fstar] = FFtFactor_perT(Ft_in, xt, xn, flag, kt, kn, mu, EH)
     for j = 1:size(trans_ss, 1)
         i_m = trans_ss(j);
         i_p = mod(i_m, N) + 1; % next point
-          if flag(i_m) == 2 % stick to slip
+        if flag(i_m) == 2 % stick to slip
             f1_m = Ft_in(i_m); % Ft-
             f1_p = f1_m + kt * (xt(i_p) - xt(i_m));
             if flag(i_p) == 0 % possible stick-slip-gap in one interval
                 fdt_gap = xn(i_m) / (xn(i_m) - xn(i_p));
-                f_gap = f1_m + (f1_p - f1_m) * fdt_gap;
+                f_ga;;pp = f1_m + (f1_p - f1_m) * fdt_gap;
                 if f_gap ~= 0 % nonzero force at lift-off implies hidden slip
                     f2_m = sign(f_gap) * mu * kn * xn(i_m);
                     fdt = fdt_gap * (f2_m - f1_m) / (f_gap - f1_m + f2_m);
