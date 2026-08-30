@@ -294,5 +294,5 @@ ind_slip = find(P.slipP_cont == 1);
 
 % yyaxis left
 % plot(P.Adof(:, 1), P.Adof(:, 5), 'r-', 'LineWidth', 2, 'DisplayName', 'kn'), hold on;
-plot(P.Adof(:, 1), P.Adof(:, 3), 'b-', 'LineWidth', 2, 'DisplayName', 'kt'), hold on, grid on;
+plot(P.Adof(:, 1), P.Adof(:, 3), 'LineWidth', 2, 'DisplayName', 'kt'), hold on, grid on;
 % plot(P.Adof(ind_slip, 1), P.Adof(ind_slip, 3), 'ko', 'DisplayName', 'slip points');

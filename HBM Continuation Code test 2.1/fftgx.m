@@ -58,7 +58,7 @@ function [F, w, flag] = fftgx(x, xct, pfunc) %
         % second gap and contact transition
         Ft_out_2 = ScaleFt(Ft_in, xct_); % pass all the displacements and forces
         
-        Fti(end - N + 1:end, :) = Ft_out_1 + Ft_out_2 - Ft_in;
+        % Fti(end - N + 1:end, :) = Ft_out_1 + Ft_out_2 - Ft_in;
         % Fti(end - N + 1:end, :) = Ft_out_2 - Ft_in;
         % dft = FFtFactor_gap_contact(Ft_in, xct_);
         % Fti(end - N + 1:end, :) = Fti(end - N + 1:end, :) + dft;

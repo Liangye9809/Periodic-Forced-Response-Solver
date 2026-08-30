@@ -19,10 +19,10 @@ stop = 0;
 
 FlagState = zeros(Nx, 4);
 %% calculate (min(w+) - max(w-)) / 2
-% xc  = x((2 * H + 1) * Na + 1:end);
-% pfunc = params.func;
-% w = get_w_middle(xc, pfunc);
-% params.func.fc.w = w;
+xc  = x((2 * H + 1) * Na + 1:end);
+pfunc = params.func;
+w = get_w_middle(xc, pfunc);
+params.func.fc.w = w;
 %%
 xct = Fourier_to_Time(x(Na * (2 * H + 1) + 1:end), H, Nx, E);
 [F, w, JL, flag] = func(x, xct, omega, params.func);
