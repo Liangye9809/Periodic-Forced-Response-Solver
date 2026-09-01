@@ -31,7 +31,7 @@ params.func.fc.w = w; % update w
 G = [F 
      tx0' * (x - x0) + tomega0 * (omega - omega_0) - ds];
 for k = 1:maxiter
-    JG = [jacob(x, xct, params.func, JL, flag, omega) deromega(x, omega, params.func)
+    JG = [jacob(x, xct, params.func, JL, flag) deromega(x, omega, params.func)
           tx0' tomega0];
     % A = [jacob(x, omega, params.func) deromega(x, omega, params.func)];
     % e_ = svd(A);
@@ -55,12 +55,13 @@ for k = 1:maxiter
     % format short g
     % disp([k z(1) z(2) lambda errorx  errorf])
     if (errorx < epsx) && (errorf < epsf)
+        params.func.fc.w = w; % converged w for next-step tangent
         t0 = [tx0; tomega0];
 
         % t = null([jacob(x, omega, params.func) deromega(x, omega, params.func)]);
         % t = [-(jacob(x, omega, params.func) \ deromega(x, omega, params.func)); 1];
         % t = t / norm(t);
-        A = [jacob(x, xct, params.func, JL, flag, omega) deromega(x, omega, params.func)];
+        A = [jacob(x, xct, params.func, JL, flag) deromega(x, omega, params.func)];
         [Q, R] = qr(A');
         t = Q(:, end);
 

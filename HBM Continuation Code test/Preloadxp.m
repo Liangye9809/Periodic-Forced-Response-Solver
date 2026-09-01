@@ -40,8 +40,7 @@ epsf = params.Newton.epsf;
 Kxx = params.func.CB_MK.Kxx;
 % [F, w] = g_mex(xp', fc); 
 % [F, w] = g(xp', fc); 
-% [F, wt, ~] = g(xp', kn, xn0, mu, kt, w_in, nloop); 
-[F, wt, ~] = g(xp', kn, xn0, mu, kt, w_in, nloop, zeros(size(xp'))); 
+[F, wt, ~] = g(xp', kn, xn0, mu, kt, w_in, nloop); 
 w(1:2, :) = wt(:, :, end);
 
 f = Kxx * xp + F(end,:)' + Rx; %%% transpose
@@ -54,7 +53,7 @@ for i = 1:maxiter
     %%%%%
     % [F, w] = g_mex(xp', fc); 
     % [F, w] = g(xp', fc); 
-    [F, wt, ~] = g(xp', kn, xn0, mu, kt, w_in, nloop, zeros(size(xp'))); 
+    [F, wt, ~] = g(xp', kn, xn0, mu, kt, w_in, nloop); 
     w(1:2, :) = wt(:, :, end);
 
     f = Kxx * xp + F(end,:)' + Rx; %%% transpose

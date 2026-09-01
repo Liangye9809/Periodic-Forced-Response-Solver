@@ -34,8 +34,8 @@ t = t';
 % xn = 2 * exp(cos(t)) - 0.5; % slip to stick
 % xt = 2 * sin(sin(t)); % slip to stick
 % simple x
-% xn = 2.5 * cos(t) + 3; % slip to stick
-% xt = 3 * sin(t); % slip to stick
+xn = 2.5 * cos(t) + 3; % slip to stick
+xt = 3 * sin(t); % slip to stick
 
 % gap to stick
 % xn = - 4 * sin(sin(t)) + 1; % separation to stick
@@ -43,27 +43,30 @@ t = t';
 % simple x
 % xn = - 10 * cos(t) + 3; % separation to stick
 % xt = - sin(t); % separation to stick
-xn = - 1 * cos(t) + 0.5; % separation to stick % (kt = 1, kn = 500, mu = 0.8)
-xt = 2 * cos(t); % separation to stick
+% xn = - 1 * cos(t) + 0.5; % separation to stick % (kt = 1, kn = 500, mu = 0.8)
+% xt = 2 * cos(t); % separation to stick
 x = [xt, xn];
 
 
 
 kt = 1;
-kn = 500;
-mu = 0.8;
+kn = 2;
+mu = 0.5;
 w =  0;
 xn0 = 0; % normal pre-displacement
 
 nloop = 2;
-
-[E, EH] = fft_matrices(N, H);
+N_ = 16;
+[E, EH] = fft_matrices(N, H); [E_, EH_] = fft_matrices(N_, H);
 X = EH * x;
-xpr = E * X;
+xpr = E * X; xpr_ = E_ * X;
 dX = dXinFourier(X, H);
 dx = E * dX;
 X = X(:);
 [Ft, wt, Mft, dxdnt] = gf_2dofs(xpr, kn, xn0, mu, kt, w, nloop);
+
+
+[Ft_, wt_, ~, ~] = gf_2dofs(xpr_, kn, xn0, mu, kt, w, nloop);
 
 tic;
         [JNL_A, JNLt_A] = HBMJACOB_analytical_gf_2dofs_2(dx, kn, mu, kt, H, N, Mft, dxdnt);
@@ -234,6 +237,22 @@ legend show;
 xlim([0, 4*pi]);
 % text(5.5,0,'$w_0$','Interpreter','latex', 'Color','b', 'FontSize', 16);
 % title('displacement');
+xlabel('Time');
+ylabel('Displacement');
+xticks([0:pi/2:4*pi]);
+xticklabels({'$0$','$\frac{\pi}{2}$','$\pi$','$\frac{3\pi}{2}$','$2\pi$',...
+    '$\frac{5\pi}{2}$','$3\pi$','$\frac{7\pi}{2}$','$4\pi$'})
+set(gca,'TickLabelInterpreter','latex');
+
+
+figure; % ('Units','centimeters','Position',[2, 2, 6, 4.5]);
+plot(T, wp, 'k--', 'LineWidth', 2, 'DisplayName', '$w^+$'), hold on;
+plot(T, wm, 'r--', 'LineWidth', 2, 'DisplayName', '$w^-$'), hold on;
+T_ = (0:(2 * N_-1)) * 2 * pi / N_;
+plot(T_, wt_, 'b-', 'LineWidth', 2, 'DisplayName', '$w$'), hold on;
+grid on;
+legend show;
+xlim([0, 4*pi]);
 xlabel('Time');
 ylabel('Displacement');
 xticks([0:pi/2:4*pi]);

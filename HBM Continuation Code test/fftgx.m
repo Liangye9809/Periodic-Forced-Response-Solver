@@ -2,7 +2,7 @@
 % x = [a¹0,a¹1,b¹1,a¹2,b¹2,...,a¹H,b¹H,  a²0,a²1,b²1,a²2,b²2,...,a²H,b²H,...]'
 
 %% original structure
-function [F, w, flag] = fftgx(x, xct, pfunc, Omega) % 
+function [F, w, flag] = fftgx(x, xct, pfunc) % 
 
 
        EH = pfunc.HBM.EH;
@@ -35,39 +35,28 @@ function [F, w, flag] = fftgx(x, xct, pfunc, Omega) %
         X(:,i) = x(r1:r2); % reorder in dofs in column
     end
     xt = E * X; 
+    dX = zeros(size(X));
+    for h = 1:(n - 1) / 2
+        dX(2 * h, :) = h * X(2 * h + 1, :);
+        dX(2 * h + 1, :) = -h * X(2 * h, :);
+    end
+    dxt = E * dX; % dx/dtheta; Omega cancels in the slip-exit interpolation
 
-    dX = X_to_dX(X, Omega);
-    dxt = E * dX;
 
     [Fti, wi, flag] = g(xt + xp', kn, xn0, mu, kt, w_in, nloop, dxt); 
     w = wi(1:2, :, end);
 
     flag_ = flag(:, :, end - N + 1:end);
-    M_fstar = zeros(n, a);
-    M_f = zeros(n, a);
-    if sum(ismember([-1, 1, 0], flag_)) > 0
+    if sum(ismember([-1, 1, 0], flag_)) > 0 % slip gap appear
         xct_ = xt + xp';
         Ft_in = Fti(end - N + 1:end, :);
-        % Fnt = ScaleFn(Fti(end - N + 1:end, 3:3:end), xct_(:, 3:3:end)); % pass only normal displacements and normal forces
-        % Fti(end - N + 1:end, 3:3:end) = Fnt;
-        
-        % first slip and stick transition
-        [Ft_out_1, M_fstar] = FFtFactor(Ft_in, xct_, flag_, kt, kn, mu, EH);
-        
-        % [dft, M_fstar] = FFtFactor_stick_slip(Ft_in, xct_, flag_, kt, kn, mu, EH);
-        % Fti(end - N + 1:end, :) = Fti(end - N + 1:end, :) + dft;
 
-        % second gap and contact transition
-        Ft_out_2 = ScaleFt(Ft_in, xct_); % pass all the displacements and forces
-        
-        Fti(end - N + 1:end, :) = Ft_out_1 + Ft_out_2 - Ft_in;
-        % Fti(end - N + 1:end, :) = Ft_out_2 - Ft_in;
-        % dft = FFtFactor_gap_contact(Ft_in, xct_);
-        % Fti(end - N + 1:end, :) = Fti(end - N + 1:end, :) + dft;
+        dft = FFT_improve(Ft_in, xct_, flag_, kt, kn, mu);
+
+        Fti(end - N + 1:end, :) = Fti(end - N + 1:end, :) + dft;
         
     end
     Ft = Fti(end - N + 1:end, :) - gxp';
-    % hndn = EH * Ft + M_fstar + M_f;
     hndn = EH * Ft;
     F = hndn(:);
 
@@ -75,14 +64,3 @@ function [F, w, flag] = fftgx(x, xct, pfunc, Omega) %
 end
 
 
-function dX = X_to_dX(X, Omega)
-    n = size(X, 1);
-    H = (n - 1) / 2;
-    dX = zeros(size(X));
-    for i = 1:H
-        % dX(2 * i, :) = i * Omega * X(2 * i + 1, :);
-        % dX(2 * i + 1, :) = - i * Omega * X(2 * i, :);
-        dX(2 * i, :) = i * 1 * X(2 * i + 1, :);
-        dX(2 * i + 1, :) = - i * 1 * X(2 * i, :);
-    end
-end

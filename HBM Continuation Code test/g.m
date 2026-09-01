@@ -13,22 +13,26 @@ function [Ft, wt, flag] = g(xt, kn, xn0, mu, kt, w_in, nloop, dxt) % xt, each ro
 
     [N, M] = size(xt);
     Nx = M / 3;
+    if nargin < 8
+        dxt = zeros(size(xt)); % exact derivative for the static preload calls
+    end
 
     Ft = zeros(nloop * N, M);
     wt = zeros(2, Nx, nloop * N);
 
     flag = zeros(2, Nx, nloop * N);
+    flag_pre = zeros(2, Nx);
     xnt = xt(:, 3:3:end);
     
 
     for j = 1:nloop
         for i = 1:N
             ipre = mod(i - 2, N) + 1;
-            [Ft((j - 1) * N + i, :), wtemp, flagi] = gf(xt(i, :), kn, xn0, mu, kt, w_in, xnt(ipre, :), ...
-                dxt(i, :), dxt(ipre, :), flag(:, :, (j - 1) * N + ipre), N);
+            [Ft((j - 1) * N + i, :), wtemp, flagi] = gf(xt(i, :), dxt(i, :), dxt(ipre, :), kn, xn0, mu, kt, w_in, xnt(ipre, :), flag_pre, 2 * pi / N);
             w_in = wtemp; 
             wt(:, :, (j - 1) * N + i) = wtemp;
             flag(:, :, (j - 1) * N + i) = flagi;
+            flag_pre = flagi;
             
         end
     end

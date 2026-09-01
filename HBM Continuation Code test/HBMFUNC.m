@@ -11,7 +11,7 @@ function [FUNC, w, JL, flag] = HBMFUNC(x, xct, Omega, pfunc) % x = [a¹0,a¹1,b�
     G = zeros(size(x));
 
     % [Gc, w, flag] = fftgx(xct, pfunc);
-    [Gc, w, flag] = fftgx(xc, xct, pfunc, Omega);
+    [Gc, w, flag] = fftgx(xc, xct, pfunc);
     
     G((2 * H + 1) * Na + 1:end) = Gc;
 

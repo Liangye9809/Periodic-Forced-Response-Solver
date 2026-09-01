@@ -16,39 +16,6 @@ function [ft_out, M_fstar] = FFtFactor(ft_in, xt, flag, kt, kn, mu, EH)
     end
 end
 
-% function [Ft_out, v_fstar] = FFtFactor_perT(Ft_in, xt, xn, flag, kt, kn, mu, EH) % all the dofs of xt, and Ft
-%     Ft_out = Ft_in;
-%     v_fstar = 0;
-%     N = size(xt, 1);
-%     % slip and stick transiton
-%     diffs = [diff(flag); flag(1) - flag(end)];
-%     ind = ismember(diffs, [1, -1, 3, -3]); % possible slip - stick transition
-%     trans_ss = find(ind == 1); % transition position
-%     for j = 1:size(trans_ss, 1)
-%         i_m = trans_ss(j);
-%         i_p = mod(i_m, N) + 1; % next point
-%         if flag(i_m) == 2 % stick to slip
-%             f1_m = Ft_in(i_m); % Ft-
-%             f1_p = f1_m + kt * (xt(i_p) - xt(i_m));
-%             f2_p = Ft_in(i_p); % Ft+
-%             f2_m = sign(f1_m) * mu * kn * xn(i_m);
-%             [Ft_out(i_m), Ft_out(i_p), f_star, dt_star] = scaleSlipStick(f1_m, f1_p, f2_m, f2_p, N);
-%             v_fstar_j = get_vecoter_fstar(f_star, EH, i_m, dt_star);
-%             v_fstar = v_fstar + v_fstar_j;
-%         end
-%         % if flag1(i_p) == 2 % slip to stick
-%         %     f1_m = Ft_in(i_m, 3 * i - 2); % Ft-
-%         %     f1_p = sign(f1_m) * mu(i) * kn(i) * xn(i_m);
-%         %     f2_p = Ft_in(i_p, 3 * i - 2); % Ft+
-%         %     f2_m = f2_p - kt(1, i) * (xt1(i_p) - xt1(i_m));    
-%         %     [Ft_out(i_m, 3 * i - 2), Ft_out(i_p, 3 * i - 2)] = scaleSlipStick(f1_m, f1_p, f2_m, f2_p);
-%         % end
-% 
-%     end
-% 
-% 
-% end
-
 function [Ft_out, v_fstar] = FFtFactor_perT(Ft_in, xt, xn, flag, kt, kn, mu, EH) % all the dofs of xt, and Ft
     Ft_out = Ft_in;
     v_fstar = 0;
@@ -60,7 +27,7 @@ function [Ft_out, v_fstar] = FFtFactor_perT(Ft_in, xt, xn, flag, kt, kn, mu, EH)
     for j = 1:size(trans_ss, 1)
         i_m = trans_ss(j);
         i_p = mod(i_m, N) + 1; % next point
-        if flag(i_m) == 2 % stick to slip
+          if flag(i_m) == 2 % stick to slip
             f1_m = Ft_in(i_m); % Ft-
             f1_p = f1_m + kt * (xt(i_p) - xt(i_m));
             if flag(i_p) == 0 % possible stick-slip-gap in one interval
@@ -94,7 +61,6 @@ function [Ft_out, v_fstar] = FFtFactor_perT(Ft_in, xt, xn, flag, kt, kn, mu, EH)
 
 
 end
-
 
 function [Ft_m, Ft_p, f_star, dt_star] = scaleSlipStick(f1_m, f1_p, f2_m, f2_p, N)
     fdt = (f2_m - f1_m) / (f1_p - f1_m + f2_m - f2_p);
