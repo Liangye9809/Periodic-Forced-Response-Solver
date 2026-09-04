@@ -1,0 +1,3 @@
+flag = [2,2,2,2,1,1,1,2,2,2,2,-1,-1,-1,2,2,0,0]';
+diffs = [diff(flag); flag(1) - flag(end)]  
+idx = find(flag(1:end) ~= [flag(2:end);)
