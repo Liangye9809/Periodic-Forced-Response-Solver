@@ -26,13 +26,13 @@ pfunc = params.func;
 w = get_w_middle(xct + xp', pfunc);
 params.func.fc.w = w;
 %%
-[F, w, JL, flag] = func(x, xct + xp', omega, params.func);
+[F, w, JL, flag, segments_all] = func(x, xct + xp', omega, params.func);
 
 params.func.fc.w = w; % update w
 G = [F 
      tx0' * (x - x0) + tomega0 * (omega - omega_0) - ds];
 for k = 1:maxiter
-    JG = [jacob(xct + xp', params.func, JL, flag) deromega(x, omega, params.func)
+    JG = [jacob(params.func, JL, segments_all) deromega(x, omega, params.func)
           tx0' tomega0];
     
     dz = -JG\G;
@@ -41,7 +41,7 @@ for k = 1:maxiter
     omega = z(end);
     
     xct = Fourier_to_Time(x(Na * (2 * H + 1) + 1:end), H, Nx, E);
-    [F, w, JL, flag] = func(x, xct + xp', omega, params.func);
+    [F, w, JL, flag, segments_all] = func(x, xct + xp', omega, params.func);
     
     params.func.fc.w = w; % update w
    
@@ -55,7 +55,7 @@ for k = 1:maxiter
     if (errorx < epsx) && (errorf < epsf)
         t0 = [tx0; tomega0];
 
-        A = [jacob(xct + xp', params.func, JL, flag) deromega(x, omega, params.func)];
+        A = [jacob(params.func, JL, segments_all) deromega(x, omega, params.func)];
         [Q, R] = qr(A');
         t = Q(:, end);
         t = t * sign(t0'*t);

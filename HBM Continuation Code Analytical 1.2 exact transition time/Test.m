@@ -1,3 +1,83 @@
-flag = [2,2,2,2,1,1,1,2,2,2,2,-1,-1,-1,2,2,0,0]';
+clear
+flag = [2,2,2,1,1,1,2,2,2,-1,-1,-1,2,2,0,0]';
 diffs = [diff(flag); flag(1) - flag(end)]  
 trans_idx = find(diffs ~= 0);
+%% Coulomb friction of dummy fucntion 2 dofs
+clear
+clc
+% close all
+eps = [];
+h = 10^(-7);
+order = 1;
+h_con = [];
+N = 16;
+H = 3;
+dt = 2 * pi / N;
+t = (0:(N-1)) * 2 * pi / N;
+t = t';
+% xn = ones(N, 1);
+% xn = - 4 * sin(sin(t)) + 1; % separation to stick
+% xt = 2 * exp(cos(t + 1)) - 3; % separation to stick
+% xn = 2 * exp(cos(t)) - 0.5; % slip to stick
+% xn = 2 * exp(cos(t)) - 0.75; % separation to slip
+% xt = 2 * sin(sin(t)); % slip to stick
+
+% xt = 1.05  * sin(2 .* exp(cos(t))); % tangent case1
+% xt = 1.00 * sin(sin(t)) ./ sin(1); % tangent case2
+% xt = 0.5 * sin(sin(t)) ./ sin(1) + 0.5; % tangent case3 only one side
+
+% plot w for the paper (kt = 1, kn = 2, mu = 0.5)
+% pure stick
+% xn = 2*ones(N, 1); % pure stick
+% xt = sin(sin(t)); % pure stick
+% simple x
+% xn = 2*ones(N, 1); % pure stick
+% xt = sin(t); % pure stick
+
+% slip to stick
+% xn = 2 * exp(cos(t)) - 0.5; % slip to stick
+% xt = 2 * sin(sin(t)); % slip to stick
+% simple x
+% xn = 2.5 * cos(t) + 3; % slip to stick
+% xt = 3 * sin(t); % slip to stick
+
+% gap to stick
+xn = - 4 * sin(sin(t)) + 1; % separation to stick
+xt = 2 * exp(cos(t + 1)) - 3; % separation to stick
+% simple x
+% xn = - 10 * cos(t) + 3; % separation to stick
+% xt = - sin(t); % separation to stick
+% xn = - 1 * cos(t) + 0.5; % separation to stick % (kt = 1, kn = 500, mu = 0.8)
+% xt = 2 * cos(t); % separation to stick
+x = [xt, xt, xn];
+
+[E, EH] = fft_matrices(N, H);
+X = EH * x;
+xpr = E * X;
+dX = dXinFourier(X, H);
+dx = E * dX;
+dxt1 = dx(:,1);
+dxn = dx(:,3);
+
+kt = [1;1];
+kn = 2;
+mu = [0.5;0.5];
+w =  [0;0];
+xn0 = 0; % normal pre-displacement
+
+nloop = 2;
+[Fti, wi, flag] = g(x, kn, xn0, mu, kt, w, nloop);
+
+segments = get_integral_time_position(flag(1,1,end - N + 1:end), xt, xn, dxt1, dxn, kt(1), kn, mu(1), Fti(end - N + 1:end, 1), H)
+S{1} = segments;
+S{2} = segments;
+JNL = JNL_Analytical(S, H, kt, kn, mu);
+
+function dX = dXinFourier(X, H)
+    dX = zeros(size(X));
+    for i = 1:H
+        dX(2 * i, :) =  i .* X(2 * i + 1, :);
+        dX(2 * i + 1, :) =  -i .* X(2 * i, :);
+    end
+
+end

@@ -20,12 +20,9 @@ function [F, w, flag] = fftgx(xct, pfunc) % x(t) = E*X
 
     [Fti, wi, flag] = g(xct, kn, xn0, mu, kt, w_in, nloop); 
     w = wi(1:2, :, end);
-
-    % Fnt = ScaleFn(Fti(end - N + 1:end, 3:3:end), xct(:, 3:3:end)); % pass only normal displacements and normal forces
+    % Calculate Segments
+    segments_All = get_all_segments(flag(:, :, end - N + 1:end), xct, dxct, kt, kn, mu, Fti(end - N + 1:end, :), H);
     
-    % TestF = [Fti(end - N + 1:end, 3:3:end), Fnt, Fnt ./ Fti(end - N + 1:end, 3:3:end)];
-    
-    % Fti(end - N + 1:end, 3:3:end) = Fnt;
     Ft = Fti(end - N + 1:end, :) - gxp'; % the last periods
     
     % TestF = [TestF, Fnt ./ Fti(end - N + 1:end, 3:3:end)];
