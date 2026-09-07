@@ -44,7 +44,11 @@ for k = 1:maxiter
     [F, w, JL, flag, segments_all] = func(x, xct + xp', omega, params.func);
     
     params.func.fc.w = w; % update w
-   
+    %% debug
+    % if params.cont.step == 48
+    %     stop = 1;
+    % end
+    %%
 
     G = [F 
          tx0' * (x - x0) + tomega0 * (omega - omega_0) - ds];
@@ -63,16 +67,16 @@ for k = 1:maxiter
         tomega = t(end);
         format short g
         disp([params.cont.step  z(1) z(2) omega  errorx  errorf   k])
-        if params.cont.step == 2623
-            stop = 1;
-        end
+        % if params.cont.step == 2623
+        %     stop = 1;
+        % end
         %% output slip state
         FlagState = get_slip_state(flag); % [2, 1, -1, 0] = [stick, slipPlus, slipMinus, gap] [Nx * 4]
         
         %%
         return
     end
-    if  k == maxiter
+    if  k >= maxiter
         tx = 0;
         tomega = 0;
         stop = 1;

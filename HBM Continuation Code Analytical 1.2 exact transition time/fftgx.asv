@@ -22,9 +22,8 @@ function [F, w, flag, segments_All] = fftgx(X, xct, pfunc) % x(t) = E*X
 
     
     Xc = X(Na * (2 * H + 1) + 1:end);
-    for ixp = 1:3 * Nx
-        Xc((2 * H + 1) * (ixp - 1) + 1) = Xc((2 * H + 1) * (ixp - 1) + 1) + 2 * xp(ixp); % consider preload
-    end
+    for ixp = 1:Nx
+        Xc((2 * H + 1) * (ixp - 1) + 1) = Xc((2 * H + 1) * (ixp - 1) + 1) + 
     dxct = get_dxt(Xc, E, Nx);
     
 
@@ -32,7 +31,7 @@ function [F, w, flag, segments_All] = fftgx(X, xct, pfunc) % x(t) = E*X
     w = wi(1:2, :, end);
     % Calculate Segments
     segments_All = get_all_segments(flag(:, :, end - N + 1:end), xct, dxct, kt, kn, mu, Fti(end - N + 1:end, :), H);
-    F_Analytical = get_Analytical_F_Fourier(segments_All, gxp', kt, kn, mu, H, Xc);
+    F_Analytical = get_Analytical_F_Fourier(segments_All, gxp', kt, kn, mu, H, X);
     
     %% numerical Ft
     Ft = Fti(end - N + 1:end, :) - gxp'; % the last periods

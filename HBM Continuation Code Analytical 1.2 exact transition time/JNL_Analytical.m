@@ -4,8 +4,8 @@ function JNL = JNL_Analytical(segments, H, kt, kn, mu) % x is the size of N*3Nx
     JNL = zeros(3 * Nx * (2 * H + 1), 3 * Nx * (2 * H + 1));
 
     for i = 1:Nx
-        segmentsT1 = segments{2 * i - 1};
-        segmentsT2 = segments{2 * i};
+        segmentsT1 = segments{1, i};
+        segmentsT2 = segments{2, i};
         JNLi = JNL_one_Nx(H, kt(:, i), kn(i), mu(:, i), segmentsT1, segmentsT2);
         indx1 = 3 * (i - 1) * (2 * H + 1) + 1;
         indx2 = 3 * i * (2 * H + 1);

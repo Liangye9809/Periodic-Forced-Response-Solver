@@ -1,0 +1,55 @@
+function F = get_Analytical_F_Fourier(S, gxp, kt, kn, mu, H, X)
+    Nx = length(gxp) / 3;
+    F = [];
+    for i = 1:Nx
+        s1 = S{1, i};
+        s2 = S{2, i};
+        X1 = X((2 * H + 1) * (3 * i - 3) + 1:(2 * H + 1) * (3 * i - 2));
+        X2 = X((2 * H + 1) * (3 * i - 2) + 1:(2 * H + 1) * (3 * i - 1));
+        Xn = X((2 * H + 1) * (3 * i - 1) + 1:(2 * H + 1) * (3 * i));
+
+        [Ft1, Fn] = get_F_per_Nx(s1, gxp(3 * i - 2), gxp(3 * i), kt(1, i), kn(i), mu(1, i), H, X1, Xn);
+        [Ft2,  ~] = get_F_per_Nx(s2, gxp(3 * i - 1), gxp(3 * i), kt(2, i), kn(i), mu(2, i), H, X2, Xn);
+        Fi = [Ft1; Ft2; Fn];
+        F = [F; Fi];
+    end
+end
+
+function [Ft, Fn] = get_F_per_Nx(s, gxpT, gxpN, kt, kn, mu, H, Xt, Xn)
+    k = length(s);
+    Ft = zeros(2 * H + 1, 1);
+    Fn = zeros(2 * H + 1, 1);
+    vw0 = zeros(2 * H + 1, 1);
+    vw0(1) = 2;
+    if k == 1 % pure stick or whole gap
+        if s(1).value == 2 % pure stick
+            Ft = kt .* (eye(2 * H + 1) * Xt - vw * s(1).w);
+            Fn = kn .* (eye(2 * H + 1) * Xn);
+        elseif s(1).value ~= 0 
+            error('whole flag is %d', s.value);
+        end
+
+    else
+        for i = 1:k
+            MW = s(i).MW;
+            vw = s(i).vw;
+            switch s(i).value
+                case 2 % stick after slip or gap
+                    Ft = Ft + kt .* (MW * Xt - vw * s(i).w) - vw * gxpT;
+                    Fn = Fn + kn .* (MW * Xn) - vw * gxpN;
+                case {-1, 1} % slip
+                    Ft = Ft + s(i).value * mu * kn * (MW * Xn) - vw * gxpT;
+                    Fn = Fn + kn .* (MW * Xn) - vw * gxpN;
+                case 0
+                    Ft = Ft - vw * gxpT;
+                    Fn = Fn - vw * gxpN;
+                otherwise
+                    error('exist other condition: %d, except slip, stick and gap', s(i).value);
+            end
+    
+        end
+    end
+
+
+end
+        

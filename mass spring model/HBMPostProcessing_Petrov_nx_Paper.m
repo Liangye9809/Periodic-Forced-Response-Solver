@@ -27,7 +27,7 @@ figure;
 % yyaxis left
 plot(Adof(:, 1), Adof(:, 5), 'r-', 'LineWidth', 2, 'DisplayName', 'kn'), hold on;
 plot(Adof(:, 1), Adof(:, 3), 'b-', 'LineWidth', 2, 'DisplayName', 'kt'), grid on;
-% plot(Adof(ind_slip, 1), Adof(ind_slip, 3), 'ko', 'DisplayName', 'slip points');
+plot(Adof(ind_slip, 1), Adof(ind_slip, 3), 'ko', 'DisplayName', 'slip points');
 % yyaxis right
 % stem(Adof(:, 2), k_cont'), grid on
 % plot(Adof(:, 1), gap_cont', 'LineWidth', 2, 'LineStyle', '-', 'Color', 'r'), hold on;

@@ -2,14 +2,11 @@ clear
 flag = [2,2,2,1,1,1,2,2,2,-1,-1,-1,2,2,0,0]';
 diffs = [diff(flag); flag(1) - flag(end)]  
 trans_idx = find(diffs ~= 0);
-%%
-clear
 S = {};
 for i = 1:4
     s1 = struct('name', i, 'number', i + 1);
-    s2 = struct('name', 2 * i, 'number', 2 * i + 2);
-    S{1, i} = s1;
-    S{2, i} = s2;
+    s2 = struct('name', i, 'number', i + 1);
+    S{i} = s;
 end
 
 %% Coulomb friction of dummy fucntion 2 dofs

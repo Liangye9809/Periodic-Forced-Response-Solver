@@ -15,7 +15,7 @@ function segments = get_integral_time_position(flag, xt, xn, dxt, dxn, kt, kn, m
     
     if n_trans == 0
         % fprintf('Signal is constant: value = %d over [0, 2pi]\n', flag(1));
-        segments = struct('value', flag(1), 't_start', 0, 't_end', 2*pi);
+        segments = struct('value', flag(1), 't_start', 0, 't_end', 2*pi, 'w', xt(end) - ft(end) / kt);
         return;
     end
     
@@ -27,14 +27,14 @@ function segments = get_integral_time_position(flag, xt, xn, dxt, dxn, kt, kn, m
     % dxdn = dxt / dxn in gap to stick transition time instant, for Jacobian Calculation
     % Mw and vw = integral of Fourier function, for Jacobian and function
     
-    segments = struct('value', {}, 't_start', {}, 't_end', {}, 'dxdn', {}, 'MW', {}, 'vw', {});
+    segments = struct('value', {}, 't_start', {}, 't_end', {}, 'dxdn', {}, 'MW', {}, 'vw', {}, 'w', {});
     i = 1;
     for k = 1:n_trans
         n_m = trans_idx(k); % transition point left
         n_p = mod(n_m, N) + 1; % transition point right
         Tstate = 10 * flag(n_m) + flag(n_p);
         switch Tstate
-            case {1, -1, 2, 10, -10} % gap to contact, slip to contact
+            case {1, -1, 2, 10, -10} % gap to contact, slip to gap
                 fdt = xn(n_m) / (xn(n_m) - xn(n_p));
                 tau_n = n_m + fdt;
                 tau = (tau_n - 1) / N * 2 * pi;
@@ -44,6 +44,7 @@ function segments = get_integral_time_position(flag, xt, xn, dxt, dxn, kt, kn, m
                     dxt_tau = dxt(n_m) + fdt * (dxt(n_p) - dxt(n_m));
                     dxn_tau = dxn(n_m) + fdt * (dxn(n_p) - dxn(n_m));
                     segments(i).dxdn = dxt_tau / dxn_tau; % for Jacobian
+                    segments(i).w = xt(n_p) - ft(n_p) / kt;
                 end
                 i = i + 1;
             case 20 % stick (to slip) to gap
@@ -84,6 +85,7 @@ function segments = get_integral_time_position(flag, xt, xn, dxt, dxn, kt, kn, m
                 tau = (tau_n - 1) / N * 2 * pi;
                 segments(i).value = flag(n_p);
                 segments(i).t_start = tau;
+                segments(i).w = xt(n_p) - ft(n_p) / kt;
                 i = i + 1;
             otherwise
                 error('exist other transition type not define!')
@@ -96,8 +98,7 @@ function segments = get_integral_time_position(flag, xt, xn, dxt, dxn, kt, kn, m
         if segments(k).t_start > segments(k).t_end
             segments(k).t_end  = segments(k).t_end + 2 * pi;
         end
-        if segments(k).value ~= 0
-            [segments(k).MW, segments(k).vw] = fW(segments(k).t_start, segments(k).t_end, H);
-        end
+        [segments(k).MW, segments(k).vw] = fW(segments(k).t_start, segments(k).t_end, H);
+        
     end
 end
