@@ -26,6 +26,9 @@ pfunc = params.func;
 w = get_w_middle(xct + xp', pfunc);
 params.func.fc.w = w;
 %%
+% if params.cont.step == 51
+%     stop = 1;
+% end
 [F, w, JL, flag, segments_all] = func(x, xct + xp', omega, params.func);
 
 params.func.fc.w = w; % update w
@@ -67,7 +70,7 @@ for k = 1:maxiter
         tomega = t(end);
         format short g
         disp([params.cont.step  z(1) z(2) omega  errorx  errorf   k])
-        % if params.cont.step == 2623
+        % if params.cont.step == 50
         %     stop = 1;
         % end
         %% output slip state

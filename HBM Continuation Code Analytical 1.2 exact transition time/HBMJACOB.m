@@ -9,6 +9,8 @@ function J = HBMJACOB(pfunc, JL, segments_all)
     
     dGdx = JNL_Analytical(segments_all, H, kt, kn, mu);
 
+    % dGdx = JNL_Analytical_pre(xct, flag(:, :, end - N + 1:end), H, N, kt, kn, mu);
+
     JNL((2 * H + 1) * Na + 1:end, (2 * H + 1) * Na + 1:end) = dGdx;
 
     J = JNL + JL;

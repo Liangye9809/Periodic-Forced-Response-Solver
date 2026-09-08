@@ -28,7 +28,7 @@ function [F, w, flag, segments_All] = fftgx(X, xct, pfunc) % x(t) = E*X
     dxct = get_dxt(Xc, E, Nx);
     
 
-    [Fti, wi, flag] = g(xct, kn, xn0, mu, kt, w_in, nloop); 
+    [Fti, wi, flag] = g(xct, kn, xn0, mu, kt, w_in, nloop, dxct); 
     w = wi(1:2, :, end);
     % Calculate Segments
     segments_All = get_all_segments(flag(:, :, end - N + 1:end), xct, dxct, kt, kn, mu, Fti(end - N + 1:end, :), H);
