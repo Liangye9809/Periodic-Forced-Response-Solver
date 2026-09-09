@@ -26,11 +26,11 @@ maxiter = 100;
 
 kn = 120; 
 xn0 = 0;
-mu = 8 * [1; 1]; 
+mu = 0.5 * [1; 1]; 
 kt = 30 * [1; 1]; 
 nloop = 2;
 
-ds = 2;
+ds = 0.1;
 % maxstep = 1852;
 maxstep = 50000;
 

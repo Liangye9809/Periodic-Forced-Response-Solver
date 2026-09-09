@@ -1,17 +1,3 @@
-clear
-flag = [2,2,2,1,1,1,2,2,2,-1,-1,-1,2,2,0,0]';
-diffs = [diff(flag); flag(1) - flag(end)]  
-trans_idx = find(diffs ~= 0);
-%%
-clear
-S = {};
-for i = 1:4
-    s1 = struct('name', i, 'number', i + 1);
-    s2 = struct('name', 2 * i, 'number', 2 * i + 2);
-    S{1, i} = s1;
-    S{2, i} = s2;
-end
-
 %% Coulomb friction of dummy fucntion 2 dofs
 clear
 clc
@@ -96,14 +82,15 @@ end
 clear
 pathin = pwd;
 cd('/home/liangye-liu/data/non-linear problem/Periodic-Forced-Response-Solver/mass spring model/data/Analytical J and F');
-load("Data_unconverge.mat");
+% load("Data_unconverge.mat");
+load("Data_unconverge_mu0.5_OneSlip.mat");
 cd(pathin);
 X = D.x;
-xp = D.xp;
-gxp = D.gxp;
+xp = D.params.func.static.preload.xp;
+gxp = D.params.func.static.preload.gxp;
 % S = D.S;
-N = D.N;
-H = D.H;
+N = D.params.func.HBM.N;
+H = D.params.func.HBM.H;
 E = D.params.func.HBM.E;
 EH = D.params.func.HBM.EH;
 xct = D.xct + xp';
@@ -136,6 +123,8 @@ hndn = EH * Ft;
 F_N = hndn(:);
 J_N = finite_diff_jac(@(Xc) fftF(Xc, H, Nx, kn, xn0, mu, kt, w, nloop, gxp, E, EH, N), Xc);
 
+
+
 function F_Fourier = fftF(Xc, H, Nx, kn, xn0, mu, kt, w, nloop, gxp, E, EH, N)
     XcM = zeros(2 * H + 1, 3 * Nx);
     for i = 1:3*Nx
@@ -149,14 +138,27 @@ function F_Fourier = fftF(Xc, H, Nx, kn, xn0, mu, kt, w, nloop, gxp, E, EH, N)
 end
 
 epsF = norm(F_N - F_a) / norm(F_N)
-epsJ = norm(J_N - J_a) / norm(J_N)
-epsJ_a = norm(J_a - J_a_pre) / norm(J_a)
-epsJ_n = norm(J_N - J_a_pre) / norm(J_N)
+epsJ_analytical_numerical = norm(J_N - J_a) / norm(J_N)
+epsJ_analytical_pre_new = norm(J_a - J_a_pre) / norm(J_a)
+epsJ_analytical_pre_numerical = norm(J_N - J_a_pre) / norm(J_N)
 
 flagT1(:, 1) = flag(1, 1, :);
 S1_pre = get_integral_time_position_pre(flagT1);
 flagT2(:, 1) = flag(2, 1, :);
 S2_pre = get_integral_time_position_pre(flagT2);
+
+figure % forces
+plot(mu(1) * (Ft(:, 3) + gxp(3)), 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$\mu Fn$'), hold on;
+plot(-mu(1) * (Ft(:, 3) + gxp(3)), 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$-\mu Fn$'), hold on;
+plot(Ft(:, 1) + gxp(1), 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$Ft$'), hold on;
+legend('show')
+
+figure
+plot((xct(:, 1) + xp(1)) - mu(1) * (Ft(:, 3) + gxp(3)) / kt(1), 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$w^-$'), hold on;
+plot((xct(:, 1) + xp(1)) + mu(1) * (Ft(:, 3) + gxp(3)) / kt(1), 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$w^+$'), hold on;
+wplot(:, 1) = wi(1,1,end - N +1:end);
+plot(wplot, 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$w$'), hold on;
+legend('show')
 
 function JNL = JNL_Analytical_pre(x, flag, H, N, kt, kn, mu) % x is the size of N*3Nx
 

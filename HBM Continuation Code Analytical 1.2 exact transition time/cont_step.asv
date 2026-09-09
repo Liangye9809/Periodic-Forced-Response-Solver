@@ -1,7 +1,7 @@
 function [x, omega, tx, tomega, w, k, FlagState, stop] = cont_step(func, jacob, deromega, params)
-% if params.cont.step == 1213
-%     stop = 1;
-% end
+if params.cont.step == 1213
+    stop = 1;
+end
 x0 = params.cont.x0;
 omega_0 = params.cont.omega_0;
      ds = params.cont.ds;
@@ -46,13 +46,13 @@ for k = 1:maxiter
     
     xct = Fourier_to_Time(x(Na * (2 * H + 1) + 1:end), H, Nx, E);
     [F, w, JL, flag, segments_all] = func(x, xct + xp', omega, params.func);
-    %% debug
-    if ismember(1, flag(:,:,65:end))
-        debugstop = 1;
-    end
-    %%
+    
     params.func.fc.w = w; % update w
-
+    %% debug
+    % if params.cont.step == 48
+    %     stop = 1;
+    % end
+    %%
 
     G = [F 
          tx0' * (x - x0) + tomega0 * (omega - omega_0) - ds];
