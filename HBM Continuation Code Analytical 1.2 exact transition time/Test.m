@@ -81,9 +81,10 @@ end
 %% compare the F and Jacobian
 clear
 pathin = pwd;
-cd('/home/liangye-liu/data/non-linear problem/Periodic-Forced-Response-Solver/mass spring model/data/Analytical J and F');
+% cd('/home/liangye-liu/data/non-linear problem/Periodic-Forced-Response-Solver/mass spring model/data/Analytical J and F');
+cd('D:\study\PHD\data\Frictions\Periodic-Forced-Response-Solver\mass spring model\data\Analytical J and F');
 % load("Data_unconverge.mat");
-load("Data_unconverge_mu0.5_OneSlip.mat");
+load("Data_unconverge_mu0.5_OneSlip_as_stick.mat");
 cd(pathin);
 X = D.x;
 xp = D.params.func.static.preload.xp;
@@ -149,17 +150,21 @@ S2_pre = get_integral_time_position_pre(flagT2);
 
 figure % forces
 plot(mu(1) * (Ft(:, 3) + gxp(3)), 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$\mu Fn$'), hold on;
-plot(-mu(1) * (Ft(:, 3) + gxp(3)), 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$-\mu Fn$'), hold on;
+plot(-mu(1) * (Ft(:, 3) + gxp(3)), 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$-\mu Fn$'), grid on;
 plot(Ft(:, 1) + gxp(1), 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$Ft$'), hold on;
 legend('show')
 
 figure
 plot((xct(:, 1) + xp(1)) - mu(1) * (Ft(:, 3) + gxp(3)) / kt(1), 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$w^-$'), hold on;
-plot((xct(:, 1) + xp(1)) + mu(1) * (Ft(:, 3) + gxp(3)) / kt(1), 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$w^+$'), hold on;
+plot((xct(:, 1) + xp(1)) + mu(1) * (Ft(:, 3) + gxp(3)) / kt(1), 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$w^+$'), grid on;
 wplot(:, 1) = wi(1,1,end - N +1:end);
 plot(wplot, 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$w$'), hold on;
 legend('show')
 
+figure
+plot(xct(:, 1) + xp(1), 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$xt1$'), hold on;
+plot(xct(:, 3) + xp(3), 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$xn$'), hold on;
+legend('show');
 function JNL = JNL_Analytical_pre(x, flag, H, N, kt, kn, mu) % x is the size of N*3Nx
 
     Nx = size(flag, 2);

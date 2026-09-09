@@ -31,7 +31,7 @@ params.func.fc.w = w;
 %%
 
 [F, w, JL, flag, segments_all] = func(x, xct + xp', omega, params.func);
-
+% w = get_w_middle(xct + xp', pfunc);
 params.func.fc.w = w; % update w
 G = [F 
      tx0' * (x - x0) + tomega0 * (omega - omega_0) - ds];
@@ -45,12 +45,15 @@ for k = 1:maxiter
     omega = z(end);
     
     xct = Fourier_to_Time(x(Na * (2 * H + 1) + 1:end), H, Nx, E);
+    w = get_w_middle(xct + xp', pfunc);
+    params.func.fc.w = w;
     [F, w, JL, flag, segments_all] = func(x, xct + xp', omega, params.func);
     %% debug
-    if ismember(1, flag(:,:,65:end))
-        debugstop = 1;
-    end
+    % if ismember(1, flag(:,:,65:end))
+    %     debugstop = 1;
+    % end
     %%
+    % w = get_w_middle(xct + xp', pfunc);
     params.func.fc.w = w; % update w
 
 

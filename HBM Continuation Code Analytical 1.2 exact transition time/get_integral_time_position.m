@@ -19,7 +19,12 @@ function segments = get_integral_time_position(flag, xt, xn, dxt, dxn, kt, kn, m
         return;
     end
     
-   
+    i_slip = ismember(flag, [1, -1]);
+    i_stick = ismember(flag, 2);
+    if sum(i_slip) == 1 && sum(i_stick) == N - 1 % if there is noly one slip, then all stick
+        segments = struct('value', 2, 't_start', 0, 't_end', 2*pi, 'w', xt(end) - ft(end) / kt);
+        return;
+    end
     
     % --- Build segments ---
     % Each segment starts at one boundary and ends at the next
