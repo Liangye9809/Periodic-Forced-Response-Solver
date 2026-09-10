@@ -45,8 +45,8 @@ for k = 1:maxiter
     omega = z(end);
     
     xct = Fourier_to_Time(x(Na * (2 * H + 1) + 1:end), H, Nx, E);
-    w = get_w_middle(xct + xp', pfunc);
-    params.func.fc.w = w;
+    % w = get_w_middle(xct + xp', pfunc);
+    % params.func.fc.w = w;
     [F, w, JL, flag, segments_all] = func(x, xct + xp', omega, params.func);
     %% debug
     % if ismember(1, flag(:,:,65:end))

@@ -84,7 +84,7 @@ pathin = pwd;
 % cd('/home/liangye-liu/data/non-linear problem/Periodic-Forced-Response-Solver/mass spring model/data/Analytical J and F');
 cd('D:\study\PHD\data\Frictions\Periodic-Forced-Response-Solver\mass spring model\data\Analytical J and F');
 % load("Data_unconverge.mat");
-load("Data_unconverge_mu0.5_OneSlip_as_stick.mat");
+load("Data_unconverge_mu0.5_slip_gap_stick_1.mat");
 cd(pathin);
 X = D.x;
 xp = D.params.func.static.preload.xp;
