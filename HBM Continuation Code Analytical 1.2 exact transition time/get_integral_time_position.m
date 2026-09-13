@@ -45,11 +45,29 @@ function segments = get_integral_time_position(flag, xt, xn, dxt, dxn, kt, kn, m
                 tau = (tau_n - 1) / N * 2 * pi;
                 segments(i).value = flag(n_p);
                 segments(i).t_start = tau;
-                if Tstate == 2 % gap to stick
+                if Tstate == 2 % gap to stick or gap-slip-stick in one interval
                     dxt_tau = dxt(n_m) + fdt * (dxt(n_p) - dxt(n_m));
                     dxn_tau = dxn(n_m) + fdt * (dxn(n_p) - dxn(n_m));
-                    segments(i).dxdn = dxt_tau / dxn_tau; % for Jacobian
-                    segments(i).w = xt(n_p) - ft(n_p) / kt;
+                    w_tau = xt(n_p) - ft(n_p) / kt; % w in landing position
+                    if abs(kt * dxt_tau) > abs(mu * kn * dxn_tau) % gap-slip-stick in one interval, slip in land, which is hidden
+                        dw_tau = dxt_tau - sign(dxt_tau) * mu * kn / kt * dxn_tau;
+                        dw_p = dxt(n_p) - sign(dxt_tau) * mu * kn / kt * dxn(n_p);
+                        if dw_tau * dw_p > 0
+                            error('wrong situation!')
+                        end
+                        fdt_stk = dw_tau / (dw_tau - dw_p);
+                        dt_stk = fdt_stk * (1 - fdt) * (2 * pi / N);
+                        w_stk = w_tau + 0.5 * dw_tau * dt_stk;
+                        segments(i).value = sign(dxt_tau);
+                        i = i + 1;
+                        segments(i).value = 2;
+                        segments(i).t_start = tau + dt_stk;
+                        segments(i).w = w_stk;
+                        
+                    else % gap to stick
+                        segments(i).dxdn = dxt_tau / dxn_tau; % for Jacobian
+                        segments(i).w = w_tau;
+                    end
                 end
                 i = i + 1;
             case 20 % stick (to slip) to gap

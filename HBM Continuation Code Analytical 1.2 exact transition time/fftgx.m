@@ -2,7 +2,7 @@
 % x = [a¹0,a¹1,b¹1,a¹2,b¹2,...,a¹H,b¹H,  a²0,a²1,b²1,a²2,b²2,...,a²H,b²H,...]'
 
 %% original structure
-function [F, w, flag, segments_All] = fftgx(X, xct, pfunc) % x(t) = E*X
+function [F, w, flag, segments_All] = fftgx(Xc, xct, pfunc) % x(t) = E*X
     
      E = pfunc.HBM.E;
     EH = pfunc.HBM.EH;
@@ -21,7 +21,7 @@ function [F, w, flag, segments_All] = fftgx(X, xct, pfunc) % x(t) = E*X
     nloop = pfunc.fc.nloop;
 
     
-    Xc = X(Na * (2 * H + 1) + 1:end);
+    % Xc = X(Na * (2 * H + 1) + 1:end);
     for ixp = 1:3 * Nx
         Xc((2 * H + 1) * (ixp - 1) + 1) = Xc((2 * H + 1) * (ixp - 1) + 1) + 2 * xp(ixp); % consider preload
     end
@@ -36,6 +36,7 @@ function [F, w, flag, segments_All] = fftgx(X, xct, pfunc) % x(t) = E*X
     
     %% numerical Ft
     Ft = Fti(end - N + 1:end, :) - gxp'; % the last periods
+    
     hndn = EH * Ft;
     F_N = hndn(:);
     

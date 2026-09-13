@@ -1,154 +1,3 @@
-%% Coulomb friction of dummy fucntion 2 dofs
-clear
-clc
-% close all
-eps = [];
-h = 10^(-7);
-order = 1;
-h_con = [];
-N = 16;
-H = 3;
-dt = 2 * pi / N;
-t = (0:(N-1)) * 2 * pi / N;
-t = t';
-% xn = ones(N, 1);
-% xn = - 4 * sin(sin(t)) + 1; % separation to stick
-% xt = 2 * exp(cos(t + 1)) - 3; % separation to stick
-% xn = 2 * exp(cos(t)) - 0.5; % slip to stick
-% xn = 2 * exp(cos(t)) - 0.75; % separation to slip
-% xt = 2 * sin(sin(t)); % slip to stick
-
-% xt = 1.05  * sin(2 .* exp(cos(t))); % tangent case1
-% xt = 1.00 * sin(sin(t)) ./ sin(1); % tangent case2
-% xt = 0.5 * sin(sin(t)) ./ sin(1) + 0.5; % tangent case3 only one side
-
-% plot w for the paper (kt = 1, kn = 2, mu = 0.5)
-% pure stick
-% xn = 2*ones(N, 1); % pure stick
-% xt = sin(sin(t)); % pure stick
-% simple x
-% xn = 2*ones(N, 1); % pure stick
-% xt = sin(t); % pure stick
-
-% slip to stick
-% xn = 2 * exp(cos(t)) - 0.5; % slip to stick
-% xt = 2 * sin(sin(t)); % slip to stick
-% simple x
-% xn = 2.5 * cos(t) + 3; % slip to stick
-% xt = 3 * sin(t); % slip to stick
-
-% gap to stick
-xn = - 4 * sin(sin(t)) + 1; % separation to stick
-xt = 2 * exp(cos(t + 1)) - 3; % separation to stick
-% simple x
-% xn = - 10 * cos(t) + 3; % separation to stick
-% xt = - sin(t); % separation to stick
-% xn = - 1 * cos(t) + 0.5; % separation to stick % (kt = 1, kn = 500, mu = 0.8)
-% xt = 2 * cos(t); % separation to stick
-x = [xt, xt, xn];
-
-[E, EH] = fft_matrices(N, H);
-X = EH * x;
-xpr = E * X;
-dX = dXinFourier(X, H);
-dx = E * dX;
-dxt1 = dx(:,1);
-dxn = dx(:,3);
-
-kt = [1;1];
-kn = 2;
-mu = [0.5;0.5];
-w =  [0;0];
-xn0 = 0; % normal pre-displacement
-
-nloop = 2;
-[Fti, wi, flag] = g(x, kn, xn0, mu, kt, w, nloop);
-
-segments = get_integral_time_position(flag(1,1,end - N + 1:end), xt, xn, dxt1, dxn, kt(1), kn, mu(1), Fti(end - N + 1:end, 1), H)
-S{1} = segments;
-S{2} = segments;
-JNL = JNL_Analytical(S, H, kt, kn, mu);
-
-function dX = dXinFourier(X, H)
-    dX = zeros(size(X));
-    for i = 1:H
-        dX(2 * i, :) =  i .* X(2 * i + 1, :);
-        dX(2 * i + 1, :) =  -i .* X(2 * i, :);
-    end
-
-end
-
-%% compare the F and Jacobian
-clear
-clc
-GetDataTest
-dxct = get_dxt(Xc, E, Nx);
-
-[Fti, wi, flagi] = g(xct, kn, xn0, mu, kt, w, nloop, dxct); 
-Ft = Fti(end - N + 1:end, :); % the last periods
-flag = flagi(:, :, end - N + 1:end);
-S = get_all_segments(flag, xct, dxct, kt, kn, mu, Ft, H);
-
-J_a = JNL_Analytical(S, H, kt, kn, mu);
-F_a = get_Analytical_F_Fourier(S, gxp, kt, kn, mu, H, Xc);
-J_a_pre = JNL_Analytical_pre(xct, flag, H, N, kt, kn, mu);
-
-
-hndn = EH * (Ft - gxp');
-F_N_pre = hndn(:);
-
-J_N = finite_diff_jac(@(Xc) fftF(Xc, H, Nx, kn, xn0, mu, kt, w, nloop, gxp, E, EH, N, dxct), Xc);
-
-
-
-function F_Fourier = fftF(Xc, H, Nx, kn, xn0, mu, kt, w, nloop, gxp, E, EH, N, dxct)
-    XcM = zeros(2 * H + 1, 3 * Nx);
-    for i = 1:3*Nx
-        XcM(:, i) = Xc((2 * H + 1) * (i - 1) + 1:(2 * H + 1) * i);
-    end
-    xct = E * XcM;
-    [Fti, wi, flag] = g(xct, kn, xn0, mu, kt, w, nloop, dxct); 
-    flag_ = flag(:, :, end - N + 1:end);
-    if sum(ismember([-1, 1, 0], flag_)) > 0 % slip gap appear
-        Ft_in = Fti(end - N + 1:end, :);
-
-        dft = FFT_improve(Ft_in, xct, flag_, kt, kn, mu);
-
-        Fti(end - N + 1:end, :) = Fti(end - N + 1:end, :) + dft;
-        
-    end
-    Ft = Fti(end - N + 1:end, :) - gxp';
-    F_Fourier = EH * Ft;
-    F_Fourier = F_Fourier(:);
-end
-
-epsF = norm(F_N_pre - F_a) / norm(F_N_pre)
-epsJ_analytical_numerical = norm(J_N - J_a) / norm(J_N)
-epsJ_analytical_pre_new = norm(J_a - J_a_pre) / norm(J_a)
-epsJ_analytical_pre_numerical = norm(J_N - J_a_pre) / norm(J_N)
-
-flagT1(:, 1) = flag(1, 1, :);
-S1_pre = get_integral_time_position_pre(flagT1);
-flagT2(:, 1) = flag(2, 1, :);
-S2_pre = get_integral_time_position_pre(flagT2);
-
-figure % forces
-plot(mu(1) * (Ft(:, 3) + gxp(3)), 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$\mu Fn$'), hold on;
-plot(-mu(1) * (Ft(:, 3) + gxp(3)), 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$-\mu Fn$'), grid on;
-plot(Ft(:, 1) + gxp(1), 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$Ft$'), hold on;
-legend('show')
-
-figure
-plot((xct(:, 1) + xp(1)) - mu(1) * (Ft(:, 3) + gxp(3)) / kt(1), 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$w^-$'), hold on;
-plot((xct(:, 1) + xp(1)) + mu(1) * (Ft(:, 3) + gxp(3)) / kt(1), 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$w^+$'), grid on;
-wplot(:, 1) = wi(1,1,end - N +1:end);
-plot(wplot, 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$w$'), hold on;
-legend('show')
-
-figure
-plot(xct(:, 1) + xp(1), 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$xt1$'), hold on;
-plot(xct(:, 3) + xp(3), 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$xn$'), hold on;
-legend('show');
 function JNL = JNL_Analytical_pre(x, flag, H, N, kt, kn, mu) % x is the size of N*3Nx
 
     Nx = size(flag, 2);
@@ -171,10 +20,10 @@ function JNLi = JNL_one_Nx(x, flagT1, flagT2, H, N, kt, kn, mu)
 
     JNLi = zeros(3 * (2 * H + 1), 3 * (2 * H + 1));
 
-    segmentsT1 = get_integral_time_position_pre(flagT1);
+    segmentsT1 = get_integral_time_position(flagT1);
     [dF1dX1, dF1dXn, dFndXn] = get_dFdX(segmentsT1, H, N, kt(1), kn, mu(1), x(:, 1), x(:, 3));
     
-    segmentsT2 = get_integral_time_position_pre(flagT2);
+    segmentsT2 = get_integral_time_position(flagT2);
     [dF2dX2, dF2dXn, ~] = get_dFdX(segmentsT2, H, N, kt(2), kn, mu(2), x(:, 2), x(:, 3));
 
     JNLi(1:2 * H + 1, 1:2 * H + 1) = dF1dX1;
@@ -187,7 +36,7 @@ function JNLi = JNL_one_Nx(x, flagT1, flagT2, H, N, kt, kn, mu)
 end
 
 
-function segments = get_integral_time_position_pre(flag)
+function segments = get_integral_time_position(flag)
     % FIND_CYCLIC_SEGMENTS Find cyclic time ranges for each segment in flag vector
     % Time axis: t(i) = (i-1)/N * 2pi, i = 1..N
     % Boundaries are at midpoints between transitions
@@ -288,4 +137,3 @@ function [dFdX, dFdXn, dFndXn] = get_dFdX(segmentsT, H, N, kt, kn, mu, xt, xn)
     end
 
 end
-

@@ -7,10 +7,10 @@ function [FUNC, w, JL, flag, S] = HBMFUNC(x, xct, Omega, pfunc) % x = [a¹0,a¹1
     H = pfunc.HBM.H;
     JL = Jlinear(Omega, pfunc); % get from outside
     
-    % xc = x((2 * H + 1) * Na + 1:end);
+    xc = x((2 * H + 1) * Na + 1:end);
     G = zeros(size(x));
 
-    [Gc, w, flag, S] = fftgx(x, xct, pfunc);
+    [Gc, w, flag, S] = fftgx(xc, xct, pfunc);
     
     G((2 * H + 1) * Na + 1:end) = Gc;
 
