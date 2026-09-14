@@ -81,21 +81,24 @@ end
 %% compare the F and Jacobian
 clear
 clc
+close all
 GetDataTest
 dxct = get_dxt(Xc, E, Nx);
 
 [Fti, wi, flagi] = g(xct, kn, xn0, mu, kt, w, nloop, dxct); 
-Ft = Fti(end - N + 1:end, :); % the last periods
-flag = flagi(:, :, end - N + 1:end);
+Ft = Fti(end - N + 1:end, :); % the last period
+flag = flagi(:, :, end - N + 1:end); % the last period
 S = get_all_segments(flag, xct, dxct, kt, kn, mu, Ft, H);
 
 J_a = JNL_Analytical(S, H, kt, kn, mu);
 F_a = get_Analytical_F_Fourier(S, gxp, kt, kn, mu, H, Xc);
 J_a_pre = JNL_Analytical_pre(xct, flag, H, N, kt, kn, mu);
 
-
-hndn = EH * (Ft - gxp');
-F_N_pre = hndn(:);
+dft = FFT_improve(Ft, xct, flag, kt, kn, mu);
+hndn_pre = EH * (Ft - gxp');
+F_N_pre = hndn_pre(:);
+hndn = EH * (Ft - gxp' + dft);
+F_N = hndn(:);
 
 J_N = finite_diff_jac(@(Xc) fftF(Xc, H, Nx, kn, xn0, mu, kt, w, nloop, gxp, E, EH, N, dxct), Xc);
 
@@ -122,7 +125,18 @@ function F_Fourier = fftF(Xc, H, Nx, kn, xn0, mu, kt, w, nloop, gxp, E, EH, N, d
     F_Fourier = F_Fourier(:);
 end
 
-epsF = norm(F_N_pre - F_a) / norm(F_N_pre)
+epsF_pre = norm(F_N_pre - F_a) / norm(F_a)
+epsF = norm(F_N - F_a) / norm(F_a)
+
+epsF_pre1 = norm(F_N_pre(1:(2 * H + 1)) - F_a(1:(2 * H + 1))) / norm(F_a(1:(2 * H + 1)))
+epsF1 = norm(F_N(1:(2 * H + 1)) - F_a(1:(2 * H + 1))) / norm(F_a(1:(2 * H + 1)))
+
+epsF_pre2 = norm(F_N_pre((2 * H + 2):(4 * H + 2)) - F_a((2 * H + 2):(4 * H + 2))) / norm(F_a((2 * H + 2):(4 * H + 2)))
+epsF2 = norm(F_N((2 * H + 2):(4 * H + 2)) - F_a((2 * H + 2):(4 * H + 2))) / norm(F_a((2 * H + 2):(4 * H + 2)))
+
+epsF_pre3 = norm(F_N_pre((4 * H + 3):end) - F_a((4 * H + 3):end)) / norm(F_a((4 * H + 3):end))
+epsF3 = norm(F_N((4 * H + 3):end) - F_a((4 * H + 3):end)) / norm(F_a((4 * H + 3):end))
+
 epsJ_analytical_numerical = norm(J_N - J_a) / norm(J_N)
 epsJ_analytical_pre_new = norm(J_a - J_a_pre) / norm(J_a)
 epsJ_analytical_pre_numerical = norm(J_N - J_a_pre) / norm(J_N)
@@ -133,21 +147,21 @@ flagT2(:, 1) = flag(2, 1, :);
 S2_pre = get_integral_time_position_pre(flagT2);
 
 figure % forces
-plot(mu(1) * (Ft(:, 3) + gxp(3)), 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$\mu Fn$'), hold on;
-plot(-mu(1) * (Ft(:, 3) + gxp(3)), 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$-\mu Fn$'), grid on;
-plot(Ft(:, 1) + gxp(1), 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$Ft$'), hold on;
+plot(mu(1) * (Ft(:, 3)), 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$\mu Fn$'), hold on;
+plot(-mu(1) * (Ft(:, 3)), 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$-\mu Fn$'), grid on;
+plot(Ft(:, 1), 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$Ft$'), hold on;
 legend('show')
 
 figure
-plot((xct(:, 1) + xp(1)) - mu(1) * (Ft(:, 3) + gxp(3)) / kt(1), 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$w^-$'), hold on;
-plot((xct(:, 1) + xp(1)) + mu(1) * (Ft(:, 3) + gxp(3)) / kt(1), 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$w^+$'), grid on;
+plot((xct(:, 1)) - mu(1) * (Ft(:, 3)) / kt(1), 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$w^-$'), hold on;
+plot((xct(:, 1)) + mu(1) * (Ft(:, 3)) / kt(1), 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$w^+$'), grid on;
 wplot(:, 1) = wi(1,1,end - N +1:end);
 plot(wplot, 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$w$'), hold on;
 legend('show')
 
 figure
-plot(xct(:, 1) + xp(1), 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$xt1$'), hold on;
-plot(xct(:, 3) + xp(3), 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$xn$'), hold on;
+plot(xct(:, 1), 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$xt1$'), hold on;
+plot(xct(:, 3), 'LineWidth', 2, 'LineStyle','-', 'DisplayName', '$xn$'), hold on;
 legend('show');
 function JNL = JNL_Analytical_pre(x, flag, H, N, kt, kn, mu) % x is the size of N*3Nx
 
@@ -289,3 +303,10 @@ function [dFdX, dFdXn, dFndXn] = get_dFdX(segmentsT, H, N, kt, kn, mu, xt, xn)
 
 end
 
+
+%%
+for i = 1:29
+    if ismember('data', h(i).DisplayName) 
+        h(i).HandleVisibility = 'off';
+    end
+end

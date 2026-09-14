@@ -115,7 +115,7 @@ function segments = get_integral_time_position(flag, xt, xn, dxt, dxn, kt, kn, m
                 segments(i).value = flag(n_p);
                 segments(i).t_start = tau;
                 i = i + 1;
-                % error('exist other transition type not define!')
+                error('exist other transition type not define!')
         end
         
     end

@@ -35,6 +35,8 @@ params.func.fc.w = w;
 params.func.fc.w = w; % update w
 G = [F 
      tx0' * (x - x0) + tomega0 * (omega - omega_0) - ds];
+dz_cont = [];
+G_cont = [];
 for k = 1:maxiter
     JG = [jacob(params.func, JL, segments_all, xct + xp', flag, x) deromega(x, omega, params.func)
           tx0' tomega0];
@@ -61,6 +63,11 @@ for k = 1:maxiter
          tx0' * (x - x0) + tomega0 * (omega - omega_0) - ds];
     errorx = norm(dz) / (norm(z) + 1e-16);
     errorf = norm(G);
+
+    % if params.cont.step == 1213
+    %     dz_cont = [dz_cont, dz];
+    %     G_cont = [G_cont, G];
+    % end
     % format short g
     % disp([k z(1) z(2) lambda errorx  errorf])
     if (errorx < epsx) && (errorf < epsf)
