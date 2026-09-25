@@ -317,22 +317,22 @@ N = 32;
 dt = 2 * pi / N;
 t = (0:(N-1)) * 2 * pi / N;
 t = t';
-kn = 10;
+kn = 1;
 kt = 0.5;
-mu = 0.8;
+mu = 0.5;
 w0 = 0;
-% xn = cos(t) + 0.05;
-xn = cos(t) + 0.5; % slip to stick
-xt = 0.1 * sin(t) + 0.2; % slip to stick
-[fn, fnp, ft, ftp, w] = TangentialForces_withPre(xn, mu, xt, kt, N, w0, kn);
+xn = cos(t) + 1.5; 
+xt = 2 * sin(t) + 0.2; 
+[fn, ~, ft, ~, w] = TangentialForces_withPre(xn, mu, xt, kt, N, w0, kn);
 
-% N_ = 2^12;
-% dt_ = 2 * pi / N_;
-% t_ = (0:(N_-1)) * 2 * pi / N_;
-% t_ = t_';
-% xn_ = cos(t_) + 1.1; % slip to stick
-% xt_ = sin(t_); % slip to stick
-% [~, ~,ftp, w_] = TangentialForces_withPre(xn_, mu, xt_, kt, N_, w0, kn);
+N_ = 2^12;
+dt_ = 2 * pi / N_;
+t_ = (0:(N_-1)) * 2 * pi / N_;
+t_ = t_';
+xn_ = cos(t_) + 1.5; % slip to stick
+xt_ = 2 * sin(t_) + 0.2; % slip to stick
+[fn_, fnp, ft_, ftp, w_] = TangentialForces_withPre(xn_, mu, xt_, kt, N_, w0, kn);
+
 % figure(100)
 % plot(t, xn, 'bo-', LineWidth=2, DisplayName='$x_n$'), hold on, grid on;
 % plot(t, fn, 'r*-', LineWidth=2, DisplayName='$f_n$'), hold on, grid on;
@@ -343,12 +343,38 @@ xt = 0.1 * sin(t) + 0.2; % slip to stick
 % xlim([0, 2*pi]);
 
 figure(200)
-plot(t, mu * fnp, 'g+-', LineWidth=2, DisplayName='$f_t$'), hold on, grid on;
+plot(t_, mu * fnp, 'g-', LineWidth=2, DisplayName='$\mu f_n^{pre}$'), hold on, grid on;
+plot(t_, -mu * fnp, 'g-', LineWidth=2, DisplayName='$\mu f_n^{pre}$', HandleVisibility='off'), hold on, grid on;
 plot(t, mu * fn, 'bo-', LineWidth=2, DisplayName='$\mu f_n$'), hold on, grid on;
 plot(t, -mu * fn, 'bo-', LineWidth=2, DisplayName='$\mu f_n$', HandleVisibility='off'), hold on, grid on;
-plot(t, ftp, 'r*-', LineWidth=2, DisplayName='$f_t^{pre}$'), hold on, grid on;
+plot(t_, ftp, 'r-', LineWidth=2, DisplayName='$f_t^{pre}$'), hold on, grid on;
 plot(t, ft, 'k+-', LineWidth=2, DisplayName='$f_t$'), hold on, grid on;
 
+legend('show')
+xticks([0:pi/2:2*pi]);
+xticklabels({'$0$','$\frac{\pi}{2}$','$\pi$','$\frac{3\pi}{2}$','$2\pi$'})
+set(gca,'TickLabelInterpreter','latex');
+xlim([0, 2*pi]);
+
+w_m = xt_ - mu * fn_ / kt;
+w_p = xt_ + mu * fn_ / kt;
+figure(300)
+plot(t_, w_m, 'r--', LineWidth=2, DisplayName='$w^{-}$'), hold on, grid on;
+plot(t_, w_p, 'k--', LineWidth=2, DisplayName='$w^{+}$'), hold on, grid on;
+plot(t, w, 'bo-', LineWidth=2, DisplayName='$w$'), hold on, grid on;
+legend('show')
+xticks([0:pi/2:2*pi]);
+xticklabels({'$0$','$\frac{\pi}{2}$','$\pi$','$\frac{3\pi}{2}$','$2\pi$'})
+set(gca,'TickLabelInterpreter','latex');
+xlim([0, 2*pi]);
+
+dxt = 2 * cos(t);
+dxn = -sin(t);
+dwp = dxt + mu * kn / kt * dxn;
+dwm = dxt - mu * kn / kt * dxn;
+figure(400)
+plot(t, dwp, 'ko-', LineWidth=2, DisplayName='$\dot w^+$'), hold on, grid on;
+plot(t, dwm, 'r*-', LineWidth=2, DisplayName='$\dot w^-$'), hold on, grid on;
 legend('show')
 xticks([0:pi/2:2*pi]);
 xticklabels({'$0$','$\frac{\pi}{2}$','$\pi$','$\frac{3\pi}{2}$','$2\pi$'})

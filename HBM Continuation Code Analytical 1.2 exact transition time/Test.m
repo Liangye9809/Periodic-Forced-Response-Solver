@@ -368,6 +368,19 @@ xticklabels({'$0$','$\frac{\pi}{2}$','$\pi$','$\frac{3\pi}{2}$','$2\pi$'})
 set(gca,'TickLabelInterpreter','latex');
 xlim([0, 2*pi]);
 
+dxt = 2 * cos(t);
+dxn = -sin(t);
+dwp = dxt + mu * kn / kt * dxn;
+dwm = dxt - mu * kn / kt * dxn;
+figure(400)
+plot(t, dwp, 'ko-', LineWidth=2, DisplayName='$\dot w^+$'), hold on, grid on;
+plot(t, dwm, 'r*-', LineWidth=2, DisplayName='$\dot w^-$'), hold on, grid on;
+legend('show')
+xticks([0:pi/2:2*pi]);
+xticklabels({'$0$','$\frac{\pi}{2}$','$\pi$','$\frac{3\pi}{2}$','$2\pi$'})
+set(gca,'TickLabelInterpreter','latex');
+xlim([0, 2*pi]);
+
 function [fn, fnp, ft, ft_pre, w] = TangentialForces_withPre(xn, mu, xt, kt, N, w0, kn)
     fn = max(kn * xn, 0);
     fnp = kn * xn;
