@@ -65,7 +65,7 @@ function [T, w, Flag, dxdn] = TangentialForces(xt, wt, kt, mu, FN, xn, xn_pre, k
     end
 end
 
-% function [T, w, Flag, dxdn] = TangentialForces(xt, wt, kt, mu, FN, xn, xn_pre)
+% function [T, w, Flag, dxdn] = TangentialForces(xt, wt, kt, mu, FN, xn, xn_pre, kn, dxt, dxn, Flag_pre, dtheta)
 %     if FN > 0
 %         T = kt * (xt - wt);
 %         if abs(T) < mu * FN

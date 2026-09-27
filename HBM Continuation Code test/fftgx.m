@@ -54,7 +54,7 @@ function [F, w, flag] = fftgx(x, xct, pfunc) %
         dft = FFT_improve(Ft_in, xct_, flag_, kt, kn, mu);
 
         Fti(end - N + 1:end, :) = Fti(end - N + 1:end, :) + dft;
-        
+
     end
     Ft = Fti(end - N + 1:end, :) - gxp';
     hndn = EH * Ft;
