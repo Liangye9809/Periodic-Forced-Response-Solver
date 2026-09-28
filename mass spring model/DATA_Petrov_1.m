@@ -14,8 +14,8 @@ CB.CBmods = [];
 H_F_ext = [0, 0, 1];
 
 
-H = 5; 
-N = 2^5; 
+H = 10; 
+N = 2^6; 
 Nx = 1; 
 Na = 1; 
 xi = 0.01; 
@@ -25,17 +25,19 @@ epsf = 1e-6;
 maxiter = 100;
 
 kn = 120; 
+% kn = 40; 
 xn0 = 0;
 mu = 0.5 * [1; 1]; 
 kt = 30 * [1; 1]; 
 nloop = 2;
 
-ds = 0.051;
+ds = 0.05;
 % maxstep = 1852;
 maxstep = 50000;
 
 xp0 = 0;
-Rx = [0, 0, -800]'; % -5*(40+120)
+Rx = [0, 0, -800]'; % -5*(40+120) = gap*(k + kn) when gap is nagtive
+% gap * k when gap is positive
 % xp = [0, 0, 7.5]';
 % gxp = [0, 0, 300]';
 xe0 = 0;

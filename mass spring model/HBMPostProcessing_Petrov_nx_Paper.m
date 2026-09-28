@@ -302,5 +302,5 @@ plot(P.Adof(:, 1), P.Adof(:, 3), 'LineWidth', 2, 'DisplayName', 'kt'), hold on, 
 figure(501)
 plot(P.Adof(:, 1), P.Adof(:, 5), 'LineWidth', 2), hold on, grid on;
 
-figure(502)
-plot(P.Adof(:, 1), P.Adof(:, 3), 'LineWidth', 2), hold on, grid on;
+% figure(502)
+% plot(P.Adof(:, 1), P.Adof(:, 3), 'LineWidth', 2), hold on, grid on;

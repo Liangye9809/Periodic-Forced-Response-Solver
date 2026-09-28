@@ -1,0 +1,119 @@
+%% 
+clear
+N = 32;
+dt = 2 * pi / N;
+t = (0:(N-1)) * 2 * pi / N;
+t = t';
+kn = 1;
+kt = 0.5;
+mu = 0.5;
+w0 = 0;
+xn = cos(t) + 1.5; 
+xt = 2 * sin(t) + 0.2; 
+[fn, ~, ft, ~, w] = TangentialForces_withPre(xn, mu, xt, kt, N, w0, kn);
+
+N_ = 2^12;
+dt_ = 2 * pi / N_;
+t_ = (0:(N_-1)) * 2 * pi / N_;
+t_ = t_';
+xn_ = cos(t_) + 1.5; % slip to stick
+xt_ = 2 * sin(t_) + 0.2; % slip to stick
+[fn_, fnp, ft_, ftp, w_] = TangentialForces_withPre(xn_, mu, xt_, kt, N_, w0, kn);
+
+% figure(100)
+% plot(t, xn, 'bo-', LineWidth=2, DisplayName='$x_n$'), hold on, grid on;
+% plot(t, fn, 'r*-', LineWidth=2, DisplayName='$f_n$'), hold on, grid on;
+% legend('show')
+% xticks([0:pi/2:2*pi]);
+% xticklabels({'$0$','$\frac{\pi}{2}$','$\pi$','$\frac{3\pi}{2}$','$2\pi$'})
+% set(gca,'TickLabelInterpreter','latex');
+% xlim([0, 2*pi]);
+
+figure(200)
+plot(t_, mu * fnp, 'g-', LineWidth=2, DisplayName='$\mu f_n^{pre}$'), hold on, grid on;
+plot(t_, -mu * fnp, 'g-', LineWidth=2, DisplayName='$\mu f_n^{pre}$', HandleVisibility='off'), hold on, grid on;
+plot(t, mu * fn, 'bo-', LineWidth=2, DisplayName='$\mu f_n$'), hold on, grid on;
+plot(t, -mu * fn, 'bo-', LineWidth=2, DisplayName='$\mu f_n$', HandleVisibility='off'), hold on, grid on;
+plot(t_, ftp, 'r-', LineWidth=2, DisplayName='$f_t^{pre}$'), hold on, grid on;
+plot(t, ft, 'k+-', LineWidth=2, DisplayName='$f_t$'), hold on, grid on;
+
+legend('show')
+xticks([0:pi/2:2*pi]);
+xticklabels({'$0$','$\frac{\pi}{2}$','$\pi$','$\frac{3\pi}{2}$','$2\pi$'})
+set(gca,'TickLabelInterpreter','latex');
+xlim([0, 2*pi]);
+
+w_m = xt_ - mu * fn_ / kt;
+w_p = xt_ + mu * fn_ / kt;
+figure(300)
+plot(t_, w_m, 'r--', LineWidth=2, DisplayName='$w^{-}$'), hold on, grid on;
+plot(t_, w_p, 'k--', LineWidth=2, DisplayName='$w^{+}$'), hold on, grid on;
+plot(t, w, 'bo-', LineWidth=2, DisplayName='$w$'), hold on, grid on;
+legend('show')
+xticks([0:pi/2:2*pi]);
+xticklabels({'$0$','$\frac{\pi}{2}$','$\pi$','$\frac{3\pi}{2}$','$2\pi$'})
+set(gca,'TickLabelInterpreter','latex');
+xlim([0, 2*pi]);
+
+dxt = 2 * cos(t);
+dxn = -sin(t);
+dwp = dxt + mu * kn / kt * dxn;
+dwm = dxt - mu * kn / kt * dxn;
+figure(400)
+plot(t, dwp, 'ko-', LineWidth=2, DisplayName='$\dot w^+$'), hold on, grid on;
+plot(t, dwm, 'r*-', LineWidth=2, DisplayName='$\dot w^-$'), hold on, grid on;
+legend('show')
+xticks([0:pi/2:2*pi]);
+xticklabels({'$0$','$\frac{\pi}{2}$','$\pi$','$\frac{3\pi}{2}$','$2\pi$'})
+set(gca,'TickLabelInterpreter','latex');
+xlim([0, 2*pi]);
+
+function [fn, fnp, ft, ft_pre, w] = TangentialForces_withPre(xn, mu, xt, kt, N, w0, kn)
+    fn = max(kn * xn, 0);
+    fnp = kn * xn;
+    ft = zeros(N, 1);
+    ft_pre = zeros(N, 1);
+    w = zeros(N, 1);
+    wp = w0;
+    for i = 1:N
+        ft_pre(i) = kt * (xt(i) - wp);
+        if abs(ft_pre(i)) > mu * fn(i)
+            ft(i) = sign(ft_pre(i)) * mu * fn(i);
+            wp = xt(i) - sign(ft_pre(i)) * mu * fn(i) / kt;
+        else
+            ft(i) = ft_pre(i);
+        end
+        w(i) = wp;
+    end
+
+end
+
+%% diagram for DFT error
+N = 32;
+t = [0:N] * 2 / N;
+t = t';
+N_ = 1024;
+t_ = [0:N_] * 2 / N_;
+t_ = t_';
+y1 = periodic_function(N, 1.03);
+y2 = periodic_function(N_, 1.03);
+figure
+plot(t_, y2, 'b-'), hold on, grid on;
+plot(t, y1, 'ro--'), hold on, grid on;
+
+
+function y = periodic_function(N, a)
+
+    % Period
+    T = 2;
+
+    % Equally spaced points in [0, 2]
+    x = linspace(0, T, N+1).';
+
+    % Apply horizontal shift and wrap into one period
+    x_shifted = mod(x - a, T);
+
+    % Evaluate the periodic function
+    y = -(x_shifted - 1).^2 + 1;
+
+end
