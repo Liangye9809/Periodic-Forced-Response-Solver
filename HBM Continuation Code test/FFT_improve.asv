@@ -28,6 +28,7 @@ function dFt = FFT_improve(ft_in, xt, flag, kt, kn, mu)
             ft_gap = ft_in(:, 3 * i - 2:3 * i);
             dFt_gap = FFT_improve_gap_contact(ft_gap, xn_gap);
             dFt(:, 3 * i - 2:3 * i) = dFt(:, 3 * i - 2:3 * i) + dFt_gap;
+            % dFt(:, 3 * i) = dFt(:, 3 * i) + dFt_gap(:, 3); % only xn
         end
 
     end
@@ -49,14 +50,14 @@ function dFt = FFT_improve_stick_to_slip(ft, xt, xn, flag, kt, kn, mu)
             if flag(i_p) == 0 %  stick to gap, possible stick-slip-gap in one interval
                 fdt_gap = xn(i_m) / (xn(i_m) - xn(i_p));
                 f_gap = f1_m + (f1_p - f1_m) * fdt_gap;
-                if f_gap ~= 0 % nonzero force at lift-off implies hidden slip
-                    f2_m = sign(f_gap) * mu * kn * xn(i_m);
-                    fdt = fdt_gap * (f2_m - f1_m) / (f_gap - f1_m + f2_m);
-                    f_star = f1_m + (f1_p - f1_m) * fdt;
-                    dFt(i_m) = 0.5 * (fdt - fdt_gap) * f1_m ...
-                        + 0.5 * fdt_gap * (1 - fdt) * f_star;
-                    dFt(i_p) = 0.5 * fdt_gap * fdt * f_star;
-                end
+                % if f_gap ~= 0 % nonzero force at lift-off implies hidden slip
+                %     f2_m = sign(f_gap) * mu * kn * xn(i_m);
+                %     fdt = fdt_gap * (f2_m - f1_m) / (f_gap - f1_m + f2_m);
+                %     f_star = f1_m + (f1_p - f1_m) * fdt;
+                %     dFt(i_m) = 0.5 * (fdt - fdt_gap) * f1_m ...
+                %         + 0.5 * fdt_gap * (1 - fdt) * f_star;
+                %     dFt(i_p) = 0.5 * fdt_gap * fdt * f_star;
+                % end
             else % stick to slip
                 f2_p = ft(i_p); % Ft+
                 f2_m = sign(f1_p) * mu * kn * xn(i_m);

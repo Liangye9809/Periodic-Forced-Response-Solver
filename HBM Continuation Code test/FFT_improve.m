@@ -28,6 +28,7 @@ function dFt = FFT_improve(ft_in, xt, flag, kt, kn, mu)
             ft_gap = ft_in(:, 3 * i - 2:3 * i);
             dFt_gap = FFT_improve_gap_contact(ft_gap, xn_gap);
             dFt(:, 3 * i - 2:3 * i) = dFt(:, 3 * i - 2:3 * i) + dFt_gap;
+            % dFt(:, 3 * i) = dFt(:, 3 * i) + dFt_gap(:, 3); % only xn
         end
 
     end

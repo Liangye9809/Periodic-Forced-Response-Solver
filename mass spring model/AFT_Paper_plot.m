@@ -89,18 +89,34 @@ function [fn, fnp, ft, ft_pre, w] = TangentialForces_withPre(xn, mu, xt, kt, N, 
 end
 
 %% diagram for DFT error
-N = 32;
+N = 10;
 t = [0:N] * 2 / N;
 t = t';
-N_ = 1024;
+y = func1(t);
+N_ = 2048;
 t_ = [0:N_] * 2 / N_;
 t_ = t_';
-y1 = periodic_function(N, 1.03);
-y2 = periodic_function(N_, 1.03);
+a = 1.1;
+y1 = periodic_function(N, a);
+y2 = periodic_function(N_, a);
+I_num = trapz(t, y1);
+I_exact = 1;
+% errors = [errors; (I_num - I_exact) / I_exact];
 figure
-plot(t_, y2, 'b-'), hold on, grid on;
-plot(t, y1, 'ro--'), hold on, grid on;
+plot(t_, y2, 'K-', LineWidth=2), hold on, grid off;
+plot(t, y1, 'ro', 'MarkerSize', 8, 'LineWidth', 2), hold on, grid off;
 
+% Draw each trapezoid
+for i = 1:N
+
+    X = [t(i), t(i+1), t(i+1), t(i)];
+    Y = [0,         0,          y1(i+1), y1(i)];
+
+    fill(X, Y, 'b', ...
+        'FaceAlpha', 0.05, ...
+        'EdgeColor', 'b');
+
+end
 
 function y = periodic_function(N, a)
 
@@ -114,6 +130,196 @@ function y = periodic_function(N, a)
     x_shifted = mod(x - a, T);
 
     % Evaluate the periodic function
-    y = -(x_shifted - 1).^2 + 1;
+    y = func1(x_shifted);
+
+end
+
+function y = func1(x)
+ % y = abs(x - 1);
+ y = -(x - 1).^2 + 1.2;
+end
+%%
+[a_values, errors] = trapezoidal_error_vs_shift(10, 100);
+
+function [a_values, errors] = trapezoidal_error_vs_shift(N, Na)
+% TRAPEZOIDAL_ERROR_VS_SHIFT
+% Calculate the trapezoidal integration error of a periodically shifted
+% function as a function of the horizontal shift.
+%
+%   [a_values, errors] = trapezoidal_error_vs_shift(N, Na)
+%
+%   Inputs:
+%       N  - Number of equally spaced intervals
+%       Na - Number of shift positions
+%
+%   Outputs:
+%       a_values - Shift values
+%       errors   - Absolute integration errors
+%
+%   Function:
+%       f(x) = -(x-1)^2 + 1,  x in [0,2]
+%
+%   Period:
+%       T = 2
+
+    T = 2;
+
+    % Integration points
+    x = linspace(0, T, N+1);
+    y0 = func1(x);
+    % Exact integral
+    I_exact = 4/3 + 0.4;
+    I_0 = trapz(x, y0);
+    error0 = I_0 - I_exact;
+    % Shift values
+    a_values = linspace(0, T, Na+1);
+    % a_values(end) = [];     % a=0 and a=T are identical
+
+    % Preallocate
+    errors = zeros(size(a_values));
+
+    % Calculate error for each shift
+    for j = 1:length(a_values)
+
+        a = a_values(j);
+
+        % Periodically shifted function
+        x_shifted = mod(x - a, T);
+        y = -(x_shifted - 1).^2 + 1.2;
+
+        % Trapezoidal integration
+        I_num = trapz(x, y);
+
+        % Absolute error
+        errors(j) = abs(I_num - I_0) / I_exact;
+    end
+
+    % Plot
+    figure;
+    plot(a_values, errors, 'LineWidth', 1.5);
+    xlabel('Shift a');
+    ylabel('integration error');
+    title(sprintf('Trapezoidal integration error, N = %d', N));
+    grid on;
+
+end
+
+%%
+
+function [a_values, errors, F_exact, F_num] = ...
+    fourier_error_vs_shift(N, Na, k)
+% FOURIER_ERROR_VS_SHIFT
+% Calculate the trapezoidal integration error of a Fourier coefficient
+% as a function of the horizontal shift of a periodic function.
+%
+%   [a_values, errors, F_exact, F_num] = ...
+%       fourier_error_vs_shift(N, Na, k)
+%
+% Inputs:
+%   N  - Number of equally spaced intervals
+%   Na - Number of shift positions
+%   k  - Fourier harmonic number
+%
+% Outputs:
+%   a_values - Shift values
+%   errors   - Absolute errors
+%   F_exact  - Exact Fourier coefficient
+%   F_num    - Numerical Fourier coefficients
+%
+% Periodic function:
+%
+%   f(x) = -(x-pi)^2 + pi^2,    x in [0, 2*pi]
+%
+% Period:
+%
+%   T = 2*pi
+%
+% Fourier coefficient:
+%
+%   F_k = 1/pi * integral_0^(2*pi)
+%               f(x) * cos(k*x) dx
+
+    T = 2*pi;
+
+    % Integration points
+    x = linspace(0, T, N+1);
+
+    % Remove the duplicated endpoint for the periodic formulation
+    x = x(1:N);
+
+    % Shift values
+    a_values = linspace(0, T, Na+1);
+    a_values(end) = [];
+
+    % Preallocate
+    F_num = zeros(size(a_values));
+    errors = zeros(size(a_values));
+
+    % ---------------------------------------------------------
+    % Exact Fourier coefficient
+    % ---------------------------------------------------------
+    %
+    % Calculate it analytically for this particular function.
+    %
+    % f(x) = -(x-pi)^2 + pi^2
+    %
+    % For k ~= 0:
+    %
+    % F_k = 4/k^2
+    %
+
+    if k == 0
+        F_exact = 4*pi^2/3;
+    else
+        F_exact = 4/k^2;
+    end
+
+    % ---------------------------------------------------------
+    % Numerical integration for each shift
+    % ---------------------------------------------------------
+
+    for j = 1:length(a_values)
+
+        a = a_values(j);
+
+        % Periodically shifted function
+        x_shifted = mod(x - a, T);
+
+        f = -(x_shifted - pi).^2 + pi^2;
+
+        % Fourier basis
+        phi = cos(k*x);
+
+        % Trapezoidal approximation
+        %
+        % Integral_0^(2*pi) f(x)*phi(x) dx
+        %
+        % Delta x = 2*pi/N
+        %
+        % 1/pi * Delta x = 2/N
+
+        F_num(j) = (2/N) * sum(f .* phi);
+
+        % Absolute error
+        errors(j) = abs(F_num(j) - F_exact);
+
+    end
+
+    % ---------------------------------------------------------
+    % Plot
+    % ---------------------------------------------------------
+
+    figure;
+
+    plot(a_values, errors, 'LineWidth', 1.5);
+
+    xlabel('Shift a');
+    ylabel('Absolute error');
+
+    title(sprintf( ...
+        'Fourier coefficient error vs. shift, N = %d, k = %d', ...
+        N, k));
+
+    grid on;
 
 end

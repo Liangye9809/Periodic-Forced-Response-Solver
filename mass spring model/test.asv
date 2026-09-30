@@ -574,4 +574,4 @@ plot([0:127]', - mu(1) * Fti(:, 3), 'k-'), hold on;
 plot([0:127]', Fti(:, 1), 'r-');
 legend('$+\mu Fn$','$-\mu Fn$','$Ft$')
 %%
-legend('No improvement','Improve gap-contact in $f_n$', 'plus gap-contact in $f_t$', 'plus w correction in gap to contact','plus stick to slip in $f_t$','plus stick-slip-gap in one interval','plus w correction in slip to stick')
+legend('No improvement','Improve gap-contact in $f_n$', 'plus gap-contact in $f_t$', 'plus w correction in gap to contact','p')

@@ -116,8 +116,6 @@ ContinuationCalculation
 % Numerical (update w file)
 % [x_cont, omega_cont, k_cont] = continuation(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);
 
-% fixed Numerical (test file)
-% [x_cont, omega_cont, k_cont, ~, ~] = continuation(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);
 
 CaseTime = toc;
 
