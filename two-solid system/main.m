@@ -1,13 +1,12 @@
 %% clear workspace and close all
-for H = 5:2:5
-    for mainj = 8:8
-clearvars -except mainj H
-N = 2^mainj;
-Nx = 4;
-% for Nx = 4:4:36
-% clearvars -except Nx
+% for H = 5:2:5
+%     for mainj = 8:8
+% clearvars -except mainj H
+% N = 2^mainj;
+% Nx = 4;
 
-% clear
+
+clear
 % close all
 % clc
 %**************************************************************************************************
@@ -23,29 +22,29 @@ Nx = 4;
 
 %% Get parameters from file
 
-
+Nx = 4;
     
-% dataname = 'Mesh32x32_CP' + string(Nx) + '.mat';
-% % dataname = 'Mesh10x13_CP' + string(Nx) + '.mat';
-% 
-% tep = pwd;
-% cd FEM/
-% load(dataname);
-% cd(tep)
+dataname = 'Mesh32x32_CP' + string(Nx) + '.mat';
+% dataname = 'Mesh10x13_CP' + string(Nx) + '.mat';
 
-Data_original_input
+tep = pwd;
+cd FEM/
+load(dataname);
+cd(tep)
 
+% Data_original_input
 
+Data
 
 
 %% Craig-Bampton reduction from FEM matrices
 
 
-% CriagBamptonReduction
+CriagBamptonReduction
 
-load('CB.mat');
-load('Rx.mat');
-load('xe0.mat');
+% load('CB.mat');
+% load('Rx.mat');
+% load('xe0.mat');
 
 % ReadFromCSV % here we directly read the Criag-Bampton matrices from CSV file 
 
@@ -121,13 +120,13 @@ omega_plot = 4100;
 % end
 
 % for 32x32 mesh
-% omega_0 = 3850 / sqrt(omega02);
-% omega_end = 4400 / sqrt(omega02);
+omega_0 = 3850 / sqrt(omega02);
+omega_end = 4400 / sqrt(omega02);
 % omega_end = omega_plot / sqrt(omega02);
 
 % for original input
-omega_0 = 0.85;
-omega_end = 0.81;
+% omega_0 = 0.85;
+% omega_end = 0.81;
 
 % problematic point
 % omega_0 = 0.829;
@@ -136,6 +135,14 @@ omega_end = 0.81;
 % x0 = X0_H5N256;
 
 ContinuationCalculation
+
+% Analytical and Corrrected Numerical (test file)
+[x_cont, omega_cont, k_cont, w_cont, stick_cont, slipP_cont, slipM_cont, gap_cont] = continuation(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);
+
+% Numerical (update w file)
+% [x_cont, omega_cont, k_cont] = continuation(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);
+
+
 CaseTime = toc;
 % CaseInfo = 'Mesh32x32_Pe100each_Adof_CP' + string(Nx) + '_PreloadFixed_9points_H' + string(H) + '_N' + string(N);
 % disp([CaseInfo, CaseTime]);
@@ -146,6 +153,6 @@ CaseTime = toc;
 % HBMPostProcessing;
 
 
-end
-end
+% end
+% end
 

@@ -1,6 +1,7 @@
 function JNL = JNL_Analytical(segments, H, kt, kn, mu) % x is the size of N*3Nx
 
-    Nx = length(segments) / 2; % contact points including T1 and T2
+    % Nx = length(segments) / 2; % contact points including T1 and T2
+    Nx = size(segments, 2);
     JNL = zeros(3 * Nx * (2 * H + 1), 3 * Nx * (2 * H + 1));
 
     for i = 1:Nx

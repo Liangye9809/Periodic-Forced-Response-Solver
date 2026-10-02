@@ -17,9 +17,13 @@
 
 FEM.Fe = zeros(size(FEM.Mee, 1), 1);
 Fe_idx = FEM.idx_Fe - 1; % change y direction to x direction
-FEM.Fe(Fe_idx) = 1;
+FEM.Fe(Fe_idx(1)) = 0;
 FEM.Fc = zeros(size(FEM.Mcc, 1), 1);
+% contact surface is x-y plane, x is circumferential direction, y is radial
+% direction, z is axial direction
 
+Fe_idx_n = FEM.idx_Fe + 1; % excitation forces in normal direction
+FEM.Fe(Fe_idx_n(1)) = 100;
 %%
 % for old mesh
 
@@ -49,9 +53,9 @@ H_F_ext = [0, 0, 1]; % fourier coefficient of f(t)
 
 %% HBM parameters
 
-% H = 7; % number of harmonics assumption
-% N = 2^6; % number of time points per force cycle
-% Nx = 64; % number of contact points, means having 4 * 3 = 12 dofs
+H = 3; % number of harmonics assumption
+N = 2^6; % number of time points per force cycle
+% Nx = 4; % number of contact points, means having 4 * 3 = 12 dofs
 Na = 5; % number of CB modes
 xi = 1e-6; 
 
@@ -96,7 +100,7 @@ xp0 = 0; % if no value defined here, the default value inside is 0
 %% continuation parameters
 
 
-ds = 0.5;
+ds = 0.05;
 maxstep = 20000;
 % omega_0 = 0.81; % 
 % omega_end = 0.87;

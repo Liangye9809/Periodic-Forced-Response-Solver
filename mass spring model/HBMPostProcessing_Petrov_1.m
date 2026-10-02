@@ -13,9 +13,9 @@ for Ndof = 1:3*Nx + Na
 end
 Adof = [Adof, k_cont'];
 
-% ind_gap_stick = find(gap_cont == 1 & (slipP_cont + slipM_cont) == 0);
-% ind_gap = find(gap_cont == 1);
-% ind_slip = find(slipP_cont == 1);
+ind_gap_stick = find(gap_cont == 1 & (slipP_cont + slipM_cont) == 0);
+ind_gap = find(gap_cont == 1);
+ind_slip = find(slipP_cont == 1);
 
 figure;
 % yyaxis left
