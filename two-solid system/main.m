@@ -97,7 +97,7 @@ Nondimensionalization
 %% continuation calculation with HBM
 
 tic;
-omega_plot = 4100;
+% omega_plot = 4100;
 % switch Nx
 %     case 4
 %         omega_plot = 4210;
@@ -120,9 +120,16 @@ omega_plot = 4100;
 % end
 
 % for 32x32 mesh
-omega_0 = 3850 / sqrt(omega02);
-omega_end = 4400 / sqrt(omega02);
+% the first freq
+% omega_0 = 3850 / sqrt(omega02);
+% omega_end = 4400 / sqrt(omega02);
 % omega_end = omega_plot / sqrt(omega02);
+ 
+omega_0 = 20000 / sqrt(omega02);
+omega_end = 30000 / sqrt(omega02);
+% omega_end = omega_plot / sqrt(omega02);
+
+
 
 % for original input
 % omega_0 = 0.85;

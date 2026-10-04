@@ -17,13 +17,13 @@
 
 FEM.Fe = zeros(size(FEM.Mee, 1), 1);
 Fe_idx = FEM.idx_Fe - 1; % change y direction to x direction
-FEM.Fe(Fe_idx(1)) = 0;
+FEM.Fe(Fe_idx(1:end)) = 1;
 FEM.Fc = zeros(size(FEM.Mcc, 1), 1);
 % contact surface is x-y plane, x is circumferential direction, y is radial
 % direction, z is axial direction
 
 Fe_idx_n = FEM.idx_Fe + 1; % excitation forces in normal direction
-FEM.Fe(Fe_idx_n(1)) = 100;
+FEM.Fe(Fe_idx_n(1:end)) = 52;
 %%
 % for old mesh
 
@@ -53,10 +53,10 @@ H_F_ext = [0, 0, 1]; % fourier coefficient of f(t)
 
 %% HBM parameters
 
-H = 3; % number of harmonics assumption
-N = 2^6; % number of time points per force cycle
+H = 9; % number of harmonics assumption
+N = 2^8; % number of time points per force cycle
 % Nx = 4; % number of contact points, means having 4 * 3 = 12 dofs
-Na = 5; % number of CB modes
+Na = 9; % number of CB modes
 xi = 1e-6; 
 
 % calculate the preload forces by predisplacement in normal direction 1 mm
@@ -71,7 +71,7 @@ xi = 1e-6;
 
 %% for 32x32 mesh
 FEM.Pe = zeros(size(FEM.Kec, 1), 1);
-F_each = 100; % for 32x32 contact mesh, 9 points each side, total 900 N each side
+F_each = 10; % for 32x32 contact mesh, 9 points each side, total 900 N each side
 % F_each = 112.5; % for 10x13 contact mesh, 8 points each side, total 900 N each side
 FEM.Pe(FEM.idx_Pe1) = F_each;
 FEM.Pe(FEM.idx_Pe2) = - F_each;
@@ -100,7 +100,7 @@ xp0 = 0; % if no value defined here, the default value inside is 0
 %% continuation parameters
 
 
-ds = 0.05;
+ds = 0.01;
 maxstep = 20000;
 % omega_0 = 0.81; % 
 % omega_end = 0.87;

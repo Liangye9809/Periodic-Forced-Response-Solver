@@ -20,8 +20,8 @@ OMEGA = sqrt(omega02) .* omega_cont';
 Adof = [OMEGA, Adof];
 
 figure;
-plot(Adof(:,2), Adof(:, 3), 'LineWidth', 2), hold on, grid on;
-
+plot(Adof(:,1), Adof(:, 3:Na + 2), 'LineWidth', 2), hold on, grid on;
+legend('CB1','CB2','CB3','CB4','CB5','CB6','CB7','CB8','CB9');
 for i = 1:Nx
     ind_gap_stick{i} = find(gap_cont(i, :) == 1 & (slipP_cont(i, :) + slipM_cont(i, :)) == 0);
     ind_gap{i} = find(gap_cont(i, :) == 1);
@@ -29,27 +29,27 @@ for i = 1:Nx
 end
 fig1 = figure;
 % yyaxis left
-plot(Adof(:,2), Adof(:,8:3:end), 'LineWidth', 2), hold on, grid on;
+plot(Adof(:,1), Adof(:,Na + 3:3:end), 'LineWidth', 2), hold on, grid on;
 for i = 1:Nx
-    plot(Adof(ind_slip{i},2), Adof(ind_slip{i}, 3 * i + 5), 'ko', 'LineWidth', 2), hold on, grid on;
+    plot(Adof(ind_slip{i},1), Adof(ind_slip{i}, 3 * i + Na), 'ko', 'LineWidth', 2), hold on, grid on;
 end
 legend('Nx1','Nx2','Nx3','Nx4','Nx1_slip','Nx2_slip','Nx3_slip','Nx4_slip');
 title('$x_1$');
 
 fig2 = figure;
 % yyaxis left
-plot(Adof(:,2), Adof(:,9:3:end), 'LineWidth', 2), hold on, grid on;
+plot(Adof(:,1), Adof(:,Na + 4:3:end), 'LineWidth', 2), hold on, grid on;
 for i = 1:Nx
-    plot(Adof(ind_slip{i},2), Adof(ind_slip{i}, 3 * i + 6), 'ko', 'LineWidth', 2), hold on, grid on;
+    plot(Adof(ind_slip{i},1), Adof(ind_slip{i}, 3 * i + Na + 1), 'ko', 'LineWidth', 2), hold on, grid on;
 end
 legend('Nx1','Nx2','Nx3','Nx4','Nx1_slip','Nx2_slip','Nx3_slip','Nx4_slip');
 title('$x_2$');
 
 fign = figure;
 % yyaxis left
-plot(Adof(:,2), Adof(:,10:3:end), 'LineWidth', 2), hold on, grid on;
+plot(Adof(:,1), Adof(:,Na + 5:3:end), 'LineWidth', 2), hold on, grid on;
 for i = 1:Nx
-    plot(Adof(ind_gap{i},2), Adof(ind_gap{i}, 3 * i + 7), 'ko', 'LineWidth', 2), hold on, grid on;
+    plot(Adof(ind_gap{i},1), Adof(ind_gap{i}, 3 * i + Na + 2), 'ko', 'LineWidth', 2), hold on, grid on;
 end
 legend('Nx1','Nx2','Nx3','Nx4','Nx1_gap','Nx2_gap','Nx3_gap','Nx4_gap');
 title('$x_n$');
