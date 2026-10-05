@@ -5,6 +5,8 @@ set(0, 'DefaultAxesTickLabelInterpreter', 'latex')
 set(0, 'DefaultAxesFontSize',16)
 set(0, 'DefaultFigurePosition', [500, 500, 600, 450]);
 set(0, 'DefaultFigureColor', 'w');
+
+
 %%
 [E, EH] = HBM.fft_matrices(2^12, H);
 for i = 1:3*Nx + Na
