@@ -40,11 +40,11 @@ Data
 %% Craig-Bampton reduction from FEM matrices
 
 
-CriagBamptonReduction
+% CriagBamptonReduction
 
-% load('CB.mat');
-% load('Rx.mat');
-% load('xe0.mat');
+load('CB.mat');
+load('Rx.mat');
+load('xe0.mat');
 
 % ReadFromCSV % here we directly read the Criag-Bampton matrices from CSV file 
 

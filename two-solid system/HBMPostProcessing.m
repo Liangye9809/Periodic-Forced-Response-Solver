@@ -90,33 +90,17 @@ title('$x_n$');
 
 %% calculate nonlinear forces
 
-% check FUN(x) = 0;
-omega_poss = omega_end;
-x_poss = x_cont(:, end);
-[FUN_poss, w_poss] = HBMFUNC(x_poss, omega_poss, params.func);
+% n_plot = 1167; % gap begin
+% n_plot = 1307; % gap max
+n_plot = 1447; % gap end
+omega_poss = omega_cont(n_plot);
+x_poss = x_cont(:, n_plot);
+w_poss = w_cont(:, n_plot*4 - 3:n_plot*4);
+[Ft_poss, wt_poss, flag_poss, xct_poss, dxct_poss, t_poss, Xc] = PlotOneResult(x_poss, w_poss, omega_poss, params);
 
-% if FUN(x) ~= 0, calculate corresponse value
-if norm(FUN_poss) > params.Newton.epsf
-    params.cont.ds = 0;
-    params.cont.omega_0 = omega_poss;
-    params.cont.step = 100001;
-    [x_poss, omega_poss, ~, ~, w_poss] = cont_step(@HBMFUNC, @HBMJACOB, @HBMJOmega, params);
-end
 
-for i = 1:Na + 3 * Nx
-    r1 = (2 * H + 1) * (i - 1) + 1;
-    r2 = (2 * H + 1) * i;
-    X(:,i) = x_poss(r1:r2); % reorder in dofs in column
-end
-xt_poss = params.func.HBM.E * X; 
-xct_poss = xt_poss(:, Na + 1:end);
-[Ft_poss, w_poss] = g(xct_poss + xp', params.func.fc);
-T = 2 * pi / omega_poss;
-dt = T / N;
-t_poss = 0:dt:(T - dt);
-
-para.t = t_poss';
-para.xt = xt_poss;
+para.t = t_poss;
+para.xct = xct_poss;
 para.Ft = Ft_poss;
 para.omega = omega_poss;
 para.xp = xp;
@@ -126,8 +110,62 @@ para.HBM = params.func.HBM;
 % para.Pe = FEM.Pe;
 % para.Pc = FEM.Pc;
 para.params = params;
-para.X = X;
+para.X = x_poss;
 
+figure(101);
+plot(t_poss, xct_poss(:, 1:3:end) + xp(1:3:end)', 'LineWidth', 2), hold on, grid on;
+legend('Nx1','Nx2','Nx3','Nx4');
+title('x1');
+ylabel('Displacement');
+xlabel('Omega');
+
+figure(102);
+plot(t_poss, xct_poss(:, 2:3:end) + xp(2:3:end)', 'LineWidth', 2), hold on, grid on;
+legend('Nx1','Nx2','Nx3','Nx4');
+title('x2');
+ylabel('Displacement');
+xlabel('Omega');
+
+figure(103);
+plot(t_poss, xct_poss(:, 3:3:end) + xp(3:3:end)', 'LineWidth', 2), hold on, grid on;
+legend('Nx1','Nx2','Nx3','Nx4');
+title('xn');
+ylabel('Displacement');
+xlabel('Omega');
+
+figure(100);
+semilogy([0:2*H]', abs(Xc));
+
+figure(201); % Ft1
+for i = 1:Nx
+    subplot(2,2,i)
+    plot(t_poss, mu(1) * Ft_poss(end - N + 1:end, 3 * i), 'k-', 'LineWidth', 2), hold on, grid on;
+    plot(t_poss, -mu(1) * Ft_poss(end - N + 1:end, 3 * i), 'k-', 'LineWidth', 2), hold on, grid on;
+    plot(t_poss, Ft_poss(end - N + 1:end, 3 * i - 2), 'LineWidth', 2), hold on, grid on;
+    titlename = 'Ft1 Nx' + string(i);
+    title(titlename);
+    ylabel('Displacement');
+    xlabel('Omega');
+end
+    
+figure(202); % Ft2
+for i = 1:Nx
+    subplot(2,2,i)
+    plot(t_poss, mu(1) * Ft_poss(end - N + 1:end, 3 * i), 'k-', 'LineWidth', 2), hold on, grid on;
+    plot(t_poss, -mu(1) * Ft_poss(end - N + 1:end, 3 * i), 'k-', 'LineWidth', 2), hold on, grid on;
+    plot(t_poss, Ft_poss(end - N + 1:end, 3 * i - 1), 'LineWidth', 2), hold on, grid on;
+    titlename = 'Ft2 Nx' + string(i);
+    title(titlename);
+    ylabel('Displacement');
+    xlabel('Omega');
+end
+
+figure(203);
+plot(t_poss, Ft_poss(end - N + 1:end, 3:3:end), 'LineWidth', 2), hold on, grid on;
+legend('Nx1','Nx2','Nx3','Nx4');
+title('Fn');
+ylabel('Displacement');
+xlabel('Omega');
 % save('data/Mesh32x32/Pe100eachData_PeFixed_Omega_'+ string(omega_plot) + '_Nx_' + string(Nx) + '_H' + string(H) + '_N' + string(N) + '.mat','para');
 %% H validation
 % figure;

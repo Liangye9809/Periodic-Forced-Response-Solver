@@ -54,7 +54,7 @@ H_F_ext = [0, 0, 1]; % fourier coefficient of f(t)
 %% HBM parameters
 
 H = 9; % number of harmonics assumption
-N = 2^8; % number of time points per force cycle
+N = 2^7; % number of time points per force cycle
 % Nx = 4; % number of contact points, means having 4 * 3 = 12 dofs
 Na = 9; % number of CB modes
 xi = 1e-6; 

@@ -34,15 +34,15 @@ t = t';
 % xn = 2 * exp(cos(t)) - 0.5; % slip to stick
 % xt = 2 * sin(sin(t)); % slip to stick
 % simple x
-xn = 2.5 * cos(t) + 3; % slip to stick
-xt = 3 * sin(t); % slip to stick
+% xn = 2.5 * cos(t) + 3; % slip to stick
+% xt = 3 * sin(t); % slip to stick
 
 % gap to stick
 % xn = - 4 * sin(sin(t)) + 1; % separation to stick
 % xt = 2 * exp(cos(t + 1)) - 3; % separation to stick
 % simple x
-% xn = - 10 * cos(t) + 3; % separation to stick
-% xt = - sin(t); % separation to stick
+xn = - 10 * cos(t) + 3; % separation to stick
+xt = - sin(t); % separation to stick
 % xn = - 1 * cos(t) + 0.5; % separation to stick % (kt = 1, kn = 500, mu = 0.8)
 % xt = 2 * cos(t); % separation to stick
 x = [xt, xn];
@@ -114,6 +114,22 @@ plot(t, Ft(end-N+1:end, 2), 'LineWidth', 2, 'DisplayName', '$f_n$'), grid on;
 ylabel('Normal Force $f_n$')
 legend show
 title('Normal displacement and force');
+xticks([0:pi/2:2*pi]);
+xticklabels({'$0$','$\frac{\pi}{2}$','$\pi$','$\frac{3\pi}{2}$','$2\pi$'})
+set(gca,'TickLabelInterpreter','latex');
+xlim([0, 7]);
+
+figure; % displacement
+yyaxis right
+plot(t, x(:, 1), 'LineWidth', 2, 'DisplayName', '$x_t$', 'Marker', '*'), hold on;
+ylabel('Tangential Displacement $x_t$')
+% ylim([-1.2, 1.2]);
+yyaxis left
+plot(t, x(:, 2), 'LineWidth', 2, 'DisplayName', '$x_n$', 'Marker', 'o'), hold on;
+ylabel('Normal Displacement $x_n$')
+grid on;
+legend show
+title('Displacement');
 xticks([0:pi/2:2*pi]);
 xticklabels({'$0$','$\frac{\pi}{2}$','$\pi$','$\frac{3\pi}{2}$','$2\pi$'})
 set(gca,'TickLabelInterpreter','latex');

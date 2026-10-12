@@ -289,15 +289,21 @@ end
     
 %%
 figure(501)
-ind_gap_stick = find(P.gap_cont == 1 & (P.slipP_cont + P.slipM_cont) == 0);
-ind_gap = find(P.gap_cont == 1);
-ind_slip = find(P.slipP_cont == 1);
+% ind_gap_stick = find(P.gap_cont == 1 & (P.slipP_cont + P.slipM_cont) == 0);
+% ind_gap = find(P.gap_cont == 1);
+% ind_slip = find(P.slipP_cont == 1);
 
-% yyaxis left
-plot(P.Adof(:, 1), P.Adof(:, 5), 'LineWidth', 2, 'DisplayName', 'kn'), hold on;
-plot(P.Adof(:, 1), P.Adof(:, 3), 'LineWidth', 2, 'DisplayName', 'kt'), hold on, grid on;
+yyaxis left
+plot(P.Adof(:, 1), P.Adof(:, 5), 'r-', 'LineWidth', 2, 'DisplayName', 'xn'), hold on;
+plot(P.Adof(:, 1), P.Adof(:, 3), 'b-', 'LineWidth', 2, 'DisplayName', 'xt'), hold on, grid on;
 % plot(P.Adof(ind_slip, 1), P.Adof(ind_slip, 3), 'ko', 'DisplayName', 'slip points');
-
+ylabel('Displacement');
+xlabel('Frequency $\omega$');
+legend show;
+yyaxis right
+stem(P.Adof(:, 1), P.k_cont', 'DisplayName', 'Number of iteration'), hold on;
+ylim([0,12]);
+ylabel('Number of iteration');
 %%
 figure(501)
 plot(P.Adof(:, 1), P.Adof(:, 5), 'LineWidth', 2), hold on, grid on;
