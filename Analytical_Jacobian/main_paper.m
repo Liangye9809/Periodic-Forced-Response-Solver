@@ -41,17 +41,17 @@ t = t';
 % xn = - 4 * sin(sin(t)) + 1; % separation to stick
 % xt = 2 * exp(cos(t + 1)) - 3; % separation to stick
 % simple x
-xn = - 10 * cos(t) + 3; % separation to stick
-xt = - sin(t); % separation to stick
-% xn = - 1 * cos(t) + 0.5; % separation to stick % (kt = 1, kn = 500, mu = 0.8)
-% xt = 2 * cos(t); % separation to stick
+% xn = - 10 * cos(t) + 3; % separation to stick
+% xt = - sin(t); % separation to stick
+xn = - 1 * cos(t) + 0.5; % separation to stick % (kt = 1, kn = 500, mu = 0.8)
+xt = 2 * cos(t); % separation to stick
 x = [xt, xn];
 
 
 
 kt = 1;
-kn = 2;
-mu = 0.5;
+kn = 500;
+mu = 0.8;
 w =  0;
 xn0 = 0; % normal pre-displacement
 
@@ -359,19 +359,27 @@ for i = 1:3
 
 end
 
-%% compare 3 Jacobians in time, analytical, wrong and corrected Jacobian
+%% compare 4 Jacobians in time, analytical, wrong and corrected Numerical, N = 2^15, h = 1e-3
 clear
 J_AN = load('P_gap_to_stick_Analytical_and_Numerical.mat');
 J_F  = load('P_gap_to_stick_Fixed_Numerical.mat');
-
+J_CF = load('P_gap_to_stick_Analytical_and_Numerical_N32768_h1e-3.mat');
 
 JNLt_N = J_AN.P.JNLt_N;
 JNLt_A = J_AN.P.JNLt_A;
 JNLt_F = J_F.P.JNLt_N;
+JNLt_C = J_CF.P.JNLt_N;
+
 N = J_F.P.N;
 H = J_F.P.H;
 t = (0:(N-1)) * 2 * pi / N;
 t = t';
+
+N_ = J_CF.P.N;
+H_ = J_CF.P.H;
+t_ = (0:(N_-1)) * 2 * pi / N_;
+t_ = t_';
+
 dTdxt_time_NUM = JNLt_N(1:N, 1:2*H+1);   dNdxt_time_NUM = JNLt_N(N + 1:end, 1:2*H+1);
 dTdxn_time_NUM = JNLt_N(1:N, 2*H+2:end); dNdxn_time_NUM = JNLt_N(N + 1:end, 2*H+2:end);
 
@@ -380,6 +388,9 @@ dTdxn_time_AN = JNLt_A(1:N, 2*H+2:end); dNdxn_time_AN = JNLt_A(N + 1:end, 2*H+2:
 
 dTdxt_time_F = JNLt_F(1:N, 1:2*H+1);   dNdxt_time_F = JNLt_F(N + 1:end, 1:2*H+1);
 dTdxn_time_F = JNLt_F(1:N, 2*H+2:end); dNdxn_time_F = JNLt_F(N + 1:end, 2*H+2:end);
+
+dTdxt_time_CF = JNLt_C(1:N_, 1:2*H_+1);   dNdxt_time_CF = JNLt_C(N_ + 1:end, 1:2*H_+1);
+dTdxn_time_CF = JNLt_C(1:N_, 2*H_+2:end); dNdxn_time_CF = JNLt_C(N_ + 1:end, 2*H_+2:end);
 
 for i = 1:3
     fig = figure; %('PaperOrientation','landscape','PaperUnits','centimeters','PaperPosition', 100 * [0 0 29.7 21], 'PaperSize',[29.7 21] * 100);
@@ -391,9 +402,10 @@ for i = 1:3
     % set(fig,'PaperPosition',[0 0 29.7 21]);
     
     subplot(2,2,1)
-    plot(t, dTdxt_time_AN(:, i),'k-', 'LineWidth', 2, 'DisplayName', 'Analytical'), hold on   
-    plot(t, dTdxt_time_NUM(:, i),'g-.', 'LineWidth', 2, 'DisplayName', 'Numerical'), grid on
-    plot(t, dTdxt_time_F(:, i),'r--', 'LineWidth', 2, 'DisplayName', 'Corrected Numerical')
+    % plot(t, dTdxt_time_AN(:, i),'k-', 'LineWidth', 2, 'DisplayName', 'Analytical'), hold on, grid on   
+    plot(t_, dTdxt_time_CF(:, i),'k-', 'LineWidth', 2, 'DisplayName', 'Uncorrected, $N=2^{15}$, $h=10^{-3}$'), hold on, grid on
+    plot(t, dTdxt_time_NUM(:, i),'b-.', 'LineWidth', 2, 'DisplayName', 'Uncorrected, $N=256$, $h=10^{-7}$'), hold on, grid on
+    plot(t, dTdxt_time_F(:, i),'r--', 'LineWidth', 2, 'DisplayName', 'Corrected, $N=256$, $h=10^{-7}$'), hold on, grid on
     legend show;
     if i == 1
         titlename = 'c}^0}$';
@@ -411,9 +423,10 @@ for i = 1:3
     set(gca,'TickLabelInterpreter','latex');
 
     subplot(2,2,2)
-    plot(t, dTdxn_time_AN(:, i),'k-',  'LineWidth', 2, 'DisplayName', 'Analytical'), hold on    
-    plot(t, dTdxn_time_NUM(:, i),'g-.', 'LineWidth', 2, 'DisplayName', 'Numerical'), grid on
-    plot(t, dTdxn_time_F(:, i),'r--',  'LineWidth', 2, 'DisplayName', 'Corrected Numerical')
+    % plot(t, dTdxn_time_AN(:, i),'k-',  'LineWidth', 2, 'DisplayName', 'Analytical'), hold on, grid on
+    plot(t_, dTdxn_time_CF(:, i),'k-',  'LineWidth', 2, 'DisplayName', 'Uncorrected, $N=2^{15}$, $h=10^{-3}$'), hold on, grid on
+    plot(t, dTdxn_time_NUM(:, i),'b-.', 'LineWidth', 2, 'DisplayName', 'Uncorrected, $N=256$, $h=10^{-7}$'), hold on, grid on
+    plot(t, dTdxn_time_F(:, i),'r--',  'LineWidth', 2, 'DisplayName', 'Corrected, $N=256$, $h=10^{-7}$'), hold on, grid on
     legend show;
     if i == 1
         titlename = 'c}^0}$';
@@ -430,9 +443,10 @@ for i = 1:3
     set(gca,'TickLabelInterpreter','latex');
 
     subplot(2,2,3)
-    plot(t, dNdxt_time_AN(:, i),'k-',  'LineWidth', 2, 'DisplayName', 'Analytical'), hold on    
-    plot(t, dNdxt_time_NUM(:, i),'g-.', 'LineWidth', 2, 'DisplayName', 'Numerical'), grid on
-    plot(t, dNdxt_time_F(:, i),'r--',  'LineWidth', 2, 'DisplayName', 'Corrected Numerical')
+    % plot(t, dNdxt_time_AN(:, i),'k-',  'LineWidth', 2, 'DisplayName', 'Analytical'), hold on, grid on
+    plot(t_, dNdxt_time_CF(:, i),'k-',  'LineWidth', 2, 'DisplayName', 'Uncorrected, $N=2^{15}$, $h=10^{-3}$'), hold on, grid on
+    plot(t, dNdxt_time_NUM(:, i),'b-.', 'LineWidth', 2, 'DisplayName', 'Uncorrected, $N=256$, $h=10^{-7}$'), hold on, grid on
+    plot(t, dNdxt_time_F(:, i),'r--',  'LineWidth', 2, 'DisplayName', 'Corrected, $N=256$, $h=10^{-7}$'), hold on, grid on
     legend show;
     if i == 1
         titlename = 'c}^0}$';
@@ -449,9 +463,10 @@ for i = 1:3
     set(gca,'TickLabelInterpreter','latex');
 
     subplot(2,2,4)
-    plot(t, dNdxn_time_AN(:, i),'k-',  'LineWidth', 2, 'DisplayName', 'Analytical'), hold on    
-    plot(t, dNdxn_time_NUM(:, i),'g-.', 'LineWidth', 2, 'DisplayName', 'Numerical'), grid on
-    plot(t, dNdxn_time_F(:, i),'r--',  'LineWidth', 2, 'DisplayName', 'Corrected Numerical')
+    % plot(t, dNdxn_time_AN(:, i),'k-',  'LineWidth', 2, 'DisplayName', 'Analytical'), hold on, grid on
+    plot(t_, dNdxn_time_CF(:, i),'r--',  'LineWidth', 2, 'DisplayName', 'Uncorrected, $N=2^{15}$, $h=10^{-3}$'), hold on, grid on
+    plot(t, dNdxn_time_NUM(:, i),'b-.', 'LineWidth', 2, 'DisplayName', 'Uncorrected, $N=256$, $h=10^{-7}$'), hold on, grid on
+    plot(t, dNdxn_time_F(:, i),'r--',  'LineWidth', 2, 'DisplayName', 'Corrected, $N=256$, $h=10^{-7}$'), hold on, grid on
     legend show;
     if i == 1
         titlename = 'c}^0}$';
@@ -473,6 +488,27 @@ for i = 1:3
 
 end
 
+for i = 1:3
+    figure
+    % plot(t, dTdxn_time_AN(:, i),'k-',  'LineWidth', 2, 'DisplayName', 'Analytical'), hold on, grid on
+    plot(t_, dTdxn_time_CF(:, i),'k-',  'LineWidth', 2, 'DisplayName', 'Uncorrected, $N=2^{15}$, $h=10^{-3}$'), hold on, grid on
+    plot(t, dTdxn_time_NUM(:, i),'b-.', 'LineWidth', 2, 'DisplayName', 'Uncorrected, $N=256$, $h=10^{-7}$'), hold on, grid on
+    plot(t, dTdxn_time_F(:, i),'r--',  'LineWidth', 2, 'DisplayName', 'Corrected, $N=256$, $h=10^{-7}$'), hold on, grid on
+    legend show;
+    if i == 1
+        titlename = 'c}^0}$';
+    elseif mod(i, 2) == 0
+        titlename = 'c}^' + string(floor(i/2)) + '}$';
+    else
+        titlename = 's}^' + string(floor(i/2)) + '}$';
+    end
+    % titlename = 'N = ' + string(N) + ', H = ' + string(H) + ', ' + string(titlename);
+    titlename = '$\frac{\partial f_t(t)}{\partial \mathbf{X}_{n' + string(titlename);
+    title(titlename);
+    xticks([0:pi/2:2*pi]);
+    xticklabels({'$0$','$\frac{\pi}{2}$','$\pi$','$\frac{3\pi}{2}$','$2\pi$'})
+    set(gca,'TickLabelInterpreter','latex');
+end
 %% compare Jacobians in time, analytical, wrong and fine wrong Jacobian
 clear
 J_AN = load('P_gap_to_stick_Analytical_and_Numerical.mat');
@@ -548,6 +584,7 @@ for i = 1:3
     xticks([0:pi/2:2*pi]);
     xticklabels({'$0$','$\frac{\pi}{2}$','$\pi$','$\frac{3\pi}{2}$','$2\pi$'})
     set(gca,'TickLabelInterpreter','latex');
+
 
     subplot(2,2,3)
     plot(t, dNdxt_time_AN(:, i),'k-',   'LineWidth', 2, 'DisplayName', 'Analytical'), hold on    
