@@ -25,8 +25,8 @@ Adof = [Adof, k_cont'];
 % ind_slip = find(slipP_cont == 1);
 figure;
 % yyaxis left 
-plot(Adof(:, 1), Adof(:, 5), 'r-', 'LineWidth', 2, 'DisplayName', 'kn'), hold on;
-plot(Adof(:, 1), Adof(:, 3), 'b-', 'LineWidth', 2, 'DisplayName', 'kt'), grid on;
+plot(Adof(:, 1), Adof(:, 5), 'r-', 'LineWidth', 2, 'DisplayName', 'xn'), hold on;
+plot(Adof(:, 1), Adof(:, 3), 'b-', 'LineWidth', 2, 'DisplayName', 'xt'), grid on;
 % plot(Adof(ind_slip, 1), Adof(ind_slip, 3), 'ko', 'DisplayName', 'slip points');
 legend('show');
 % yyaxis right
@@ -305,8 +305,9 @@ stem(P.Adof(:, 1), P.k_cont', 'DisplayName', 'Number of iteration'), hold on;
 ylim([0,12]);
 ylabel('Number of iteration');
 %%
-figure(501)
-plot(P.Adof(:, 1), P.Adof(:, 5), 'LineWidth', 2), hold on, grid on;
-
-% figure(502)
+% figure(501)
 % plot(P.Adof(:, 1), P.Adof(:, 3), 'LineWidth', 2), hold on, grid on;
+% plot(P.Adof(:, 1), P.Adof(:, 5), 'LineWidth', 2), hold on, grid on;
+
+figure(502)
+plot(P.Adof(:, 1), P.Adof(:, 3), 'LineWidth', 2), hold on, grid on;

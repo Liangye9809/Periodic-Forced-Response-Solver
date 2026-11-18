@@ -38,21 +38,21 @@ t = t';
 % xt = 3 * sin(t); % slip to stick
 
 % gap to stick
-% xn = - 4 * sin(sin(t)) + 1; % separation to stick
-% xt = 2 * exp(cos(t + 1)) - 3; % separation to stick
+xn = - 4 * sin(sin(t)) + 1; % separation to stick
+xt = 2 * exp(cos(t + 1)) - 3; % separation to stick
 % simple x
 % xn = - 10 * cos(t) + 3; % separation to stick
 % xt = - sin(t); % separation to stick
-xn = - 1 * cos(t) + 0.5; % separation to stick % (kt = 1, kn = 500, mu = 0.8)
-xt = 2 * cos(t); % separation to stick
+% xn = - 1 * cos(t) + 0.5; % separation to stick % (kt = 1, kn = 500, mu = 0.8)
+% xt = 2 * cos(t); % separation to stick
 x = [xt, xn];
 
 
 
 kt = 1;
-kn = 500;
-mu = 0.8;
-w =  0;
+kn = 2;
+mu = 0.5;
+w =  -2.5;
 xn0 = 0; % normal pre-displacement
 
 nloop = 2;
@@ -224,6 +224,8 @@ xticks([0:pi/2:2*pi]);
 xticklabels({'$0$','$\frac{\pi}{2}$','$\pi$','$\frac{3\pi}{2}$','$2\pi$'})
 set(gca,'TickLabelInterpreter','latex');
 
+
+
 figure; % hysteresis cycle
 plot(xplot(:, 1), Ft(:, 1), 'LineWidth', 2);
 title('hysteresis cycle');
@@ -287,6 +289,7 @@ wm = xplot(:, 1) - mu * kn / kt * max(xplot(:, 2), 0);
 plot(T, wp, 'k--', 'LineWidth', 2), hold on;
 plot(T, wm, 'r--', 'LineWidth', 2), hold on;
 plot(T, wt, 'b-', 'LineWidth', 2), hold on;
+legend('$w1$', '$w2$', '$w3$', 'Interpreter','latex');
 grid on;
 % xlim(T([end-2*N+1,end]));
 xlim(T([end-N+1,end]));
@@ -301,8 +304,32 @@ ylim(1.2 * [min(-mu * Ft(:,2)), max(mu * Ft(:,2))]);
 xlim(T([end-N+1,end]));
 grid on;
 
+%%
+figure; % friction forces
+plot(t, mu * Ft(118:373, 2), 'b--', 'LineWidth', 2), hold on;
+plot(t, - mu * Ft(118:373, 2), 'r--', 'LineWidth', 2), hold on;
+plot(t, Ft(118:373, 1), 'k-', 'LineWidth', 2), hold on;
+legend("$\mu f_n$", "$-\mu f_n$","$f_t$");
+% ylim(1.2 * [min(-mu * Ft(:,2)), max(mu * Ft(:,2))]);
+% xlim(T([end-N+1,end]));
+title('friction forces');
+grid on;
+xticks([0:pi/2:2*pi]);
+xticklabels({'$0$','$\frac{\pi}{2}$','$\pi$','$\frac{3\pi}{2}$','$2\pi$'})
+set(gca,'TickLabelInterpreter','latex');
 
+% Set figure size
+set(figure(1), 'Units', 'centimeters');
+pos = get(figure(1), 'Position');
+set(figure(1), 'Position', [pos(1), pos(2), 20, 10]);
 
+% Set background color
+set(figure(1), 'Color', 'white');
+
+% Export PNG
+exportgraphics(figure(1), 'Friction_Diagram.png', ...
+    'Resolution', 300, ...
+    'BackgroundColor', 'white');
 
 %%
 dTdxt_time_NUM = JNLt_N(1:N, 1:2*H+1);
@@ -641,3 +668,73 @@ P.t = t;
 P.xt = xt;
 P.X = X;
 P.h = h;
+%%
+% Figure names
+figNames = {'figure(1)', 'figure(2)', 'figure(3)'};
+
+% Set figure size (cm)
+figWidth = 12;
+figHeight = 10;
+
+% Resolution
+dpi = 300;
+
+% Output folder
+outputFolder = './PNG';
+
+if ~exist(outputFolder, 'dir')
+    mkdir(outputFolder);
+end
+
+for k = 1:length(figNames)
+
+    % Get figure handle
+    fig = figure(k);
+
+    if isempty(fig)
+        warning('%s not found.', figNames{k});
+        continue;
+    end
+
+    % Set figure size
+    set(fig, 'Units', 'centimeters');
+    pos = get(fig, 'Position');
+    set(fig, 'Position', [pos(1), pos(2), figWidth, figHeight]);
+
+    % Set background color
+    set(fig, 'Color', 'white');
+
+    % Export PNG
+    outputFile = fullfile(outputFolder, ...
+        [figNames{k}, '.png']);
+
+    exportgraphics(fig, outputFile, ...
+        'Resolution', dpi, ...
+        'BackgroundColor', 'white');
+
+end
+%%
+% Set figure size
+fig = figure(1);
+% figWidth = 20;
+% figHeight = 0.5 * figWidth;
+% figWidth = 8;
+% figHeight = 6.5;
+% Jacobian
+figWidth = 25;
+figHeight = 0.6 * figWidth;
+dpi = 300;
+outputFile = 'figure1.png';
+set(fig, 'Units', 'centimeters');
+pos = get(fig, 'Position');
+set(fig, 'Position', [pos(1), pos(2), figWidth, figHeight]);
+
+% Set background color
+set(fig, 'Color', 'white');
+
+% Export PNG
+
+
+exportgraphics(fig, outputFile, ...
+    'Resolution', dpi, ...
+    'BackgroundColor', 'white');
